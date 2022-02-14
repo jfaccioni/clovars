@@ -27,11 +27,11 @@ class TestCell(NotEmptyTestCase):
         """Sets up the test case subject (a Cell instance)."""
         self.cell = Cell()
 
-    def test_cell_has_default_treatment_class_attribute(self) -> None:
-        """Tests whether a Cell has a "default_treatment" class attribute (a Treatment instance)."""
-        self.assertTrue(hasattr(self.cell, 'default_treatment'))
-        self.assertTrue(hasattr(Cell, 'default_treatment'))
-        self.assertIsInstance(self.cell.default_treatment, Treatment)
+    # def test_cell_has_default_treatment_class_attribute(self) -> None:
+    #     """Tests whether a Cell has a "default_treatment" class attribute (a Treatment instance)."""
+    #     self.assertTrue(hasattr(self.cell, 'default_treatment'))
+    #     self.assertTrue(hasattr(Cell, 'default_treatment'))
+    #     self.assertIsInstance(self.cell.default_treatment, Treatment)
 
     def test_cell_has_name_attribute(self) -> None:
         """Tests whether a Cell has a "name" attribute (a string)."""
@@ -195,10 +195,10 @@ class TestCell(NotEmptyTestCase):
         self.assertTrue(hasattr(self.cell, 'treatment'))
         self.assertIsInstance(self.cell.treatment, Treatment)
 
-    def test_cell_uses_the_default_treatment_if_treatment_argument_is_none(self) -> None:
-        """Tests whether a Cell uses the "default_treatment" class attribute when initialized with treatment=None."""
-        cell = Cell(signal=None)
-        self.assertIs(cell.treatment, self.cell.default_treatment)
+    # def test_cell_uses_the_default_treatment_if_treatment_argument_is_none(self) -> None:
+    #     """Tests whether a Cell uses the "default_treatment" class attribute when initialized with treatment=None."""
+    #     cell = Cell(signal=None)
+    #     self.assertIs(cell.treatment, self.cell.default_treatment)
 
     def test_calculate_division_chance_method_returns_chance_depending_on_the_cell_seconds_since_birth(self) -> None:
         """

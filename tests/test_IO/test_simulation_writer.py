@@ -11,6 +11,7 @@ class TestSimulationWriter(unittest.TestCase):
     """Class representing unit-tests for clovars.IO.simulation_writer.SimulationWriter class."""
     default_output_folder = Path('SimulationWriter_TEST_FOLDER')
     default_delta = 3600
+    default_current_frame = 1
     default_stop_conditions = {}
 
     @classmethod
@@ -180,19 +181,31 @@ class TestSimulationWriter(unittest.TestCase):
     def test_write_cells_writes_a_csv_file_to_the_output_folder(self) -> None:
         """Tests whether the "write_cells" method writes a csv file to the output folder."""
         self.assertFalse(self.simulation_writer.cell_csv_path.exists())
-        self.simulation_writer.write_cells(well=self.well, simulation_seconds=self.default_delta)
+        self.simulation_writer.write_cells(
+            well=self.well,
+            simulation_seconds=self.default_delta,
+            current_frame=self.default_current_frame,
+        )
         self.assertTrue(self.simulation_writer.cell_csv_path.exists())
 
     def test_write_cells_method_writes_one_row_per_cell(self) -> None:
         """Tests whether the "write_cells" method writes a csv with one row per each Cell."""
         expected_cell_number = 3
-        self.simulation_writer.write_cells(well=self.well, simulation_seconds=self.default_delta)
+        self.simulation_writer.write_cells(
+            well=self.well,
+            simulation_seconds=self.default_delta,
+            current_frame=self.default_current_frame,
+        )
         with open(self.simulation_writer.cell_csv_path) as csv_file:
             self.assertEqual(expected_cell_number, len(csv_file.readlines()))
 
     def test_cell_as_csv_row_returns_row_with_equal_number_of_columns_to_cell_header(self) -> None:
         """Tests whether the "cell_as_csv_row" method returns a string of equal length to the cell csv header."""
-        row = self.simulation_writer.cell_as_csv_row(cell=Cell(), simulation_seconds=self.default_delta)
+        row = self.simulation_writer.cell_as_csv_row(
+            cell=Cell(),
+            simulation_seconds=self.default_delta,
+            current_frame=self.default_current_frame,
+        )
         self.assertIsInstance(row, str)
         self.assertEqual(len(row.split(',')), len(self.simulation_writer.cell_csv_header.split(',')))
 
@@ -205,19 +218,31 @@ class TestSimulationWriter(unittest.TestCase):
     def test_write_colonies_writes_a_csv_file_to_the_output_folder(self) -> None:
         """Tests whether the "write_colonies" method writes a csv file to the output folder."""
         self.assertFalse(self.simulation_writer.colony_csv_path.exists())
-        self.simulation_writer.write_colonies(well=self.well, simulation_seconds=self.default_delta)
+        self.simulation_writer.write_colonies(
+            well=self.well,
+            simulation_seconds=self.default_delta,
+            current_frame=self.default_current_frame,
+        )
         self.assertTrue(self.simulation_writer.colony_csv_path.exists())
 
     def test_write_colonies_method_writes_one_row_per_colony(self) -> None:
         """Tests whether the "write_colonies" method writes a csv with one row per each Cell."""
         expected_colony_number = 1
-        self.simulation_writer.write_colonies(well=self.well, simulation_seconds=self.default_delta)
+        self.simulation_writer.write_colonies(
+            well=self.well,
+            simulation_seconds=self.default_delta,
+            current_frame=self.default_current_frame,
+        )
         with open(self.simulation_writer.colony_csv_path) as csv_file:
             self.assertEqual(expected_colony_number, len(csv_file.readlines()))
 
     def test_colony_as_csv_row_returns_row_with_equal_number_of_columns_to_colony_header(self) -> None:
         """Tests whether the "colony_as_csv_row" method returns a string of equal length to the colony csv header."""
-        row = self.simulation_writer.colony_as_csv_row(colony=Colony(), simulation_seconds=self.default_delta)
+        row = self.simulation_writer.colony_as_csv_row(
+            colony=Colony(),
+            simulation_seconds=self.default_delta,
+            current_frame=self.default_current_frame,
+        )
         self.assertIsInstance(row, str)
         self.assertEqual(len(row.split(',')), len(self.simulation_writer.colony_csv_header.split(',')))
 

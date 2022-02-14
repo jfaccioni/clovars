@@ -232,14 +232,14 @@ class TestTreeDrawer(unittest.TestCase):
     def test_get_xyz_from_cell_nodes_method_returns_tuple_of_values(self) -> None:
         """Tests whether the "get_xyz_from_cell_nodes" method returns a tuple of list of the XYZ values of each Node."""
         cell_nodes = [
-            CellNode(x=10, y=5, simulation_seconds=350),
-            CellNode(x=12, y=4, simulation_seconds=400),
-            CellNode(x=14, y=3, simulation_seconds=450),
+            CellNode(x=10, y=5, simulation_hours=1),
+            CellNode(x=12, y=4, simulation_hours=2),
+            CellNode(x=14, y=3, simulation_hours=3),
         ]
         xs, ys, zs = self.tree_drawer.get_xyz_from_cell_nodes(cell_nodes=cell_nodes)
         self.assertSequenceEqual(xs, [10, 12, 14])
         self.assertSequenceEqual(ys, [5, 4, 3])
-        self.assertSequenceEqual(zs, [350, 400, 450])
+        self.assertSequenceEqual(zs, [1, 2, 3])
 
     def test_add_colorbar_method(self) -> None:
         """Tests whether the "add_colorbar" method calls the "colorbar" method on the plt.Figure instance."""

@@ -20,6 +20,7 @@ class TestSimulationViewer(NotEmptyTestCase):
     default_cell_data = pd.DataFrame({  # a Cell that divides into two between 60s and 120s
                 'signal_value': [0.0, 0.1, 0.2, 0.05],
                 'simulation_seconds': [0, 60, 120, 120],
+                'simulation_hours': [0, 1, 2, 3],
                 'generation': [0, 0, 1, 1],
                 'name': ['1a-1', '1a-1', '1a-1.1', '1a-1.2'],
                 'branch_name': ['1a-1', '1a-1', '1a-1', '1a-1'],

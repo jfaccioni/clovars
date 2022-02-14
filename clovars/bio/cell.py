@@ -5,28 +5,18 @@ import random
 from typing import TYPE_CHECKING
 
 from clovars.abstract import Circle
-from clovars.scientific import bounded_brownian_motion, ConstantCellSignal, Gaussian
+from clovars.scientific import bounded_brownian_motion
 from clovars.utils import SimulationError
-from clovars.bio import Treatment
+from clovars.bio import DEFAULT_TREATMENT, DEFAULT_CELL_SIGNAL
 
 if TYPE_CHECKING:
     from clovars.scientific import CellSignal
+    from clovars.bio import Treatment
 
 
 class Cell:
     """Class representing a single Cell in a specific point in time and space."""
     cell_id_counter = itertools.count()
-    default_treatment = Treatment(
-        name="Control",
-        division_curve=Gaussian(loc=24.0, scale=5),
-        death_curve=Gaussian(loc=32, scale=5),
-        signal_disturbance={
-            'signal_type': 'Gaussian',
-            'mean': 0.0,
-            'std': 1e-3,
-            'k': 1e-3,
-        }
-    )
 
     def __init__(
             self,
@@ -63,8 +53,8 @@ class Cell:
             raise SimulationError(f"Death threshold value {self.death_threshold} not in [0, 1] interval.")
         # Composition
         self.circle = Circle(x=x, y=y, radius=radius)
-        self.signal = signal if signal is not None else ConstantCellSignal()
-        self.treatment = treatment if treatment is not None else self.default_treatment
+        self.signal = signal if signal is not None else DEFAULT_CELL_SIGNAL
+        self.treatment = treatment if treatment is not None else DEFAULT_TREATMENT
 
     def __str__(self) -> str:
         """Returns a user-friendly string representation of the Cell."""

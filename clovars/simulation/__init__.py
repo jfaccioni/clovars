@@ -1,8 +1,8 @@
 # Classes are imported first
 from clovars.simulation.run.simulation_runner import SimulationRunner
-from clovars.simulation.view.simulation_viewer import SimulationViewer
 from clovars.simulation.view.treatment_drawer import TreatmentDrawer
 from clovars.simulation.view.tree_drawer import TreeDrawer
+from clovars.simulation.view.simulation_viewer import SimulationViewer
 from clovars.simulation.analysis.simulation_analyzer import SimulationAnalyzer
 # Functions are imported later
 from clovars.simulation.run.run_simulation import run_simulation_function

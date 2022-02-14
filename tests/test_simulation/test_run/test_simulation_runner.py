@@ -10,6 +10,7 @@ from clovars.utils import QuietPrinterMixin, SimulationError
 
 class TestSimulationRunner(unittest.TestCase):
     """Class representing unit-tests for clovars.simulation_runner.simulation_runner.SimulationRunner class."""
+    default_current_frame = 1
 
     def setUp(self) -> None:
         """Sets up the test case subject (a SimulationRunner instance)."""
@@ -165,10 +166,12 @@ class TestSimulationRunner(unittest.TestCase):
             simulation_writer=self.run_kwargs['simulation_writer'],
             well=self.run_kwargs['well'],
             simulation_seconds=0,
+            current_frame=self.default_current_frame,
         )
         self.run_kwargs['simulation_writer'].write_cells.assert_called_once_with(
             well=self.run_kwargs['well'],
             simulation_seconds=0,
+            current_frame=self.default_current_frame,
         )
 
     def test_write_simulation_status_method_calls_write_colonies(self) -> None:
@@ -177,10 +180,12 @@ class TestSimulationRunner(unittest.TestCase):
             simulation_writer=self.run_kwargs['simulation_writer'],
             well=self.run_kwargs['well'],
             simulation_seconds=0,
+            current_frame=self.default_current_frame,
         )
         self.run_kwargs['simulation_writer'].write_colonies.assert_called_once_with(
             well=self.run_kwargs['well'],
             simulation_seconds=0,
+            current_frame=self.default_current_frame,
         )
 
     @mock.patch('clovars.simulation.SimulationRunner.reached_all_colonies_size_limit')

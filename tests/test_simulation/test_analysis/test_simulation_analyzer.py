@@ -8,7 +8,7 @@ class TestSimulationAnalyzer(unittest.TestCase):
         """Sets up the test case (a SimulationAnalyzer instance)."""
 
     def test_(self) -> None:
-        self.fail("Finish the tests!")
+        self.fail("Write the test!")
 
 
 if __name__ == '__main__':
