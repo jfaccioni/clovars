@@ -9,8 +9,10 @@ setup(
         'matplotlib',
         'numpy',
         'pandas',
-        'openpyxl',
-        'jsonpickle',
-        'PyQt5',
+        'scipy',
+        'seaborn',
+        # 'openpyxl',
+        # 'jsonpickle',
+        # 'PyQt5',
     ]
 )
