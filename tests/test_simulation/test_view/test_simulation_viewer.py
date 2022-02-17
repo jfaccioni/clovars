@@ -268,14 +268,17 @@ class TestSimulationViewer(NotEmptyTestCase):
         roots = list(self.simulation_viewer.yield_roots())
         self.assertEqual(len(roots), 1)  # Default test case, only one root CellNode
         for i, suffix in enumerate('bcde', 2):
-            self.simulation_viewer.cell_data = self.simulation_viewer.cell_data.append(pd.Series({
-                'signal_value': 0.0,
-                'simulation_seconds': 0,
-                'generation': 0,
-                'name': f'1{suffix}-1',
-                'branch_name': f'1{suffix}-1',
-                'colony_name': f'1{suffix}',
-            }), ignore_index=True)
+            self.simulation_viewer.cell_data = pd.concat([
+                self.simulation_viewer.cell_data,
+                pd.DataFrame({
+                    'signal_value': 0.0,
+                    'simulation_seconds': 0,
+                    'generation': 0,
+                    'name': f'1{suffix}-1',
+                    'branch_name': f'1{suffix}-1',
+                    'colony_name': f'1{suffix}',
+                }, index=[0])
+            ], ignore_index=True)
             roots = list(self.simulation_viewer.yield_roots())
             self.assertEqual(len(roots), i)  # adds one new root CellNode at a time
 
@@ -308,14 +311,17 @@ class TestSimulationViewer(NotEmptyTestCase):
         actual_cells_in_tree = len([node for node in root.traverse()])
         self.assertEqual(actual_cells_in_tree, expected_cells_in_tree)  # At the start, all data is from the same root
         for suffix in 'bcde':
-            self.simulation_viewer.cell_data = self.simulation_viewer.cell_data.append(pd.Series({
-                'signal_value': 0.0,
-                'simulation_seconds': 0,
-                'generation': 0,
-                'name': f'1{suffix}-1',
-                'branch_name': f'1{suffix}-1',
-                'colony_name': f'1{suffix}',
-            }), ignore_index=True)  # Adds unrelated CellNodes to the data
+            self.simulation_viewer.cell_data = pd.concat([
+                self.simulation_viewer.cell_data,
+                pd.DataFrame({
+                    'signal_value': 0.0,
+                    'simulation_seconds': 0,
+                    'generation': 0,
+                    'name': f'1{suffix}-1',
+                    'branch_name': f'1{suffix}-1',
+                    'colony_name': f'1{suffix}',
+                }, index=[0])
+            ], ignore_index=True)  # Adds unrelated CellNodes to the data
             root = self.simulation_viewer.get_root_data(root_name='1a-1', root_data=self.simulation_viewer.cell_data)
             actual_cells_in_tree = len([node for node in root.traverse()])
             self.assertEqual(actual_cells_in_tree, expected_cells_in_tree)  # Tree should not change

@@ -1,6 +1,4 @@
 import unittest
-from collections import Sequence
-from contextlib import contextmanager
 from pathlib import Path
 from unittest import mock
 from unittest.mock import MagicMock
@@ -9,9 +7,10 @@ from matplotlib import pyplot as plt
 
 from clovars.bio import Treatment
 from clovars.simulation import TreatmentDrawer
+from tests import NotEmptyTestCase
 
 
-class TestTreatmentDrawer(unittest.TestCase):
+class TestTreatmentDrawer(NotEmptyTestCase):
     """Class representing unit-tests for clovars.simulation.view.simulation_viewer.TreatmentDrawer class."""
     default_folder_path = Path('.')
     default_file_name = 'TEST'
@@ -20,13 +19,6 @@ class TestTreatmentDrawer(unittest.TestCase):
     def setUp(self) -> None:
         """Sets up the test case subject (a TreatmentDrawer instance)."""
         self.treatment_drawer = TreatmentDrawer(treatment_data={('1', 0): Treatment()})
-
-    @contextmanager
-    def assertSequenceNotEmpty(self, sequence: Sequence):
-        """ContextManager for asserting that a Sequence has at least one value in it."""
-        if len(sequence) < 1:
-            self.fail(f"Empty sequence of type {type(sequence)}")
-        yield
 
     def test_treatment_drawer_has_treatment_attribute(self) -> None:
         """Tests whether the TreatmentDrawer has the "treatments" attribute (dictionary of integer-treatment pairs)."""
