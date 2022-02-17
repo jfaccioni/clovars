@@ -1,0 +1,32 @@
+verbose = true
+
+[input]
+simulation_input_folder = 'output/'
+parameters_file_name = 'params.json'
+cell_csv_file_name = 'cell_output.csv'
+colony_csv_file_name = 'colony_output.csv'
+
+[view]
+colormap = 'viridis'
+figure_dpi = 320
+
+[2D_view]
+layout = 'family'  # valid layouts: family, time, generation,
+display = false
+render = false
+render_file_name = '2D'
+render_file_extension = 'png'  # valid extensions: png, svg
+
+[3D_view]
+display = false
+render = false
+render_file_name = '3D'
+render_file_extension = 'png'  # valid extensions: png, svg
+
+[treatment_curves]
+show_division = false
+show_death = false
+display = false
+render = false
+render_file_name = 'curves'
+render_file_extension = 'png'  # valid extensions: png, svg
