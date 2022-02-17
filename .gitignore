@@ -6,4 +6,7 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+# PyCharm files
 /.idea
+# editable pip install files
+/clovars.egg-info
