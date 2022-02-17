@@ -1,7 +1,7 @@
 import math
 import unittest
 
-from cellsim.abstract import Circle
+from clovars.abstract import Circle
 
 
 class TestCircle(unittest.TestCase):

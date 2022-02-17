@@ -3,7 +3,7 @@ from typing import Generator
 
 from ete3 import TreeNode
 
-from cellsim.abstract import CellNode
+from clovars.abstract import CellNode
 
 
 class TestCellNode(unittest.TestCase):
