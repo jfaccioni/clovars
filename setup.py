@@ -9,6 +9,7 @@ setup(
         'matplotlib',
         'numpy',
         'pandas',
+        'toml',
         'scipy',
         'seaborn',
         # 'openpyxl',
