@@ -21,6 +21,7 @@ def main() -> None:
         print('View')
         toml_view_settings = toml.load(VIEW_SETTINGS_PATH)
         view_settings = format_view_settings(view_settings=toml_view_settings)  # noqa
+        print(view_settings)
         view_simulation_function(**view_settings)
     elif args.mode.lower() == 'analyse':
         print('Analyse')
@@ -72,7 +73,7 @@ def format_view_settings(view_settings: dict) -> dict:
     view_3d_dict = view_settings.get('3D_view', {})
     view_treatment_dict = view_settings.get('treatment_curves', {})
     return {
-        'output_folder': os.path.join(input_dict.get('simulation_input_folder', 'view')),
+        'output_folder': os.path.join(input_dict.get('simulation_input_folder', '.'), 'view'),
         'simulation_loader_settings': input_dict,
         'view_settings': {
             'colormap_name': view_dict.get('colormap', 'viridis'),
@@ -107,12 +108,28 @@ def format_analyse_settings(analyse_settings: dict) -> dict:
     colony_division_times_dict = analyse_settings.get('colony_division_times', {})
     videos_dict = analyse_settings.get('videos', {})
     return {
-        'output_folder': os.path.join(input_dict.get('simulation_input_folder', 'view')),
+        'output_folder': os.path.join(input_dict.get('simulation_input_folder', '.'), 'analysis'),
         'simulation_loader_settings': input_dict,
         'analyse_settings': {
             'compare_treatments': tree_stats_dict.get('perform', False),
             'treatments_bootstrap_n': tree_stats_dict.get('bootstrap_n', 100),
-            # TODO: finish these dictionaries
+            'plot_dynafit': dynafit_dict.get('perform', False),
+            'dynafit_start_day': dynafit_dict.get('start_day', 3),
+            'dynafit_end_day': dynafit_dict.get('end_day', 6),
+            'cs_group_filter': dynafit_dict.get('filter_colonies_smaller_than', 0),
+            'cs_merge': dynafit_dict.get('merge_colonies_of_different_sizes', False),
+            'cs_bins': dynafit_dict.get('number_of_bins_to_merge_on', 10),
+            'dynafit_bootstrap_n': dynafit_dict.get('bootstrap_n', 100),
+            'use_log_colony_size': dynafit_dict.get('use_log2_colony_size', False),
+            'show_cell_fate_distributions': cell_fate_dict.get('display', False),
+            'render_cell_fate_distributions': cell_fate_dict.get('render', False),
+            'join_treatments': cell_fate_dict.get('join_treatments', False),
+            'distributions_file_name': cell_fate_dict.get('render_file_name', 'cell_fate_distributions'),
+            'distributions_file_extension': cell_fate_dict.get('render_file_extension', 'png'),
+            'show_cell_fitness_distributions': cell_fitness_dict.get('perform', False),
+            'show_colony_division_times_cv': colony_division_times_dict.get('perform', False),
+            'write_video_colony_signal_vs_size_over_time': videos_dict.get('render_colony_signal_vs_size', False),
+            'write_video_colony_fitness_over_time': videos_dict.get('render_colony_fitness_distribution', False),
         },
         'verbose': analyse_settings.get('verbose', False)
     }
