@@ -1,7 +1,7 @@
 verbose = true
 
 [input]
-simulation_input_folder = 'output/'
+simulation_input_folder = 'output'
 parameters_file_name = 'params.json'
 cell_csv_file_name = 'cell_output.csv'
 colony_csv_file_name = 'colony_output.csv'
@@ -11,7 +11,7 @@ colormap = 'viridis'
 figure_dpi = 320
 
 [2D_view]
-layout = 'family'  # valid layouts: family, time, generation,
+layout = 'family'  # valid layouts: family, time, division, signal
 display = false
 render = false
 render_file_name = '2D'
