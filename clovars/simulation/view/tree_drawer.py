@@ -12,7 +12,7 @@ from mpl_toolkits.mplot3d import art3d
 
 if TYPE_CHECKING:
     from pathlib import Path
-    from cellsim.abstract import CellNode
+    from clovars.abstract import CellNode
 
 
 class TreeDrawer:
