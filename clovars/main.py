@@ -18,16 +18,13 @@ def main() -> None:
         run_settings['colony_data'] = colony_data
         run_simulation_function(**run_settings)
     elif args.mode.lower() == 'view':
-        print('View')
         toml_view_settings = toml.load(VIEW_SETTINGS_PATH)
         view_settings = format_view_settings(view_settings=toml_view_settings)  # noqa
-        print(view_settings)
         view_simulation_function(**view_settings)
     elif args.mode.lower() == 'analyse':
-        print('Analyse')
         toml_analyse_settings = toml.load(ANALYSE_SETTINGS_PATH)
         analyse_settings = format_analyse_settings(analyse_settings=toml_analyse_settings)  # noqa
-        analyse_simulation_function(**toml_analyse_settings)
+        analyse_simulation_function(**analyse_settings)
     else:
         print(f'Invalid mode {args.mode}. Exiting...')
 
@@ -110,7 +107,7 @@ def format_analyse_settings(analyse_settings: dict) -> dict:
     return {
         'output_folder': os.path.join(input_dict.get('simulation_input_folder', '.'), 'analysis'),
         'simulation_loader_settings': input_dict,
-        'analyse_settings': {
+        'analysis_settings': {
             'compare_treatments': tree_stats_dict.get('perform', False),
             'treatments_bootstrap_n': tree_stats_dict.get('bootstrap_n', 100),
             'plot_dynafit': dynafit_dict.get('perform', False),
