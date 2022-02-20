@@ -144,7 +144,31 @@ class TreeDrawer:
         else:
             node.set_style(NodeStyle(fgcolor=color, size=3))
 
-    def show_trees_matplotlib(
+    def show_trees_matplotlib_2D(
+            self,
+            well_node: CellNode,
+    ) -> None:
+        """Displays the view of the SimulationViewer as a matplotlib 2D plot."""
+        print('show 2D')
+        print(well_node.name)
+        print(self)
+
+    def render_trees_matplotlib_2D(
+            self,
+            well_node: CellNode,
+            folder_path: Path,
+            file_name: str,
+            file_extension: str,
+    ) -> None:
+        """Renders the view of the SimulationViewer as a matplotlib 2D plot."""
+        print('render 2D')
+        print(well_node.name)
+        print(folder_path)
+        print(file_name)
+        print(file_extension)
+        print(self)
+
+    def show_trees_matplotlib_3D(
             self,
             well_node: CellNode,
             well_radius: float,
@@ -162,7 +186,7 @@ class TreeDrawer:
         self.set_limits(ax=ax, well_radius=well_radius)
         plt.show()
 
-    def render_trees_matplotlib(
+    def render_trees_matplotlib_3D(
             self,
             well_node: CellNode,
             well_radius: float,
