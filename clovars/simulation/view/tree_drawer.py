@@ -147,26 +147,111 @@ class TreeDrawer:
     def show_trees_matplotlib_2D(
             self,
             well_node: CellNode,
+            layout: str,
     ) -> None:
         """Displays the view of the SimulationViewer as a matplotlib 2D plot."""
-        print('show 2D')
-        print(well_node.name)
-        print(self)
+        figure, ax = plt.subplots()
+        self.draw_2D_scatter(well_node=well_node, layout=layout, ax=ax)
+        for branch in well_node.yield_branches():
+            self.draw_2D_branch(branch=branch, ax=ax)
+        ax.set_xlabel('Simulation time (hours)')
+        ax.set_ylabel('')
+        self.add_colorbar(figure=figure, ax=ax)
+        plt.show()
 
     def render_trees_matplotlib_2D(
             self,
             well_node: CellNode,
+            layout: str,
             folder_path: Path,
             file_name: str,
             file_extension: str,
     ) -> None:
         """Renders the view of the SimulationViewer as a matplotlib 2D plot."""
-        print('render 2D')
-        print(well_node.name)
-        print(folder_path)
-        print(file_name)
-        print(file_extension)
-        print(self)
+        figure, ax = plt.subplots()
+        self.draw_2D_scatter(well_node=well_node, layout=layout, ax=ax)
+        for branch in well_node.yield_branches():
+            self.draw_2D_branch(branch=branch, ax=ax)
+        ax.set_xlabel('Simulation time (hours)')
+        ax.set_ylabel('')
+        self.add_colorbar(figure=figure, ax=ax)
+        fname = str(folder_path / f'{file_name}.{file_extension}')
+        figure.savefig(fname)
+        plt.close(figure)
+
+    def draw_2D_scatter(
+            self,
+            well_node: CellNode,
+            layout: str,
+            ax: plt.Axes,
+    ) -> None:
+        xs, ys, cs, ms = [], [], [], []
+        for node in well_node.iter_descendants():
+            xs.append(node.simulation_seconds)
+            ys.append(self.get_height_from_name(name=node.name))
+            if layout == 'family':
+                cs.append(self.get_family_color(node=node))
+            elif layout == 'time':
+                cs.append(self.time_normalizer(node.simulation_seconds))
+            elif layout == 'division':
+                cs.append(self.division_normalizer(node.generation))
+            elif layout == 'signal':
+                cs.append(self.signal_normalizer(node.signal_value))
+            else:
+                raise ValueError(f'Invalid layout: {layout}')
+            ms = '.' if layout != 'family' else self.get_family_marker(node=node)
+        ax.scatter(xs, ys, c=cs, marker=ms)
+
+    def draw_2D_branch(
+            self,
+            branch: list[CellNode],
+            ax: plt.Axes,
+    ) -> None:
+        """Draws a branch onto the 2D tree."""
+        xs = [node.simulation_seconds for node in branch]
+        ys = [self.get_height_from_name(name=node.name) for node in branch]
+        ax.plot(xs, ys, c='0.7', zorder=1)
+
+    @staticmethod
+    def get_family_color(node: CellNode) -> str:
+        """Returns the proper color for the given CellNode, when plotting the 2D tree as a family."""
+        if node.is_root():
+            return 'blue'
+        elif node.is_leaf():
+            return 'orange'
+        elif node.is_dead():
+            return 'red'
+        elif node.is_parent():
+            return 'green'
+        else:
+            return 'gray'
+
+    @staticmethod
+    def get_family_marker(node: CellNode) -> str:
+        """Returns the proper marker style for the given CellNode, when plotting the 2D tree as a family."""
+        if node.is_root():
+            return '*'
+        elif node.is_leaf():
+            return '.'
+        elif node.is_dead():
+            return 'x'
+        elif node.is_parent():
+            return '.'
+        else:
+            return '.'
+
+    @staticmethod
+    def get_height_from_name(name: str) -> float:
+        """Returns the height of the CellNode in a 2D tree, given its name."""
+        height = 0.0
+        current_step = 0.5
+        for number in name.split('.')[1:]:
+            if number == '1':
+                height += current_step
+            elif number == '2':
+                height -= current_step
+            current_step /= 2
+        return height
 
     def show_trees_matplotlib_3D(
             self,

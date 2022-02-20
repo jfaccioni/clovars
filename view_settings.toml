@@ -11,7 +11,7 @@ colormap = 'viridis'
 figure_dpi = 320
 
 [2D_view]
-# layout = 'family'  # valid layouts: family, time, division, signal
+layout = 'family'  # valid layouts: family, time, division, signal
 display = false
 render = false
 render_file_name = '2D'

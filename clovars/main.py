@@ -84,6 +84,7 @@ def format_view_settings(view_settings: dict) -> dict:
             # 'ete3_file_extension': view_2d_dict.get('render_file_extension', 'png'),
             'show_2D': view_2d_dict.get('display', False),
             'render_2D': view_2d_dict.get('render', False),
+            'layout': view_2d_dict.get('layout', 'family'),
             '2D_file_name': view_2d_dict.get('render_file_name', '2D'),
             '2D_file_extension': view_2d_dict.get('render_file_extension', 'png'),
             'show_3D': view_3d_dict.get('display', False),
