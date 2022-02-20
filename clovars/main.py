@@ -12,10 +12,8 @@ def main() -> None:
     args = parse_command_line_arguments()
     if args.mode.lower() == 'run':
         toml_run_settings = toml.load(RUN_SETTINGS_PATH)
-        run_settings = format_run_settings(toml_run_settings)  # noqa
         toml_colony_data = toml.load(COLONY_DATA_PATH)
-        colony_data = format_colony_data(toml_colony_data)  # noqa
-        run_settings['colony_data'] = colony_data
+        run_settings = format_run_settings(run_settings=toml_run_settings, colony_data=toml_colony_data)  # noqa
         run_simulation_function(**run_settings)
     elif args.mode.lower() == 'view':
         toml_view_settings = toml.load(VIEW_SETTINGS_PATH)
@@ -29,9 +27,13 @@ def main() -> None:
         print(f'Invalid mode {args.mode}. Exiting...')
 
 
-def format_run_settings(run_settings: dict) -> dict:
+def format_run_settings(
+        run_settings: dict,
+        colony_data: dict,
+) -> dict:
     """Formats the run settings parsed from the TOML file, as expected by CloVarS."""
     return {
+        'colony_data': format_colony_data(colony_data),  # noqa
         'well_settings': run_settings['well'],
         'simulation_writer_settings': run_settings['output'],
         'simulation_runner_settings': {
