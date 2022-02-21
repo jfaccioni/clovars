@@ -2,6 +2,7 @@
 from clovars.simulation.run.simulation_runner import SimulationRunner
 from clovars.simulation.view.treatment_drawer import TreatmentDrawer
 from clovars.simulation.view.tree_drawer import TreeDrawer
+from clovars.simulation.view.tree_drawer_2D import TreeDrawer2D
 from clovars.simulation.view.simulation_viewer import SimulationViewer
 from clovars.simulation.analysis.simulation_analyzer import SimulationAnalyzer
 # Functions are imported later

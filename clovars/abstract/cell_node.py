@@ -111,6 +111,10 @@ class CellNode(TreeNode):
         except AttributeError:  # Happens when self.parent = None
             return False
 
+    def is_initial_cell(self) -> bool:
+        """Returns whether the CellNode appears at the very start of the simulation."""
+        return self.simulation_seconds == 0
+
     def is_dead(self) -> bool:
         """Returns whether the CellNode is considered to be a dead Cell, from a biological standpoint."""
         return self.fate_at_next_frame == 'death'  # type: ignore

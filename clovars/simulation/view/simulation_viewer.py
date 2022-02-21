@@ -4,7 +4,7 @@ from typing import Any, Generator, TYPE_CHECKING
 
 from clovars.abstract import CellNode
 from clovars.utils import PathCreatorMixin, QuietPrinterMixin
-from clovars.simulation import TreatmentDrawer, TreeDrawer
+from clovars.simulation import TreatmentDrawer, TreeDrawer2D, TreeDrawer
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -48,66 +48,49 @@ class SimulationViewer(QuietPrinterMixin, PathCreatorMixin):
         """Produces output depending on the values inside the settings dictionary."""
         # Setup
         colormap_name = settings.get('colormap_name', self.default_colormap_name)
-        tree_drawer = TreeDrawer(
+        layout = settings.get('layout', self.default_layout)
+
+        # 2D TREES
+        tree_drawer_2D = TreeDrawer2D(
+            colormap_name=colormap_name,
+            layout=layout,
+            signal_values=self.cell_data['signal_value'],
+            time_values=self.cell_data['simulation_hours'],
+            division_values=self.cell_data['generation'],
+        )
+        if settings.get('display_2D', False) is True:
+            self.quiet_print('Displaying Cell Trees as a 2D plot...')
+            tree_drawer_2D.display_trees(root_nodes=self.roots)
+        if settings.get('render_2D', False) is True:
+            self.quiet_print('Rendering Cell Trees as a 2D plot...')
+            tree_drawer_2D.render_trees(
+                root_nodes=self.roots,
+                folder_path=self.path,
+                file_name=settings.get('file_name_2D', self.default_2D_file_name),
+                file_extension=settings.get('file_extension_2D', self.default_2D_file_extension),
+            )
+
+        # 3D TREES
+        tree_drawer_3D = TreeDrawer(
             colormap_name=colormap_name,
             signal_values=self.cell_data['signal_value'],
             time_values=self.cell_data['simulation_hours'],
             division_values=self.cell_data['generation'],
         )
-        # # ETE3 TREES
-        # if settings.get('show_ete3', False) is True:
-        #     self.quiet_print('Displaying ete3 Trees interface...')
-        #     tree_layout = settings.get('ete3_tree_layout', self.default_tree_layout)
-        #     for root in self.yield_roots():
-        #         self.quiet_print(f'Displaying tree: {root.name}')
-        #         tree_drawer.show_ete3(root=root, tree_layout=tree_layout)
-        # if settings.get('render_ete3', False) is True:
-        #     file_name = settings.get('ete3_file_name', self.default_tree_file_name)
-        #     file_extension = settings.get('ete3_file_extension', self.default_tree_file_extension)
-        #     dpi = settings.get('dpi', self.default_dpi)
-        #     tree_layout = settings.get('ete3_tree_layout', self.default_tree_layout)
-        #     self.quiet_print('Rendering ete3 Trees to file...')
-        #     for root in self.yield_roots():
-        #         self.quiet_print(f'Rendering tree: {root.name}')
-        #         tree_drawer.render_ete3(
-        #             root=root,
-        #             folder_path=self.path,
-        #             file_name=file_name,
-        #             file_extension=file_extension,
-        #             dpi=dpi,
-        #             tree_layout=tree_layout,
-        #         )
-        # MATPLOTLIB 2D TREES
-        if settings.get('show_2D', False) is True:
-            self.quiet_print('Displaying Cell Trees on a 2D matplotlib plot...')
-            tree_drawer.show_trees_matplotlib_2D(
-                well_node=self.well_node,
-                layout=settings.get('layout', self.default_layout),
-            )
-        # MATPLOTLIB 2D TREES
-        if settings.get('render_2D', False) is True:
-            self.quiet_print('Rendering Cell Trees on a 2D matplotlib plot...')
-            tree_drawer.render_trees_matplotlib_2D(
-                well_node=self.well_node,
-                layout=settings.get('layout', self.default_layout),
-                folder_path=self.path,
-                file_name=settings.get('2D_file_name', self.default_2D_file_name),
-                file_extension=settings.get('2D_file_extension', self.default_2D_file_extension),
-            )
-        # MATPLOTLIB 3D TREES
         if settings.get('show_3D', False) is True:
             self.quiet_print('Displaying Cell Trees on a 3D matplotlib plot...')
-            tree_drawer.show_trees_matplotlib_3D(well_node=self.well_node, well_radius=self.well_radius)
+            tree_drawer_3D.show_trees_matplotlib_3D(well_node=self.well_node, well_radius=self.well_radius)
         if settings.get('render_3D', False) is True:
             self.quiet_print('Rendering Cell Trees on a 3D matplotlib plot...')
-            tree_drawer.render_trees_matplotlib_3D(
+            tree_drawer_3D.render_trees_matplotlib_3D(
                 well_node=self.well_node,
                 well_radius=self.well_radius,
                 folder_path=self.path,
                 file_name=settings.get('3D_file_name', self.default_3D_file_name),
                 file_extension=settings.get('3D_file_extension', self.default_3D_file_extension),
             )
-        # MATPLOTLIB GAUSSIANS
+
+        # TREATMENTS
         treatment_drawer = TreatmentDrawer(treatment_data=self.treatment_data)
         show_division = settings.get('division_gaussian', True)
         show_death = settings.get('death_gaussian', True)
@@ -126,6 +109,30 @@ class SimulationViewer(QuietPrinterMixin, PathCreatorMixin):
                 show_division=show_division,
                 show_death=show_death,
             )
+
+    # # ETE3 TREES
+    # if settings.get('show_ete3', False) is True:
+    #     self.quiet_print('Displaying ete3 Trees interface...')
+    #     tree_layout = settings.get('ete3_tree_layout', self.default_tree_layout)
+    #     for root in self.yield_roots():
+    #         self.quiet_print(f'Displaying tree: {root.name}')
+    #         tree_drawer.show_ete3(root=root, tree_layout=tree_layout)
+    # if settings.get('render_ete3', False) is True:
+    #     file_name = settings.get('ete3_file_name', self.default_tree_file_name)
+    #     file_extension = settings.get('ete3_file_extension', self.default_tree_file_extension)
+    #     dpi = settings.get('dpi', self.default_dpi)
+    #     tree_layout = settings.get('ete3_tree_layout', self.default_tree_layout)
+    #     self.quiet_print('Rendering ete3 Trees to file...')
+    #     for root in self.yield_roots():
+    #         self.quiet_print(f'Rendering tree: {root.name}')
+    #         tree_drawer.render_ete3(
+    #             root=root,
+    #             folder_path=self.path,
+    #             file_name=file_name,
+    #             file_extension=file_extension,
+    #             dpi=dpi,
+    #             tree_layout=tree_layout,
+    #         )
 
     @property
     def well_node(self) -> CellNode:

@@ -7,12 +7,12 @@ cell_csv_file_name = 'cell_output.csv'
 colony_csv_file_name = 'colony_output.csv'
 
 [view]
-colormap = 'viridis'
+colormap = 'viridis'  # valid colormaps: any matplotlib colormap name
+layout = 'signal'  # valid layouts: family, time, generation, signal
 figure_dpi = 320
 
 [2D_view]
-layout = 'family'  # valid layouts: family, time, division, signal
-display = false
+display = true
 render = false
 render_file_name = '2D'
 render_file_extension = 'png'  # valid extensions: png, svg
