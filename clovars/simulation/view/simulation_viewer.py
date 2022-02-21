@@ -102,30 +102,6 @@ class SimulationViewer(QuietPrinterMixin, PathCreatorMixin):
                 file_extension=settings.get('gaussians_file_extension', self.default_gaussians_file_extension),
             )
 
-    # # ETE3 TREES
-    # if settings.get('show_ete3', False) is True:
-    #     self.quiet_print('Displaying ete3 Trees interface...')
-    #     tree_layout = settings.get('ete3_tree_layout', self.default_tree_layout)
-    #     for root in self.yield_roots():
-    #         self.quiet_print(f'Displaying tree: {root.name}')
-    #         tree_drawer.show_ete3(root=root, tree_layout=tree_layout)
-    # if settings.get('render_ete3', False) is True:
-    #     file_name = settings.get('ete3_file_name', self.default_tree_file_name)
-    #     file_extension = settings.get('ete3_file_extension', self.default_tree_file_extension)
-    #     dpi = settings.get('dpi', self.default_dpi)
-    #     tree_layout = settings.get('ete3_tree_layout', self.default_tree_layout)
-    #     self.quiet_print('Rendering ete3 Trees to file...')
-    #     for root in self.yield_roots():
-    #         self.quiet_print(f'Rendering tree: {root.name}')
-    #         tree_drawer.render_ete3(
-    #             root=root,
-    #             folder_path=self.path,
-    #             file_name=file_name,
-    #             file_extension=file_extension,
-    #             dpi=dpi,
-    #             tree_layout=tree_layout,
-    #         )
-
     @property
     def well_node(self) -> CellNode:
         """Returns a CellNode from which all CellNodes grow. Cached as a private attribute."""
