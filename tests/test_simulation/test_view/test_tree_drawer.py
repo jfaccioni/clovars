@@ -32,7 +32,7 @@ class TestTreeDrawer(unittest.TestCase):
 
     def test_tree_drawer_has_normalizer_attributes(self) -> None:
         """Tests whether a TreeDrawer has the expected normalizer attributes."""
-        for normalizer_attr_name in ['signal_normalizer', 'time_normalizer', 'division_normalizer']:
+        for normalizer_attr_name in ['signal_normalizer', 'time_normalizer', 'generation_normalizer']:
             with self.subTest(normalizer_attr_name=normalizer_attr_name):
                 self.assertTrue(hasattr(self.tree_drawer, normalizer_attr_name))
                 self.assertIsInstance(getattr(self.tree_drawer, normalizer_attr_name), Normalize)

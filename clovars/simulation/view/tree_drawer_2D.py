@@ -28,14 +28,14 @@ class TreeDrawer2D:
             layout: str = 'family',
             signal_values: pd.Series | None = None,
             time_values: pd.Series | None = None,
-            division_values: pd.Series | None = None,
+            generation_values: pd.Series | None = None,
     ) -> None:
         """Initializes a TreeDrawer2D instance."""
         self.colormap = get_cmap(colormap_name)
         self.validate_layout(layout=layout)
         self.layout = layout
         self.time_normalizer = self.get_normalizer(values=time_values)
-        self.generation_normalizer = self.get_normalizer(values=division_values)
+        self.generation_normalizer = self.get_normalizer(values=generation_values)
         self.signal_normalizer = self.get_normalizer(values=signal_values)
 
     def validate_layout(

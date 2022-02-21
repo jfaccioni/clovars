@@ -4,7 +4,7 @@ from typing import Any, Generator, TYPE_CHECKING
 
 from clovars.abstract import CellNode
 from clovars.utils import PathCreatorMixin, QuietPrinterMixin
-from clovars.simulation import TreatmentDrawer, TreeDrawer2D, TreeDrawer
+from clovars.simulation import TreatmentDrawer, TreeDrawer2D, TreeDrawer3D
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -16,8 +16,6 @@ class SimulationViewer(QuietPrinterMixin, PathCreatorMixin):
     default_colormap_name = 'viridis'
     default_dpi = 120
     default_layout = 'family'
-    default_tree_file_name = 'tree'
-    default_tree_file_extension = 'png'
     default_2D_file_name = '2D'
     default_2D_file_extension = 'png'
     default_3D_file_name = '3D'
@@ -46,18 +44,17 @@ class SimulationViewer(QuietPrinterMixin, PathCreatorMixin):
             settings: dict[str, Any],
     ) -> None:
         """Produces output depending on the values inside the settings dictionary."""
-        # Setup
-        colormap_name = settings.get('colormap_name', self.default_colormap_name)
-        layout = settings.get('layout', self.default_layout)
+        # TREE SETTINGS
+        tree_drawer_settings = {
+            'colormap_name': settings.get('colormap_name', self.default_colormap_name),
+            'layout': settings.get('layout', self.default_layout),
+            'signal_values': self.cell_data['signal_value'],
+            'time_values': self.cell_data['simulation_hours'],
+            'generation_values': self.cell_data['generation']
+        }
 
         # 2D TREES
-        tree_drawer_2D = TreeDrawer2D(
-            colormap_name=colormap_name,
-            layout=layout,
-            signal_values=self.cell_data['signal_value'],
-            time_values=self.cell_data['simulation_hours'],
-            division_values=self.cell_data['generation'],
-        )
+        tree_drawer_2D = TreeDrawer2D(**tree_drawer_settings)
         if settings.get('display_2D', False) is True:
             self.quiet_print('Displaying Cell Trees as a 2D plot...')
             tree_drawer_2D.display_trees(root_nodes=self.roots)
@@ -71,18 +68,13 @@ class SimulationViewer(QuietPrinterMixin, PathCreatorMixin):
             )
 
         # 3D TREES
-        tree_drawer_3D = TreeDrawer(
-            colormap_name=colormap_name,
-            signal_values=self.cell_data['signal_value'],
-            time_values=self.cell_data['simulation_hours'],
-            division_values=self.cell_data['generation'],
-        )
-        if settings.get('show_3D', False) is True:
+        tree_drawer_3D = TreeDrawer3D(**tree_drawer_settings)
+        if settings.get('display_3D', False) is True:
             self.quiet_print('Displaying Cell Trees on a 3D matplotlib plot...')
-            tree_drawer_3D.show_trees_matplotlib_3D(well_node=self.well_node, well_radius=self.well_radius)
+            tree_drawer_3D.display_trees(well_node=self.well_node, well_radius=self.well_radius)
         if settings.get('render_3D', False) is True:
             self.quiet_print('Rendering Cell Trees on a 3D matplotlib plot...')
-            tree_drawer_3D.render_trees_matplotlib_3D(
+            tree_drawer_3D.render_trees(
                 well_node=self.well_node,
                 well_radius=self.well_radius,
                 folder_path=self.path,
@@ -103,11 +95,11 @@ class SimulationViewer(QuietPrinterMixin, PathCreatorMixin):
         if settings.get('render_gaussians', False) is True:
             self.quiet_print('Rendering division and death gaussians...')
             treatment_drawer.render_gaussians(
+                show_division=show_division,
+                show_death=show_death,
                 folder_path=self.path,
                 file_name=settings.get('gaussians_file_name', self.default_gaussians_file_name),
                 file_extension=settings.get('gaussians_file_extension', self.default_gaussians_file_extension),
-                show_division=show_division,
-                show_death=show_death,
             )
 
     # # ETE3 TREES

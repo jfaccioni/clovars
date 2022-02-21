@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 
 if TYPE_CHECKING:
     from pathlib import Path
-    from cellsim.bio import Treatment
+    from clovars.bio import Treatment
 
 
 class TreatmentDrawer:
@@ -20,8 +20,8 @@ class TreatmentDrawer:
 
     def show_gaussians(
             self,
-            show_division: bool = True,
-            show_death: bool = True,
+            show_division: bool,
+            show_death: bool,
     ) -> None:
         """Shows the Division and Death Gaussians for each Treatment in the Simulation."""
         for figure, _ in self.yield_gaussians(show_death=show_death, show_division=show_division):
@@ -29,11 +29,11 @@ class TreatmentDrawer:
 
     def render_gaussians(
             self,
+            show_division: bool,
+            show_death: bool,
             folder_path: Path,
             file_name: str,
             file_extension: str,
-            show_division: bool = True,
-            show_death: bool = True,
     ) -> None:
         """Shows the Division and Death Gaussians for each Treatment in the Simulation."""
         for figure, label in self.yield_gaussians(show_death=show_death, show_division=show_division):
@@ -43,8 +43,8 @@ class TreatmentDrawer:
 
     def yield_gaussians(
             self,
-            show_death: bool = True,
-            show_division: bool = True,
+            show_death: bool,
+            show_division: bool,
     ) -> Generator[tuple[plt.Figure, str], None, None]:
         """Sequentially yields gaussian Figures from the Simulation view."""
         for (colony_name, treatment_frame), treatment in self.treatment_data.items():

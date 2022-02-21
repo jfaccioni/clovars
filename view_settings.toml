@@ -18,7 +18,7 @@ render_file_name = '2D'
 render_file_extension = 'png'  # valid extensions: png, svg
 
 [3D_view]
-display = false
+display = true
 render = false
 render_file_name = '3D'
 render_file_extension = 'png'  # valid extensions: png, svg
