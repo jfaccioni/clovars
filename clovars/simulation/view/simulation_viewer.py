@@ -50,7 +50,8 @@ class SimulationViewer(QuietPrinterMixin, PathCreatorMixin):
             'layout': settings.get('layout', self.default_layout),
             'signal_values': self.cell_data['signal_value'],
             'time_values': self.cell_data['simulation_hours'],
-            'generation_values': self.cell_data['generation']
+            'age_values': self.cell_data['seconds_since_birth'] / 3600,  # in hours
+            'generation_values': self.cell_data['generation'],
         }
 
         # 2D TREES

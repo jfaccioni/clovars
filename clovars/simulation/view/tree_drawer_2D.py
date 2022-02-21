@@ -18,7 +18,10 @@ class TreeDrawer2D:
     valid_layouts = [
         'family',
         'time',
+        'age',
         'generation',
+        'division',
+        'death',
         'signal',
     ]
 
@@ -28,6 +31,7 @@ class TreeDrawer2D:
             layout: str = 'family',
             signal_values: pd.Series | None = None,
             time_values: pd.Series | None = None,
+            age_values: pd.Series | None = None,
             generation_values: pd.Series | None = None,
     ) -> None:
         """Initializes a TreeDrawer2D instance."""
@@ -35,7 +39,10 @@ class TreeDrawer2D:
         self.validate_layout(layout=layout)
         self.layout = layout
         self.time_normalizer = self.get_normalizer(values=time_values)
+        self.age_normalizer = self.get_normalizer(values=age_values)
         self.generation_normalizer = self.get_normalizer(values=generation_values)
+        self.division_normalizer = self.get_normalizer(values=None)
+        self.death_normalizer = self.get_normalizer(values=None)
         self.signal_normalizer = self.get_normalizer(values=signal_values)
 
     def validate_layout(
@@ -171,7 +178,10 @@ class TreeDrawer2D:
         return {
             'family': self.get_family_color,
             'time': self.get_time_color,
+            'age': self.get_age_color,
             'generation': self.get_generation_color,
+            'division': self.get_division_color,
+            'death': self.get_death_color,
             'signal': self.get_signal_color,
         }[self.layout](node=node)
 
@@ -196,12 +206,33 @@ class TreeDrawer2D:
         """Returns the CellNode's color in the plot, when plotting the tree with the time layout."""
         return self.time_normalizer(node.simulation_hours)
 
+    def get_age_color(
+            self,
+            node: CellNode
+    ) -> str:
+        """Returns the CellNode's color in the plot, when plotting the tree with the age layout."""
+        return self.age_normalizer(node.seconds_since_birth / 3600)  # in hours
+
     def get_generation_color(
             self,
             node: CellNode
     ) -> str:
         """Returns the CellNode's color in the plot, when plotting the tree with the generation layout."""
         return self.generation_normalizer(node.generation)
+
+    def get_division_color(
+            self,
+            node: CellNode
+    ) -> str:
+        """Returns the CellNode's color in the plot, when plotting the tree with the division layout."""
+        return self.division_normalizer(node.division_threshold)
+
+    def get_death_color(
+            self,
+            node: CellNode
+    ) -> str:
+        """Returns the CellNode's color in the plot, when plotting the tree with the death layout."""
+        return self.death_normalizer(node.death_threshold)
 
     def get_signal_color(
             self,
@@ -283,11 +314,17 @@ class TreeDrawer2D:
         if self.layout == 'family' or self.layout == 'time':  # no colorbar
             return
         norm = {
+            'age': self.age_normalizer,
             'generation': self.generation_normalizer,
+            'division': self.division_normalizer,
+            'death': self.death_normalizer,
             'signal': self.signal_normalizer,
         }[self.layout]
         label = {
+            'age': 'Cell Age (h)',
             'generation': 'Generation',
+            'division': 'Division Threshold',
+            'death': 'Death Threshold',
             'signal': 'Signal Value',
         }[self.layout]
         mappable = plt.cm.ScalarMappable(norm=norm, cmap=self.colormap)

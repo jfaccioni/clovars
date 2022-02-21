@@ -21,6 +21,7 @@ class TreeDrawer3D:
             colormap_name: str = 'viridis',
             layout: str = 'family',
             signal_values: pd.Series | None = None,
+            age_values: pd.Series | None = None,
             time_values: pd.Series | None = None,
             generation_values: pd.Series | None = None,
     ) -> None:
@@ -28,6 +29,7 @@ class TreeDrawer3D:
         self.colormap = get_cmap(colormap_name)
         self.layout = layout  # not being used for anything now
         self.time_normalizer = self.get_normalizer(values=time_values)
+        self.age_normalizer = self.get_normalizer(values=age_values)
         self.generation_normalizer = self.get_normalizer(values=generation_values)
         self.signal_normalizer = self.get_normalizer(values=signal_values)
 
