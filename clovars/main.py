@@ -69,6 +69,7 @@ def format_view_settings(view_settings: dict) -> dict:
     input_dict = view_settings.get('input', {})
     view_dict = view_settings.get('view', {})
     view_2d_dict = view_settings.get('2D_view', {})
+    video_dict = view_settings.get('2D_video', {})
     view_3d_dict = view_settings.get('3D_view', {})
     view_treatment_dict = view_settings.get('treatment_curves', {})
     return {
@@ -82,6 +83,9 @@ def format_view_settings(view_settings: dict) -> dict:
             'render_2D': view_2d_dict.get('render', False),
             'file_name_2D': view_2d_dict.get('render_file_name', '2D'),
             'file_extension_2D': view_2d_dict.get('render_file_extension', 'png'),
+            'render_video': video_dict.get('render', False),
+            'file_name_video': video_dict.get('render_file_name', '2D'),
+            'file_extension_video': video_dict.get('render_file_extension', 'png'),
             'display_3D': view_3d_dict.get('display', False),
             'render_3D': view_3d_dict.get('render', False),
             'display_well': view_3d_dict.get('display_well', False),

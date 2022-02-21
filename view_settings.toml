@@ -7,18 +7,23 @@ cell_csv_file_name = 'cell_output.csv'
 colony_csv_file_name = 'colony_output.csv'
 
 [view]
-colormap = 'viridis'  # valid colormaps: any matplotlib colormap name
-layout = 'age'  # valid layouts: family, time, age, generation, division, death, signal,
+colormap = 'plasma'  # valid colormaps: any matplotlib colormap name
+layout = 'signal'  # valid layouts: family, time, age, generation, division, death, signal,
 figure_dpi = 320
 
 [2D_view]
-display = true
+display = false
 render = false
 render_file_name = '2D'
 render_file_extension = 'png'  # valid extensions: png, svg
 
+[2D_video]
+render = true
+render_file_name = '2D_signal'
+render_file_extension = 'mp4'  # valid extensions: mp4
+
 [3D_view]
-display = true
+display = false
 render = false
 display_well = false
 z_axis_ratio = 1.0  # use 1.0 for a square display, larger values for "tall" trees

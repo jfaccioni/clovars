@@ -1,19 +1,23 @@
 from __future__ import annotations
 
+from collections import defaultdict
 from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
+from matplotlib.animation import ArtistAnimation
 from matplotlib.cm import get_cmap
 from matplotlib.colors import Normalize
+
+from clovars.utils import QuietPrinterMixin
 
 if TYPE_CHECKING:
     from pathlib import Path
     from clovars.abstract import CellNode
 
 
-class TreeDrawer2D:
+class TreeDrawer2D(QuietPrinterMixin):
     """Class containing functions to draw and display Cell trees in 2D."""
     valid_layouts = [
         'family',
@@ -33,8 +37,10 @@ class TreeDrawer2D:
             time_values: pd.Series | None = None,
             age_values: pd.Series | None = None,
             generation_values: pd.Series | None = None,
+            verbose: bool = False,
     ) -> None:
         """Initializes a TreeDrawer2D instance."""
+        super().__init__(verbose=verbose)
         self.colormap = get_cmap(colormap_name)
         self.validate_layout(layout=layout)
         self.layout = layout
@@ -69,6 +75,7 @@ class TreeDrawer2D:
         """Displays the trees as a matplotlib 2D plot."""
         for root_node in root_nodes:
             self.plot_tree(root_node=root_node)
+            self.quiet_print(f"Displaying colony: {root_node.name}")
             plt.show()
 
     def render_trees(
@@ -81,7 +88,8 @@ class TreeDrawer2D:
         """Renders the trees as a matplotlib 2D plot."""
         for root_node in root_nodes:
             figure = self.plot_tree(root_node=root_node)
-            fname = str(folder_path / f'{file_name}.{file_extension}')
+            self.quiet_print(f"Rendering image of colony: {root_node.name}")
+            fname = str(folder_path / f'{file_name}_{root_node.name}.{file_extension}')
             figure.savefig(fname)
             plt.close(figure)
 
@@ -89,10 +97,11 @@ class TreeDrawer2D:
             self,
             root_node: CellNode,
     ) -> plt.Figure:
-        """Plots the tree, given its root node and a layout."""
+        """Plots the tree, given its root node."""
         figure, ax = plt.subplots(figsize=(12, 12))
         self.draw_branches(root_node=root_node, ax=ax)
         self.draw_cells(root_node=root_node, ax=ax)
+        self.hide_borders(ax=ax)
         self.add_legend(ax=ax)
         self.add_colorbar(figure=figure, ax=ax)
         figure.suptitle(f'Colony {root_node.name}')
@@ -289,6 +298,13 @@ class TreeDrawer2D:
         else:
             return 15.0
 
+    @staticmethod
+    def hide_borders(ax: plt.Axes) -> None:
+        """Hides unnecessary borders from the Axes instance."""
+        ax.yaxis.set_visible(False)
+        for direction in ['right', 'top', 'left']:
+            ax.spines[direction].set_visible(False)
+
     def add_legend(
             self,
             ax: plt.Axes,
@@ -297,11 +313,11 @@ class TreeDrawer2D:
         if self.layout != 'family':  # no legend
             return
         handles = [
-                plt.Line2D([0], [0], marker='.', color='w', markerfacecolor='0.7', markersize=15, label='cell'),
-                plt.Line2D([0], [0], marker='>', color='w', markerfacecolor='green', markersize=10, label='parent'),
-                plt.Line2D([0], [0], marker='X', color='w', markerfacecolor='red', markersize=10, label='dead'),
-                plt.Line2D([0], [0], marker='*', color='w', markerfacecolor='orange', markersize=15, label='leaf'),
-                plt.Line2D([0], [0], marker='s', color='w', markerfacecolor='blue', markersize=10, label='root'),
+            plt.Line2D([0], [0], marker='.', color='w', markerfacecolor='0.7', markersize=15, label='cell'),
+            plt.Line2D([0], [0], marker='>', color='w', markerfacecolor='green', markersize=10, label='parent'),
+            plt.Line2D([0], [0], marker='X', color='w', markerfacecolor='red', markersize=10, label='dead'),
+            plt.Line2D([0], [0], marker='*', color='w', markerfacecolor='orange', markersize=15, label='leaf'),
+            plt.Line2D([0], [0], marker='s', color='w', markerfacecolor='blue', markersize=10, label='root'),
         ]
         ax.legend(handles=handles)
 
@@ -329,3 +345,74 @@ class TreeDrawer2D:
         }[self.layout]
         mappable = plt.cm.ScalarMappable(norm=norm, cmap=self.colormap)
         figure.colorbar(mappable=mappable, ax=ax, label=label, orientation='horizontal', fraction=0.05)
+
+    def render_tree_videos(
+            self,
+            root_nodes: list[CellNode],
+            folder_path: Path,
+            file_name: str,
+            file_extension: str,
+    ) -> None:
+        """Renders the trees as a matplotlib 2D plot."""
+        for root_node in root_nodes:
+            animation = self.animate_tree(root_node=root_node)
+            fname = str(folder_path / f'{file_name}_{root_node.name}.{file_extension}')
+            self.quiet_print(f'Rendering video of colony: {root_node.name}')
+
+            def progress_callback(
+                    current_frame: int,
+                    total_frames: int,
+            ) -> None:
+                """Prints the current animation progress to stdout."""
+                if total_frames is None:
+                    total_frames = root_node.get_farthest_node()[0].simulation_frames
+                self.quiet_print(f'Writing frame {current_frame} / {total_frames}')
+
+            animation.save(fname, progress_callback=progress_callback)
+
+    def animate_tree(
+            self,
+            root_node: CellNode,
+    ) -> ArtistAnimation:
+        """Animates the tree, given its root node."""
+        figure, ax = plt.subplots(figsize=(12, 12))
+        self.hide_borders(ax=ax)
+        self.add_legend(ax=ax)
+        self.add_colorbar(figure=figure, ax=ax)
+        artists = self.animate_frames(root_node=root_node, ax=ax)
+        figure.suptitle(f'Colony {root_node.name}')
+        ax.set_xlabel('Simulation time (hours)')
+        ax.set_ylabel('')
+        return ArtistAnimation(figure, artists=artists, interval=200, blit=True)
+
+    def animate_frames(
+            self,
+            root_node: CellNode,
+            ax: plt.Axes,
+    ) -> list[list[plt.Artist]]:
+        """Animates the frames (as the Simulation advances) in the tree."""
+        artist_dict = defaultdict(list)
+        for node in root_node.traverse():
+            parent_x = self.get_node_x(node=node)
+            parent_y = self.get_node_y(node=node)
+            node_artists = ax.scatter(
+                parent_x,
+                parent_y,
+                c=self.get_node_color(node=node),
+                s=self.get_node_size(node=node),
+                marker=self.get_node_marker(node=node),
+                zorder=2,
+                animated=True,
+            )
+            artist_dict[node.simulation_frames].append(node_artists)
+            for child_node in node.children:
+                child_x = self.get_node_x(node=child_node)
+                child_y = self.get_node_y(node=child_node)
+                xs = [parent_x, child_x]
+                ys = [parent_y, child_y]
+                line_artists = ax.plot(xs, ys, c='0.7', linewidth=0.5, zorder=1, animated=True)
+                artist_dict[child_node.simulation_frames].extend(line_artists)
+        # copies the old frames into the current frame
+        for frame_number in list(artist_dict.keys()):
+            artist_dict[frame_number+1].extend(artist_dict[frame_number])
+        return [artist_list for k, artist_list in sorted(artist_dict.items(), key=lambda tup: tup[0])]

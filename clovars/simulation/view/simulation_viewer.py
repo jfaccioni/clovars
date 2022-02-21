@@ -18,6 +18,8 @@ class SimulationViewer(QuietPrinterMixin, PathCreatorMixin):
     default_layout = 'family'
     default_2D_file_name = '2D'
     default_2D_file_extension = 'png'
+    default_video_file_name = 'colony'
+    default_video_file_extension = 'mp4'
     default_3D_file_name = '3D'
     default_3D_file_extension = 'png'
     default_gaussians_file_name = 'gaussians'
@@ -55,7 +57,7 @@ class SimulationViewer(QuietPrinterMixin, PathCreatorMixin):
         }
 
         # 2D TREES
-        tree_drawer_2D = TreeDrawer2D(**tree_drawer_settings)
+        tree_drawer_2D = TreeDrawer2D(**tree_drawer_settings, verbose=self.verbose)
         if settings.get('display_2D', False) is True:
             self.quiet_print('Displaying Cell Trees as a 2D plot...')
             tree_drawer_2D.display_trees(root_nodes=self.roots)
@@ -66,6 +68,14 @@ class SimulationViewer(QuietPrinterMixin, PathCreatorMixin):
                 folder_path=self.path,
                 file_name=settings.get('file_name_2D', self.default_2D_file_name),
                 file_extension=settings.get('file_extension_2D', self.default_2D_file_extension),
+            )
+        if settings.get('render_video', False) is True:
+            self.quiet_print('Rendering Cell Trees as a video...')
+            tree_drawer_2D.render_tree_videos(
+                root_nodes=self.roots,
+                folder_path=self.path,
+                file_name=settings.get('file_name_video', self.default_video_file_name),
+                file_extension=settings.get('file_extension_video', self.default_video_file_extension),
             )
 
         # 3D TREES
