@@ -72,15 +72,22 @@ class SimulationViewer(QuietPrinterMixin, PathCreatorMixin):
         tree_drawer_3D = TreeDrawer3D(**tree_drawer_settings)
         if settings.get('display_3D', False) is True:
             self.quiet_print('Displaying Cell Trees on a 3D matplotlib plot...')
-            tree_drawer_3D.display_trees(well_node=self.well_node, well_radius=self.well_radius)
+            tree_drawer_3D.display_trees(
+                root_nodes=self.roots,
+                display_well=settings.get('display_well', False),
+                z_axis_ratio=settings.get('z_axis_ratio', 1.0),
+                well_radius=self.well_radius,
+            )
         if settings.get('render_3D', False) is True:
             self.quiet_print('Rendering Cell Trees on a 3D matplotlib plot...')
             tree_drawer_3D.render_trees(
-                well_node=self.well_node,
+                root_nodes=self.roots,
+                display_well=settings.get('display_well', False),
+                z_axis_ratio=settings.get('z_axis_ratio', 1.0),
                 well_radius=self.well_radius,
                 folder_path=self.path,
-                file_name=settings.get('3D_file_name', self.default_3D_file_name),
-                file_extension=settings.get('3D_file_extension', self.default_3D_file_extension),
+                file_name=settings.get('file_name_3D', self.default_3D_file_name),
+                file_extension=settings.get('file_extension_3D', self.default_3D_file_extension),
             )
 
         # TREATMENTS

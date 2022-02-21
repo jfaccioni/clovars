@@ -8,7 +8,7 @@ colony_csv_file_name = 'colony_output.csv'
 
 [view]
 colormap = 'viridis'  # valid colormaps: any matplotlib colormap name
-layout = 'death'  # valid layouts: family, time, age, generation, division, death, signal,
+layout = 'age'  # valid layouts: family, time, age, generation, division, death, signal,
 figure_dpi = 320
 
 [2D_view]
@@ -18,8 +18,10 @@ render_file_name = '2D'
 render_file_extension = 'png'  # valid extensions: png, svg
 
 [3D_view]
-display = false
+display = true
 render = false
+display_well = false
+z_axis_ratio = 1.0  # use 1.0 for a square display, larger values for "tall" trees
 render_file_name = '3D'
 render_file_extension = 'png'  # valid extensions: png, svg
 

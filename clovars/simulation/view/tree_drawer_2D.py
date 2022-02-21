@@ -90,7 +90,7 @@ class TreeDrawer2D:
             root_node: CellNode,
     ) -> plt.Figure:
         """Plots the tree, given its root node and a layout."""
-        figure, ax = plt.subplots()
+        figure, ax = plt.subplots(figsize=(12, 12))
         self.draw_branches(root_node=root_node, ax=ax)
         self.draw_cells(root_node=root_node, ax=ax)
         self.add_legend(ax=ax)
@@ -328,5 +328,4 @@ class TreeDrawer2D:
             'signal': 'Signal Value',
         }[self.layout]
         mappable = plt.cm.ScalarMappable(norm=norm, cmap=self.colormap)
-        cbar = figure.colorbar(mappable=mappable, ax=ax, label=label, orientation='horizontal', fraction=0.05)
-        cbar.set_ticks([tick for tick in cbar.get_ticks() if tick.is_integer()])
+        figure.colorbar(mappable=mappable, ax=ax, label=label, orientation='horizontal', fraction=0.05)
