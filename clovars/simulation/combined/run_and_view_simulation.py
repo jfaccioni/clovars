@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from clovars.settings import get_run_settings, get_view_settings
+from clovars._deprecated.settings import get_run_settings, get_view_settings
 from clovars.simulation import run_simulation_function, view_simulation_function
 
 

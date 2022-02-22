@@ -7,8 +7,8 @@ cell_csv_file_name = 'cell_output.csv'
 colony_csv_file_name = 'colony_output.csv'
 
 [view]
-colormap = 'plasma'  # valid colormaps: any matplotlib colormap name
-layout = 'signal'  # valid layouts: family, time, age, generation, division, death, signal,
+colormap_name = 'plasma'  # valid colormaps: any matplotlib colormap name
+layout = 'division'  # valid layouts: family, time, age, generation, division, death, signal,
 figure_dpi = 320
 
 [2D_view]
@@ -19,14 +19,14 @@ render_file_extension = 'png'  # valid extensions: png, svg
 
 [2D_video]
 render = true
-render_file_name = '2D_signal'
+render_file_name = '2D_family'
 render_file_extension = 'mp4'  # valid extensions: mp4
 
 [3D_view]
 display = false
 render = false
 display_well = false
-z_axis_ratio = 1.0  # use 1.0 for a square display, larger values for "tall" trees
+z_axis_ratio = 1.2  # use 1.0 for a square display, larger values for "tall" trees
 render_file_name = '3D'
 render_file_extension = 'png'  # valid extensions: png, svg
 
@@ -35,5 +35,5 @@ show_division = false
 show_death = false
 display = false
 render = false
-render_file_name = 'curves'
+render_file_name = 'treatments'
 render_file_extension = 'png'  # valid extensions: png, svg

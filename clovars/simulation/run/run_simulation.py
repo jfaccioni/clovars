@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from clovars.IO import ColonyLoader, SimulationWriter, WellLoader
-from clovars.settings import get_run_settings
+from clovars._deprecated.settings import get_run_settings
 from clovars.simulation import SimulationRunner
 
 

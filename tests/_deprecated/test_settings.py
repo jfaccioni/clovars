@@ -1,6 +1,6 @@
 import unittest
 
-from clovars.settings import get_run_settings, get_view_settings, get_analysis_settings
+from clovars._deprecated.settings import get_run_settings, get_view_settings, get_analysis_settings
 
 
 class TestSettings(unittest.TestCase):
