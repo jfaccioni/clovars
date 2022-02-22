@@ -11,8 +11,11 @@ The **Clo**nal **Var**iability **S**imulation (CloVarS) is a cell culture simula
 See the examples below for yourself:
 
 <p align="center" width="100%">
-    <img width="49%" src="docs/_static/family_tree_01.gif" alt="Simulation Family Tree">
-    <img width="49%" src="docs/_static/family_tree_02.gif" alt="Simulation Family Tree">
+    <img width="80%" src="docs/_static/family_tree_01.gif" alt="Simulation Family Tree">
+</p>
+
+<p align="center" width="100%">
+    <img width="80%" src="docs/_static/family_tree_02.gif" alt="Simulation Family Tree">
 </p>
 
 ## Installation
