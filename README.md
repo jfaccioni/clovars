@@ -25,7 +25,7 @@ CloVarS can be executed in the following modes:
 
 You also need to provide the necessary [settings files](settings). These files use the [TOML](https://toml.io/en/) syntax, which makes it easy to open and edit them in any text editor.
 
-[This folder](settings) has examples for the structure of the settings files.
+[This folder](settings) has examples for the structure of the settings files. **CloVarS will likely run into errors if the settings are not in the proper format!**
 ### Run CloVarS
 To run CloVarS, enter the following command in a terminal:
 ```shell
