@@ -102,7 +102,7 @@ class TreeDrawer2D(QuietPrinterMixin):
         self.draw_branches(root_node=root_node, ax=ax)
         self.draw_cells(root_node=root_node, ax=ax)
         self.hide_borders(ax=ax)
-        if self.layout not in ('family',):  # add legend for other layouts only
+        if self.layout == 'family':  # add legend for family layout only
             self.add_legend(ax=ax)
         if self.layout not in ('family', 'time'):  # add colorbar for other layouts only
             self.add_colorbar(figure=figure, ax=ax)
@@ -215,42 +215,42 @@ class TreeDrawer2D(QuietPrinterMixin):
             node: CellNode
     ) -> str:
         """Returns the CellNode's color in the plot, when plotting the tree with the time layout."""
-        return self.time_normalizer(node.simulation_hours)
+        return self.colormap(self.time_normalizer(node.simulation_hours))
 
     def get_age_color(
             self,
             node: CellNode
     ) -> str:
         """Returns the CellNode's color in the plot, when plotting the tree with the age layout."""
-        return self.age_normalizer(node.seconds_since_birth / 3600)  # in hours
+        return self.colormap(self.age_normalizer(node.seconds_since_birth / 3600))  # in hours
 
     def get_generation_color(
             self,
             node: CellNode
     ) -> str:
         """Returns the CellNode's color in the plot, when plotting the tree with the generation layout."""
-        return self.generation_normalizer(node.generation)
+        return self.colormap(self.generation_normalizer(node.generation))
 
     def get_division_color(
             self,
             node: CellNode
     ) -> str:
         """Returns the CellNode's color in the plot, when plotting the tree with the division layout."""
-        return self.division_normalizer(node.division_threshold)
+        return self.colormap(self.division_normalizer(node.division_threshold))
 
     def get_death_color(
             self,
             node: CellNode
     ) -> str:
         """Returns the CellNode's color in the plot, when plotting the tree with the death layout."""
-        return self.death_normalizer(node.death_threshold)
+        return self.colormap(self.death_normalizer(node.death_threshold))
 
     def get_signal_color(
             self,
             node: CellNode
     ) -> str:
         """Returns the CellNode's color in the plot, when plotting the tree with the signal layout."""
-        return self.signal_normalizer(node.signal_value)
+        return self.colormap(self.signal_normalizer(node.signal_value))
 
     def get_node_marker(
             self,

@@ -76,7 +76,7 @@ def format_view_settings(view_settings: dict) -> dict:
         'output_folder': os.path.join(input_dict.get('simulation_input_folder', '.'), 'view'),
         'simulation_loader_settings': input_dict,
         'view_settings': {
-            'colormap_name': view_dict.get('colormap', 'viridis'),
+            'colormap_name': view_dict.get('colormap_name', 'viridis'),
             'dpi': view_dict.get('figure_dpi', 320),
             'layout': view_dict.get('layout', 'family'),
             'display_2D': view_2d_dict.get('display', False),
