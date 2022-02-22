@@ -2,6 +2,9 @@ import unittest
 from contextlib import contextmanager
 from typing import Sequence
 
+# Flag that ignores decorated_tests
+SKIP_TESTS = True
+
 
 class NotEmptyTestCase(unittest.TestCase):
     """TestCase extension with a method for asserting whether a sequence is empty or not."""

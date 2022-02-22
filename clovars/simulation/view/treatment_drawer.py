@@ -18,16 +18,16 @@ class TreatmentDrawer:
         """Initializes a TreeDrawer instance."""
         self.treatment_data = treatment_data
 
-    def show_gaussians(
+    def display(
             self,
             show_division: bool,
             show_death: bool,
     ) -> None:
-        """Shows the Division and Death Gaussians for each Treatment in the Simulation."""
-        for figure, _ in self.yield_gaussians(show_death=show_death, show_division=show_division):
+        """Displays the Division and Death Gaussians for each Treatment in the Simulation."""
+        for figure, _ in self.yield_curves(show_death=show_death, show_division=show_division):
             plt.show()
 
-    def render_gaussians(
+    def render(
             self,
             show_division: bool,
             show_death: bool,
@@ -35,13 +35,13 @@ class TreatmentDrawer:
             file_name: str,
             file_extension: str,
     ) -> None:
-        """Shows the Division and Death Gaussians for each Treatment in the Simulation."""
-        for figure, label in self.yield_gaussians(show_death=show_death, show_division=show_division):
+        """Renders the Division and Death Gaussians for each Treatment in the Simulation."""
+        for figure, label in self.yield_curves(show_death=show_death, show_division=show_division):
             fname = folder_path / f'{file_name}_{label}.{file_extension}'
             figure.savefig(fname)
             plt.close(figure)
 
-    def yield_gaussians(
+    def yield_curves(
             self,
             show_death: bool,
             show_division: bool,

@@ -69,7 +69,7 @@ def format_view_settings(view_settings: dict) -> dict:
     input_dict = view_settings.get('input', {})
     view_dict = view_settings.get('view', {})
     view_2d_dict = view_settings.get('2D_view', {})
-    video_dict = view_settings.get('2D_video', {})
+    video_2d_dict = view_settings.get('2D_video', {})
     view_3d_dict = view_settings.get('3D_view', {})
     view_treatment_dict = view_settings.get('treatment_curves', {})
     return {
@@ -83,21 +83,21 @@ def format_view_settings(view_settings: dict) -> dict:
             'render_2D': view_2d_dict.get('render', False),
             'file_name_2D': view_2d_dict.get('render_file_name', '2D'),
             'file_extension_2D': view_2d_dict.get('render_file_extension', 'png'),
-            'render_video': video_dict.get('render', False),
-            'file_name_video': video_dict.get('render_file_name', '2D'),
-            'file_extension_video': video_dict.get('render_file_extension', 'png'),
+            'render_video_2D': video_2d_dict.get('render', False),
+            'file_name_video_2D': video_2d_dict.get('render_file_name', '2D'),
+            'file_extension_video_2D': video_2d_dict.get('render_file_extension', 'png'),
             'display_3D': view_3d_dict.get('display', False),
             'render_3D': view_3d_dict.get('render', False),
             'display_well': view_3d_dict.get('display_well', False),
             'z_axis_ratio': view_3d_dict.get('z_axis_ratio', 1.0),
             'file_name_3D': view_3d_dict.get('render_file_name', '3D'),
             'file_extension_3D': view_3d_dict.get('render_file_extension', 'png'),
-            'show_gaussians': view_treatment_dict.get('display', False),
-            'render_gaussians': view_treatment_dict.get('render', False),
-            'division_gaussian': view_treatment_dict.get('show_division', False),
-            'death_gaussian': view_treatment_dict.get('show_death', False),
-            'gaussians_file_name': view_treatment_dict.get('render_file_name', 'curves'),
-            'gaussians_file_extension': view_treatment_dict.get('render_file_extension', 'png'),
+            'display_treatments': view_treatment_dict.get('display', False),
+            'render_treatments': view_treatment_dict.get('render', False),
+            'show_division': view_treatment_dict.get('show_division', False),
+            'show_death': view_treatment_dict.get('show_death', False),
+            'file_name_treatments': view_treatment_dict.get('render_file_name', 'curves'),
+            'file_extension_treatments': view_treatment_dict.get('render_file_extension', 'png'),
         },
         'verbose': view_settings.get('verbose', False)
     }

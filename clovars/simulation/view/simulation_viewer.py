@@ -22,8 +22,8 @@ class SimulationViewer(QuietPrinterMixin, PathCreatorMixin):
     default_video_file_extension = 'mp4'
     default_3D_file_name = '3D'
     default_3D_file_extension = 'png'
-    default_gaussians_file_name = 'gaussians'
-    default_gaussians_file_extension = 'png'
+    default_treatments_file_name = 'treatments'
+    default_treatments_file_extension = 'png'
 
     def __init__(
             self,
@@ -69,7 +69,7 @@ class SimulationViewer(QuietPrinterMixin, PathCreatorMixin):
                 file_name=settings.get('file_name_2D', self.default_2D_file_name),
                 file_extension=settings.get('file_extension_2D', self.default_2D_file_extension),
             )
-        if settings.get('render_video', False) is True:
+        if settings.get('render_video_2D', False) is True:
             self.quiet_print('Rendering Cell Trees as a video...')
             tree_drawer_2D.render_tree_videos(
                 root_nodes=self.roots,
@@ -102,22 +102,22 @@ class SimulationViewer(QuietPrinterMixin, PathCreatorMixin):
 
         # TREATMENTS
         treatment_drawer = TreatmentDrawer(treatment_data=self.treatment_data)
-        show_division = settings.get('division_gaussian', True)
-        show_death = settings.get('death_gaussian', True)
-        if settings.get('show_gaussians', False) is True:
-            self.quiet_print('Displaying division and death gaussians...')
-            treatment_drawer.show_gaussians(
+        show_division = settings.get('show_division', True)
+        show_death = settings.get('show_death', True)
+        if settings.get('display_treatments', False) is True:
+            self.quiet_print('Displaying the treatment division and death curves...')
+            treatment_drawer.display(
                 show_division=show_division,
                 show_death=show_death,
             )
-        if settings.get('render_gaussians', False) is True:
-            self.quiet_print('Rendering division and death gaussians...')
-            treatment_drawer.render_gaussians(
+        if settings.get('render_treatments', False) is True:
+            self.quiet_print('Rendering the treatment division and death curves...')
+            treatment_drawer.render(
                 show_division=show_division,
                 show_death=show_death,
                 folder_path=self.path,
-                file_name=settings.get('gaussians_file_name', self.default_gaussians_file_name),
-                file_extension=settings.get('gaussians_file_extension', self.default_gaussians_file_extension),
+                file_name=settings.get('file_name_treatments', self.default_treatments_file_name),
+                file_extension=settings.get('file_extension_treatments', self.default_treatments_file_extension),
             )
 
     @property

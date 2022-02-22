@@ -10,7 +10,7 @@ from clovars.abstract import CellNode
 from clovars.bio import Treatment
 from clovars.simulation import SimulationViewer
 from clovars.utils import PathCreatorMixin, QuietPrinterMixin
-from tests import NotEmptyTestCase
+from tests import NotEmptyTestCase, SKIP_TESTS
 
 
 class TestSimulationViewer(NotEmptyTestCase):
@@ -18,14 +18,15 @@ class TestSimulationViewer(NotEmptyTestCase):
     default_output_folder = Path('SimulationViewer_TEST_FOLDER')
     default_well_radius = 100
     default_cell_data = pd.DataFrame({  # a Cell that divides into two between 60s and 120s
-                'signal_value': [0.0, 0.1, 0.2, 0.05],
-                'simulation_seconds': [0, 60, 120, 120],
-                'simulation_hours': [0, 1, 2, 3],
-                'generation': [0, 0, 1, 1],
-                'name': ['1a-1', '1a-1', '1a-1.1', '1a-1.2'],
-                'branch_name': ['1a-1', '1a-1', '1a-1', '1a-1'],
-                'colony_name': ['1a', '1a', '1a', '1a'],
-            })
+        'signal_value': [0.0, 0.1, 0.2, 0.05],
+        'simulation_seconds': [0, 3600, 7200, 10800],
+        'simulation_hours': [0, 1, 2, 3],
+        'seconds_since_birth': [0, 3600, 0, 3600],
+        'generation': [0, 0, 1, 1],
+        'name': ['1a-1', '1a-1', '1a-1.1', '1a-1.2'],
+        'branch_name': ['1a-1', '1a-1', '1a-1', '1a-1'],
+        'colony_name': ['1a', '1a', '1a', '1a'],
+    })
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -63,11 +64,15 @@ class TestSimulationViewer(NotEmptyTestCase):
         expected_attr_dict = {
             "default_colormap_name": str,
             "default_dpi": int,
-            "default_tree_layout": str,
-            "default_tree_file_name": str,
-            "default_tree_file_extension": str,
-            "default_matplotlib3d_file_name": str,
-            "default_matplotlib3d_file_extension": str,
+            "default_layout": str,
+            "default_2D_file_name": str,
+            "default_2D_file_extension": str,
+            "default_video_file_name": str,
+            "default_video_file_extension": str,
+            "default_3D_file_name": str,
+            "default_3D_file_extension": str,
+            "default_treatments_file_name": str,
+            "default_treatments_file_extension": str,
         }
         for expected_attr, expected_type in expected_attr_dict.items():
             with self.subTest(expected_attr=expected_attr, expected_type=expected_type):
@@ -96,90 +101,83 @@ class TestSimulationViewer(NotEmptyTestCase):
                 self.assertTrue(hasattr(self.simulation_viewer, protected_attr))
                 self.assertIsNone(getattr(self.simulation_viewer, protected_attr))
 
-    @mock.patch('clovars.simulation.view.simulation_viewer.TreeDrawer')
-    def test_generate_output_method_creates_tree_drawer(
+    @mock.patch('clovars.simulation.view.simulation_viewer.TreeDrawer2D')
+    def test_generate_output_method_creates_tree_drawer_2D(
             self,
-            mock_tree_drawer: MagicMock,
+            mock_tree_drawer_2D: MagicMock,
     ) -> None:
-        """Tests whether the "generate_output" method instantiates a TreeDrawer instance."""
+        """Tests whether the "generate_output" method instantiates a TreeDrawer2D instance."""
         self.simulation_viewer.generate_output(settings={})
-        mock_tree_drawer.assert_called_once()
+        mock_tree_drawer_2D.assert_called_once()
 
-    @mock.patch('clovars.simulation.TreeDrawer.show_ete3')
-    def test_generate_output_method_calls_show_ete3_method(
+    @mock.patch('clovars.simulation.TreeDrawer2D.display_trees')
+    def test_generate_output_method_calls_display_trees_method_on_tree_drawer_2D(
             self,
-            mock_show_ete3: MagicMock,
+            mock_display_trees: MagicMock,
     ) -> None:
-        """Tests whether the "generate_output" method calls the TreeDrawer's "show_ete3" method."""
-        self.simulation_viewer.generate_output(settings={'show_ete3': False})
-        mock_show_ete3.assert_not_called()
+        """Tests whether the "generate_output" method calls the TreeDrawer2D's "display_trees" method."""
+        self.simulation_viewer.generate_output(settings={'display_2D': False})
+        mock_display_trees.assert_not_called()
         with mock.patch.object(self.simulation_viewer, 'yield_roots', return_value=[MagicMock()]):
-            self.simulation_viewer.generate_output(settings={'show_ete3': True})
-        mock_show_ete3.assert_called()
+            self.simulation_viewer.generate_output(settings={'display_2D': True})
+        mock_display_trees.assert_called()
 
-    @mock.patch('clovars.simulation.TreeDrawer.show_ete3')
-    def test_generate_output_method_calls_show_ete3_once_per_root(
+    @mock.patch('clovars.simulation.TreeDrawer2D.render_trees')
+    def test_generate_output_method_calls_render_trees_method_on_tree_drawer_2D(
             self,
-            mock_show_ete3: MagicMock,
+            mock_render_trees: MagicMock,
     ) -> None:
-        """Tests whether the "generate_output" method calls the TreeDrawer's "show_ete3" method one time per root."""
-        with mock.patch.object(self.simulation_viewer, 'yield_roots', return_value=[]):
-            self.simulation_viewer.generate_output(settings={'show_ete3': True})
-        mock_show_ete3.assert_not_called()  # Zero roots, no calls
-        with mock.patch.object(self.simulation_viewer, 'yield_roots', return_value=[MagicMock() for _ in range(5)]):
-            self.simulation_viewer.generate_output(settings={'show_ete3': True})
-        mock_show_ete3.assert_called()
-        self.assertEqual(mock_show_ete3.call_count, 5)  # Five roots, five calls
-
-    @mock.patch('clovars.simulation.TreeDrawer.render_ete3')
-    def test_generate_output_method_calls_render_ete3_method(
-            self,
-            mock_render_ete3: MagicMock,
-    ) -> None:
-        """Tests whether the "generate_output" method calls the TreeDrawer's "render_ete3" method."""
-        self.simulation_viewer.generate_output(settings={'render_ete3': False})
-        mock_render_ete3.assert_not_called()
+        """Tests whether the "generate_output" method calls the TreeDrawer2D's "render_trees" method."""
+        self.simulation_viewer.generate_output(settings={'render_2D': False})
+        mock_render_trees.assert_not_called()
         with mock.patch.object(self.simulation_viewer, 'yield_roots', return_value=[MagicMock()]):
-            self.simulation_viewer.generate_output(settings={'render_ete3': True})
-        mock_render_ete3.assert_called()
+            self.simulation_viewer.generate_output(settings={'render_2D': True})
+        mock_render_trees.assert_called()
 
-    @mock.patch('clovars.simulation.TreeDrawer.render_ete3')
-    def test_generate_output_method_calls_render_ete3_once_per_root(
+    @mock.patch('clovars.simulation.TreeDrawer2D.render_tree_videos')
+    def test_generate_output_method_calls_render_tree_videos_method_on_tree_drawer_2D(
             self,
-            mock_render_ete3: MagicMock,
+            mock_render_tree_videos: MagicMock,
     ) -> None:
-        """Tests whether the "generate_output" method calls the TreeDrawer's "render_ete3" method one time per root."""
-        with mock.patch.object(self.simulation_viewer, 'yield_roots', return_value=[]):
-            self.simulation_viewer.generate_output(settings={'render_ete3': True})
-        mock_render_ete3.assert_not_called()  # Zero roots, no calls
-        with mock.patch.object(self.simulation_viewer, 'yield_roots', return_value=[MagicMock() for _ in range(5)]):
-            self.simulation_viewer.generate_output(settings={'render_ete3': True})
-        mock_render_ete3.assert_called()
-        self.assertEqual(mock_render_ete3.call_count, 5)  # Five roots, five calls
+        """Tests whether the "generate_output" method calls the TreeDrawer2D's "render_tree_videos" method."""
+        self.simulation_viewer.generate_output(settings={'render_video_2D': False})
+        mock_render_tree_videos.assert_not_called()
+        with mock.patch.object(self.simulation_viewer, 'yield_roots', return_value=[MagicMock()]):
+            self.simulation_viewer.generate_output(settings={'render_video_2D': True})
+        mock_render_tree_videos.assert_called()
 
-    @mock.patch('clovars.simulation.TreeDrawer.show_trees_matplotlib')
-    def test_generate_output_method_calls_show_trees_matplotlib_method(
+    @mock.patch('clovars.simulation.view.simulation_viewer.TreeDrawer3D')
+    def test_generate_output_method_creates_tree_drawer_3D(
             self,
-            mock_show_trees_matplotlib: MagicMock,
+            mock_tree_drawer_3D: MagicMock,
     ) -> None:
-        """Tests whether the "generate_output" method calls the TreeDrawer's "show_trees_matplotlib" method"""
-        self.simulation_viewer.generate_output(settings={'show_3D': False})
-        mock_show_trees_matplotlib.assert_not_called()
-        with mock.patch('clovars.simulation.SimulationViewer.well_node'):
-            self.simulation_viewer.generate_output(settings={'show_3D': True})
-        mock_show_trees_matplotlib.assert_called()
+        """Tests whether the "generate_output" method instantiates a TreeDrawer3D instance."""
+        self.simulation_viewer.generate_output(settings={})
+        mock_tree_drawer_3D.assert_called_once()
 
-    @mock.patch('clovars.simulation.TreeDrawer.render_trees_matplotlib')
-    def test_generate_output_method_calls_render_trees_matplotlib_method(
+    @mock.patch('clovars.simulation.TreeDrawer3D.display_trees')
+    def test_generate_output_method_calls_display_trees_method_on_tree_drawer_3D(
             self,
-            mock_render_trees_matplotlib: MagicMock,
+            mock_display_trees: MagicMock,
     ) -> None:
-        """Tests whether the "generate_output" method calls the TreeDrawer's "render_trees_matplotlib" method."""
+        """Tests whether the "generate_output" method calls the TreeDrawer3D's "display_trees" method."""
+        self.simulation_viewer.generate_output(settings={'display_3D': False})
+        mock_display_trees.assert_not_called()
+        with mock.patch.object(self.simulation_viewer, 'yield_roots', return_value=[MagicMock()]):
+            self.simulation_viewer.generate_output(settings={'display_3D': True})
+        mock_display_trees.assert_called()
+
+    @mock.patch('clovars.simulation.TreeDrawer3D.render_trees')
+    def test_generate_output_method_calls_render_trees_method_on_tree_drawer_3D(
+            self,
+            mock_render_trees: MagicMock,
+    ) -> None:
+        """Tests whether the "generate_output" method calls the TreeDrawer3D's "render_trees" method."""
         self.simulation_viewer.generate_output(settings={'render_3D': False})
-        mock_render_trees_matplotlib.assert_not_called()
-        with mock.patch('clovars.simulation.SimulationViewer.well_node'):
+        mock_render_trees.assert_not_called()
+        with mock.patch.object(self.simulation_viewer, 'yield_roots', return_value=[MagicMock()]):
             self.simulation_viewer.generate_output(settings={'render_3D': True})
-        mock_render_trees_matplotlib.assert_called_once()
+        mock_render_trees.assert_called()
 
     @mock.patch('clovars.simulation.view.simulation_viewer.TreatmentDrawer')
     def test_generate_output_method_creates_treatment_drawer(
@@ -190,26 +188,26 @@ class TestSimulationViewer(NotEmptyTestCase):
         self.simulation_viewer.generate_output(settings={})
         mock_treatment_drawer.assert_called_once()
 
-    @mock.patch('clovars.simulation.TreatmentDrawer.show_gaussians')
-    def test_generate_output_method_calls_show_gaussians_method(
+    @mock.patch('clovars.simulation.TreatmentDrawer.display')
+    def test_generate_output_method_calls_display_method_on_treatment_drawer(
             self,
             mock_show_gaussians: MagicMock,
     ) -> None:
-        """Tests whether the "generate_output" method calls the TreatmentDrawer's "show_gaussians" method."""
-        self.simulation_viewer.generate_output(settings={'show_gaussians': False})
+        """Tests whether the "generate_output" method calls the TreatmentDrawer's "display" method."""
+        self.simulation_viewer.generate_output(settings={'display_treatments': False})
         mock_show_gaussians.assert_not_called()
-        self.simulation_viewer.generate_output(settings={'show_gaussians': True})
+        self.simulation_viewer.generate_output(settings={'display_treatments': True})
         mock_show_gaussians.assert_called()
 
-    @mock.patch('clovars.simulation.TreatmentDrawer.render_gaussians')
-    def test_generate_output_method_calls_render_gaussians_method(
+    @mock.patch('clovars.simulation.TreatmentDrawer.render')
+    def test_generate_output_method_calls_render_method_on_treatment_drawer(
             self,
             mock_render_gaussians: MagicMock,
     ) -> None:
-        """Tests whether the "generate_output" method calls the TreatmentDrawer's "render_gaussians" method."""
-        self.simulation_viewer.generate_output(settings={'render_gaussians': False})
+        """Tests whether the "generate_output" method calls the TreatmentDrawer's "display" method."""
+        self.simulation_viewer.generate_output(settings={'render_treatments': False})
         mock_render_gaussians.assert_not_called()
-        self.simulation_viewer.generate_output(settings={'render_gaussians': True})
+        self.simulation_viewer.generate_output(settings={'render_treatments': True})
         mock_render_gaussians.assert_called()
 
     def test_well_node_property_returns_cell_node_instance(self) -> None:
@@ -337,6 +335,7 @@ class TestSimulationViewer(NotEmptyTestCase):
         root = self.simulation_viewer.build_tree(root_name='1a-1', groups=self.default_cell_data.groupby('name'))
         self.assertIsInstance(root, CellNode)
 
+    @unittest.skipIf(SKIP_TESTS is True, "SKIP TESTS is set to True")
     def test_build_tree_returns_node_with_tree_structure(self) -> None:
         """Tests whether the Node returned by the "build_tree" has a defined tree structure."""
         self.fail('Write the test!')  # TODO: revise the code used for this test, currently kinda confusing

@@ -16,6 +16,16 @@ if TYPE_CHECKING:
 
 class TreeDrawer3D:
     """Class containing functions to draw and display Cell trees in 3D."""
+    valid_layouts = [
+        'family',
+        'time',
+        'age',
+        'generation',
+        'division',
+        'death',
+        'signal',
+    ]
+
     def __init__(
             self,
             colormap_name: str = 'viridis',
@@ -27,13 +37,22 @@ class TreeDrawer3D:
     ) -> None:
         """Initializes a TreeDrawer instance."""
         self.colormap = get_cmap(colormap_name)
-        self.layout = layout  # not being used for anything now
+        self.validate_layout(layout=layout)
+        self.layout = layout
         self.time_normalizer = self.get_normalizer(values=time_values)
         self.age_normalizer = self.get_normalizer(values=age_values)
         self.generation_normalizer = self.get_normalizer(values=generation_values)
         self.division_normalizer = self.get_normalizer(values=None)
         self.death_normalizer = self.get_normalizer(values=None)
         self.signal_normalizer = self.get_normalizer(values=signal_values)
+
+    def validate_layout(
+            self,
+            layout: str,
+    ) -> None:
+        """Raises a ValueError if the given layout isn't a valid option."""
+        if layout not in self.valid_layouts:
+            raise ValueError(f'Invalid layout: {layout}')
 
     @staticmethod
     def get_normalizer(values: pd.Series | None = None) -> Normalize:
@@ -97,7 +116,8 @@ class TreeDrawer3D:
         ax.set_xlabel('X coordinate (µm)')
         ax.set_ylabel('Y coordinate (µm)')
         ax.set_zlabel('Time (h)')
-        self.add_colorbar(figure=figure, ax=ax)
+        if self.layout not in ('family', 'time'):  # add colorbar for other layouts only
+            self.add_colorbar(figure=figure, ax=ax)
         if display_well is True:
             self.draw_well(ax=ax, well_radius=well_radius)
             self.set_well_limits(ax=ax, well_radius=well_radius)
@@ -213,7 +233,7 @@ class TreeDrawer3D:
         """Formats the tree according to the family layout."""
         self.draw_root(ax=ax, root_node=root_node)
         parent_nodes = root_node.search_nodes(fate_at_next_frame='division')
-        self.draw_parents(ax=ax, parent_nodes=parent_nodes, family_layout=True)
+        self.draw_parents(ax=ax, parent_nodes=parent_nodes)
         dead_nodes = root_node.search_nodes(fate_at_next_frame='death')
         self.draw_dead_cells(ax=ax, dead_nodes=dead_nodes)
         leaf_nodes = [node for node in root_node.get_leaves() if node not in dead_nodes]
@@ -226,20 +246,7 @@ class TreeDrawer3D:
     ) -> None:
         """Formats the tree according to the non-family layout"""
         parent_nodes = root_node.search_nodes(fate_at_next_frame='division')
-        self.draw_parents(ax=ax, parent_nodes=parent_nodes, family_layout=False)
-
-    def draw_parents(
-            self,
-            ax: plt.Axes,
-            parent_nodes: list[CellNode],
-            family_layout: bool,
-    ) -> None:
-        """Draws the parent Cells on a matplotlib 3D plot."""
-        xs, ys, zs = self.get_xyz_from_cell_nodes(cell_nodes=parent_nodes)
-        if family_layout is True:
-            ax.scatter(xs, ys, zs, color='green', marker='^', zorder=2)
-        else:  # non-family layouts
-            ax.scatter(xs, ys, zs, color='black', marker='.', s=100, alpha=0.5, zorder=2)
+        self.draw_parents(ax=ax, parent_nodes=parent_nodes)
 
     @staticmethod
     def draw_root(
@@ -248,6 +255,18 @@ class TreeDrawer3D:
     ) -> None:
         """Draws the root Cell on a matplotlib 3D plot"""
         ax.scatter(root_node.x, root_node.y, root_node.simulation_hours, color='blue', marker='s', zorder=2)
+
+    def draw_parents(
+            self,
+            ax: plt.Axes,
+            parent_nodes: list[CellNode],
+    ) -> None:
+        """Draws the parent Cells on a matplotlib 3D plot."""
+        xs, ys, zs = self.get_xyz_from_cell_nodes(cell_nodes=parent_nodes)
+        if self.layout == 'family':
+            ax.scatter(xs, ys, zs, color='green', marker='^', zorder=2)
+        else:
+            ax.scatter(xs, ys, zs, color='black', marker='.', s=100, alpha=0.5, zorder=2)
 
     def draw_dead_cells(
             self,
@@ -273,8 +292,6 @@ class TreeDrawer3D:
             ax: plt.Axes,
     ) -> None:
         """Adds a colorbar to the Figure."""
-        if self.layout == 'family' or self.layout == 'time':  # no colorbar
-            return
         norm = {
             'age': self.age_normalizer,
             'generation': self.generation_normalizer,

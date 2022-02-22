@@ -4,6 +4,7 @@ from unittest.mock import MagicMock
 
 from clovars.abstract import Circle
 from clovars.bio import Cell, Colony, Well
+from tests import SKIP_TESTS
 
 
 class TestWell(unittest.TestCase):
@@ -119,8 +120,9 @@ class TestWell(unittest.TestCase):
         self.well.add_colony(colony)
         self.assertSequenceEqual(self.well.colonies, [colony])
 
+    @unittest.skipIf(SKIP_TESTS is True, "SKIP TESTS is set to True")
     def test_pass_time_method_(self) -> None:
-        """docstring."""
+        """Docstring."""
         self.fail('Write the test!')
 
     def test_set_cell_fate_method_calls_set_cell_fate_method(self) -> None:

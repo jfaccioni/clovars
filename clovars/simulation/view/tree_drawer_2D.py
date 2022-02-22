@@ -102,8 +102,10 @@ class TreeDrawer2D(QuietPrinterMixin):
         self.draw_branches(root_node=root_node, ax=ax)
         self.draw_cells(root_node=root_node, ax=ax)
         self.hide_borders(ax=ax)
-        self.add_legend(ax=ax)
-        self.add_colorbar(figure=figure, ax=ax)
+        if self.layout not in ('family',):  # add legend for other layouts only
+            self.add_legend(ax=ax)
+        if self.layout not in ('family', 'time'):  # add colorbar for other layouts only
+            self.add_colorbar(figure=figure, ax=ax)
         figure.suptitle(f'Colony {root_node.name}')
         ax.set_xlabel('Simulation time (hours)')
         ax.set_ylabel('')
@@ -305,13 +307,9 @@ class TreeDrawer2D(QuietPrinterMixin):
         for direction in ['right', 'top', 'left']:
             ax.spines[direction].set_visible(False)
 
-    def add_legend(
-            self,
-            ax: plt.Axes,
-    ) -> None:
+    @staticmethod
+    def add_legend(ax: plt.Axes) -> None:
         """Adds a legend to the Figure."""
-        if self.layout != 'family':  # no legend
-            return
         handles = [
             plt.Line2D([0], [0], marker='.', color='w', markerfacecolor='0.7', markersize=15, label='cell'),
             plt.Line2D([0], [0], marker='>', color='w', markerfacecolor='green', markersize=10, label='parent'),
@@ -327,8 +325,6 @@ class TreeDrawer2D(QuietPrinterMixin):
             ax: plt.Axes,
     ) -> None:
         """Adds a colorbar to the Figure."""
-        if self.layout == 'family' or self.layout == 'time':  # no colorbar
-            return
         norm = {
             'age': self.age_normalizer,
             'generation': self.generation_normalizer,

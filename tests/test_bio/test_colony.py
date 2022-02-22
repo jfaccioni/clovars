@@ -4,6 +4,7 @@ import numpy as np
 
 from clovars.bio import Cell, Colony, Treatment
 from clovars.scientific import ConstantCellSignal
+from tests import SKIP_TESTS
 
 
 class TestColony(unittest.TestCase):
@@ -147,8 +148,9 @@ class TestColony(unittest.TestCase):
         ]
         self.assertEqual(self.colony.signal_std(), np.std(signal_values))
 
+    @unittest.skipIf(SKIP_TESTS is True, "SKIP TESTS is set to True")
     def test_pass_time_method_(self) -> None:
-        """docstring"""
+        """Docstring."""
         self.fail('Write the test!')
 
 
