@@ -8,11 +8,39 @@ The **Clo**nal **Var**iability **S**imulation (CloVarS) is a cell culture simula
 
 
 ## Installation
-CloVarS can be installed in your Python environment with the command
-```
+CloVarS requires Python (3.9+) in order to execute.
+
+CloVarS can be installed in your Python environment with the command:
+```shell
 pip install clovars
 ```
-This command also installs the necessary dependencies.
+This command adds the `clovars` command to your Python environment, while also installing the necessary [dependencies](#dependencies).
+
+## How to use CloVarS
+CloVarS can be executed in the following modes: 
+- `run` - run a simulation with the given settings
+- `view` - visualize the results of a previous run (figures, images, videos) 
+- `analyse` - run analytical tools on the result of a previous run
+### Run CloVarS
+To run CloVarS, enter the following command in a terminal:
+```shell
+clovars run <path-to-settings-file> <path-to-colonies-file>
+```
+where: 
+- `path-to-settings-file` is the path for a TOML file with the run settings;
+- `path-to-colonies-file` is the path for a TOML file with the colony description.
+### View CloVarS
+To view the result of a previous CloVarS run, enter the following command in a terminal:
+```shell
+clovars view <path-to-settings-file>
+```
+where `path-to-settings-file` is the path for a TOML file with the view settings.
+### Analyse CloVarS
+To run analytical scripts on the results of a previous CloVarS run, enter the following command in a terminal:
+```shell
+clovars analyse <path-to-settings-file>
+```
+where `path-to-settings-file` is the path for a TOML file with the analysis settings.
 
 ## Dependencies
 CloVarS depends on the following third-party packages:
