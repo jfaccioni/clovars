@@ -81,7 +81,7 @@ class SimulationViewer(QuietPrinterMixin, PathCreatorMixin):
         # 3D TREES
         tree_drawer_3D = TreeDrawer3D(**tree_drawer_settings)
         if settings.get('display_3D', False) is True:
-            self.quiet_print('Displaying Cell Trees on a 3D matplotlib plot...')
+            self.quiet_print('Displaying Cell Trees as a 3D plot...')
             tree_drawer_3D.display_trees(
                 root_nodes=self.roots,
                 display_well=settings.get('display_well', False),
@@ -89,7 +89,7 @@ class SimulationViewer(QuietPrinterMixin, PathCreatorMixin):
                 well_radius=self.well_radius,
             )
         if settings.get('render_3D', False) is True:
-            self.quiet_print('Rendering Cell Trees on a 3D matplotlib plot...')
+            self.quiet_print('Rendering Cell Trees as a 3D plot...')
             tree_drawer_3D.render_trees(
                 root_nodes=self.roots,
                 display_well=settings.get('display_well', False),
