@@ -109,6 +109,7 @@ class TreeDrawer2D(QuietPrinterMixin):
         figure.suptitle(f'Colony {root_node.name}')
         ax.set_xlabel('Simulation time (hours)')
         ax.set_ylabel('')
+        plt.tight_layout()
         return figure
 
     def draw_branches(

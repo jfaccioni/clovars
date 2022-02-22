@@ -121,6 +121,7 @@ class TreeDrawer3D:
         if display_well is True:
             self.draw_well(ax=ax, well_radius=well_radius)
             self.set_well_limits(ax=ax, well_radius=well_radius)
+        figure.tight_layout()
         return figure
 
     def draw_tree(
