@@ -8,14 +8,10 @@ This repository contains the source code accompanying the article "CloVarS: a si
 ## What is CloVarS
 The **Clo**nal **Var**iability **S**imulation (CloVarS) is a cell culture simulation that generates synthetic single-cell lineage data, as normally obtained from time-lapse microscopy experiments.
 
-See the examples below for yourself:
+The example below depicts a single colony, starting from a single cell, which grows over 7 days:
 
 <p align="center" width="100%">
     <img width="80%" src="docs/_static/family_tree_01.gif" alt="Simulation Family Tree">
-</p>
-
-<p align="center" width="100%">
-    <img width="80%" src="docs/_static/family_tree_02.gif" alt="Simulation Family Tree">
 </p>
 
 ## Installation
@@ -37,7 +33,6 @@ You also need to provide the necessary [settings files](settings). These files u
 
 [This folder](settings) has examples for the structure of the settings files. **CloVarS will likely run into errors if the settings are not in the proper format!**
 ### Run CloVarS
-To run CloVarS, enter the following command in a terminal:
 ```shell
 clovars run <path-to-run-settings> <path-to-colonies>
 ```
@@ -45,17 +40,17 @@ where:
 - `path-to-run-settings` is the path for a TOML file with the run settings;
 - `path-to-colonies` is the path for a TOML file with the colony description.
 ### View CloVarS
-To view the result of a previous CloVarS run, enter the following command in a terminal:
 ```shell
 clovars view <path-to-view-settings>
 ```
-where `path-to-view-settings` is the path for a TOML file with the view settings.
+where:
+- `path-to-view-settings` is the path for a TOML file with the view settings.
 ### Analyse CloVarS
-To run analytical scripts on the results of a previous CloVarS run, enter the following command in a terminal:
 ```shell
 clovars analyse <path-to-analysis-settings>
 ```
-where `path-to-analysis-settings` is the path for a TOML file with the analysis settings.
+where: 
+- `path-to-analysis-settings` is the path for a TOML file with the analysis settings.
 
 ## Dependencies
 CloVarS depends on the following third-party packages:
