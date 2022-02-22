@@ -10,3 +10,4 @@
 /.idea
 # editable pip install files
 /clovars.egg-info
+/build
