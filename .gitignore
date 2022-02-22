@@ -11,3 +11,5 @@
 # editable pip install files
 /clovars.egg-info
 /build
+# Default CloVarS output folder
+/output
