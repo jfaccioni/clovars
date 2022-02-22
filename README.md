@@ -15,9 +15,7 @@ The example below depicts a single colony, starting from a single cell, which gr
 </p>
 
 ## Installation
-CloVarS requires **Python version 3.9+** in order to run.
-
-CloVarS can be installed in your Python environment with the command:
+CloVarS requires **Python version 3.9+** in order to run. You can install CloVarS in your Python environment with the command:
 ```shell
 pip install clovars
 ```
@@ -31,7 +29,7 @@ CloVarS can be executed in the following modes:
 
 You also need to provide the necessary [settings files](settings). These files use the [TOML](https://toml.io/en/) syntax, which makes it easy to open and edit them in any text editor.
 
-[This folder](settings) has examples for the structure of the settings files. **CloVarS will likely run into errors if the settings are not in the proper format!**
+[This folder](settings) has examples for the structure of the settings files. **CloVarS will likely run into errors if the setting files have missing / wrong values!**
 ### Run CloVarS
 ```shell
 clovars run <path-to-run-settings> <path-to-colonies>
