@@ -374,8 +374,10 @@ class TreeDrawer2D(QuietPrinterMixin):
         """Animates the tree, given its root node."""
         figure, ax = plt.subplots(figsize=(12, 12))
         self.hide_borders(ax=ax)
-        self.add_legend(ax=ax)
-        self.add_colorbar(figure=figure, ax=ax)
+        if self.layout == 'family':  # add legend for family layout only
+            self.add_legend(ax=ax)
+        if self.layout not in ('family', 'time'):  # add colorbar for other layouts only
+            self.add_colorbar(figure=figure, ax=ax)
         artists = self.animate_frames(root_node=root_node, ax=ax)
         figure.suptitle(f'Colony {root_node.name}')
         ax.set_xlabel('Simulation time (hours)')
@@ -395,7 +397,7 @@ class TreeDrawer2D(QuietPrinterMixin):
             node_artists = ax.scatter(
                 parent_x,
                 parent_y,
-                c=self.get_node_color(node=node),
+                color=self.get_node_color(node=node),
                 s=self.get_node_size(node=node),
                 marker=self.get_node_marker(node=node),
                 zorder=2,
@@ -407,7 +409,7 @@ class TreeDrawer2D(QuietPrinterMixin):
                 child_y = self.get_node_y(node=child_node)
                 xs = [parent_x, child_x]
                 ys = [parent_y, child_y]
-                line_artists = ax.plot(xs, ys, c='0.7', linewidth=0.5, zorder=1, animated=True)
+                line_artists = ax.plot(xs, ys, color='0.7', linewidth=0.5, zorder=1, animated=True)
                 artist_dict[child_node.simulation_frames].extend(line_artists)
         # copies the old frames into the current frame
         for frame_number in list(artist_dict.keys()):

@@ -20,7 +20,7 @@ render_file_extension = 'png'  # valid extensions: png, svg
 [2D_video]
 render = true
 render_file_name = '2D_family'
-render_file_extension = 'mp4'  # valid extensions: mp4
+render_file_extension = 'mp4'  # valid extensions: mp4  -- WARNING: rendering might take some time!
 
 [3D_view]
 display = false
