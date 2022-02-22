@@ -1,12 +1,16 @@
 # CloVarS: a clonal variability simulation
 This repository contains the source code accompanying the article "CloVarS: a simulation of clonal variability in single cells" (in preparation).
 
-<p><img src="docs/_static/clovars_overview.png" alt="CloVarS basic workflow" width=2240></p>
+<p align="center" width="100%">
+    <img src="docs/_static/clovars_overview.png" alt="CloVarS basic workflow">
+</p>
 
 ## What is CloVarS
 The **Clo**nal **Var**iability **S**imulation (CloVarS) is a cell culture simulation that generates synthetic single-cell lineage data, as normally obtained from time-lapse microscopy experiments.
 
-![Simulation Family Tree](docs/_static/family_tree.gif)
+<p align="center" width="100%">
+    <img width="33%" src="docs/_static/family_tree.gif" alt="Simulation Family Tree">
+</p>
 
 ## Installation
 CloVarS requires Python version 3.9+ in order to run.
