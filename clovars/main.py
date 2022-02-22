@@ -1,30 +1,49 @@
 import os
-from argparse import ArgumentParser, Namespace
+from argparse import ArgumentParser
 
 import toml
 
-from clovars import ANALYSE_SETTINGS_PATH, COLONY_DATA_PATH, RUN_SETTINGS_PATH, VIEW_SETTINGS_PATH
+from clovars import ANALYSE_SETTINGS_PATH, COLONIES_PATH, RUN_SETTINGS_PATH, VIEW_SETTINGS_PATH
 from clovars.simulation import analyse_simulation_function, run_simulation_function, view_simulation_function
 
 
 def main() -> None:
     """Main function of CloVarS."""
     args = parse_command_line_arguments()
-    if args.mode.lower() == 'run':
-        toml_run_settings = toml.load(RUN_SETTINGS_PATH)
-        toml_colony_data = toml.load(COLONY_DATA_PATH)
-        run_settings = format_run_settings(run_settings=toml_run_settings, colony_data=toml_colony_data)  # noqa
+    mode = args['mode'].lower()
+    toml_settings = toml.load(args['settings-path'])
+    if mode == 'run':
+        toml_colony_data = toml.load(args['colonies-path'])
+        run_settings = format_run_settings(run_settings=toml_settings, colony_data=toml_colony_data)  # noqa
         run_simulation_function(**run_settings)
-    elif args.mode.lower() == 'view':
-        toml_view_settings = toml.load(VIEW_SETTINGS_PATH)
-        view_settings = format_view_settings(view_settings=toml_view_settings)  # noqa
+    elif mode == 'view':
+        view_settings = format_view_settings(view_settings=toml_settings)  # noqa
         view_simulation_function(**view_settings)
-    elif args.mode.lower() == 'analyse':
-        toml_analyse_settings = toml.load(ANALYSE_SETTINGS_PATH)
-        analyse_settings = format_analyse_settings(analyse_settings=toml_analyse_settings)  # noqa
+    elif mode == 'analyse':
+        analyse_settings = format_analyse_settings(analyse_settings=toml_settings)  # noqa
         analyse_simulation_function(**analyse_settings)
     else:
-        print(f'Invalid mode {args.mode}. Exiting...')
+        print(f'Something went wrong, got -> invalid mode {mode}. Exiting...')
+
+
+def parse_command_line_arguments() -> dict[str, str]:
+    parser = ArgumentParser(description='Execute CloVarS')
+    parser.add_argument('mode', nargs='?', help='CloVarS execution mode (run/analyse/view)', default='run')
+    parser.add_argument('settings-path', nargs='?', help='Path to the settings file', default='')
+    parser.add_argument('colonies-path', nargs='?', help='Path to the colonies file (for run mode)', default='')
+    args_dict = vars(parser.parse_args())
+    if not args_dict['settings-path']:  # no settings path was given
+        mode = args_dict['mode']
+        try:
+            args_dict['settings-path'] = {
+                'run': RUN_SETTINGS_PATH,
+                'view': VIEW_SETTINGS_PATH,
+                'analyse': ANALYSE_SETTINGS_PATH,
+            }[mode]
+        except KeyError:
+            print(f'Invalid mode {mode}. Exiting...')
+        args_dict['colonies-path'] = COLONIES_PATH
+    return args_dict
 
 
 def format_run_settings(
@@ -85,7 +104,7 @@ def format_view_settings(view_settings: dict) -> dict:
             'file_extension_2D': view_2d_dict.get('render_file_extension', 'png'),
             'render_video_2D': video_2d_dict.get('render', False),
             'file_name_video_2D': video_2d_dict.get('render_file_name', '2D'),
-            'file_extension_video_2D': video_2d_dict.get('render_file_extension', 'png'),
+            'file_extension_video_2D': video_2d_dict.get('render_file_extension', 'mp4'),
             'display_3D': view_3d_dict.get('display', False),
             'render_3D': view_3d_dict.get('render', False),
             'display_well': view_3d_dict.get('display_well', False),
@@ -138,17 +157,6 @@ def format_analyse_settings(analyse_settings: dict) -> dict:
         },
         'verbose': analyse_settings.get('verbose', False)
     }
-
-
-def parse_command_line_arguments() -> Namespace:
-    parser = ArgumentParser(description='Execute CloVarS')
-    parser.add_argument(
-        'mode',
-        nargs='?',
-        help='Mode in which to run CloVarS (run/analyse/view)',
-        default='run',
-    )
-    return parser.parse_args()
 
 
 if __name__ == '__main__':

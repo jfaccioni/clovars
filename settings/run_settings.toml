@@ -5,7 +5,7 @@ delta = 3600  # time between two simulation frames (in seconds)
 well_radius = 13351.624  # in µm
 
 [output]
-output_folder = 'output/'
+output_folder = 'output'
 parameters_file_name = 'params.json'
 cell_csv_file_name = 'cell_output.csv'
 colony_csv_file_name = 'colony_output.csv'
