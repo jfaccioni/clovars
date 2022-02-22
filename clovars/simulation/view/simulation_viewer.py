@@ -74,8 +74,8 @@ class SimulationViewer(QuietPrinterMixin, PathCreatorMixin):
             tree_drawer_2D.render_tree_videos(
                 root_nodes=self.roots,
                 folder_path=self.path,
-                file_name=settings.get('file_name_video', self.default_video_file_name),
-                file_extension=settings.get('file_extension_video', self.default_video_file_extension),
+                file_name=settings.get('file_name_video_2D', self.default_video_file_name),
+                file_extension=settings.get('file_extension_video_2D', self.default_video_file_extension),
             )
 
         # 3D TREES
