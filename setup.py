@@ -9,7 +9,7 @@ setup(
         ],
     },
     packages=find_packages(),
-    package_requires=[
+    install_requires=[
         'ete3',
         'matplotlib',
         'numpy',
