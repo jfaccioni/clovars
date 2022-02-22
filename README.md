@@ -15,13 +15,13 @@ The example below depicts a single colony, starting from a single cell, which gr
 </p>
 
 ## Installation
-CloVarS requires Python version 3.9+ in order to run.
+CloVarS requires **Python version 3.9+** in order to run.
 
 CloVarS can be installed in your Python environment with the command:
 ```shell
 pip install clovars
 ```
-This command adds the `clovars` command to your Python environment, while also installing the necessary [dependencies](#dependencies).
+This adds the `clovars` command to your Python environment, and also installs the necessary [dependencies](#dependencies).
 
 ## How to use CloVarS
 CloVarS can be executed in the following modes: 
@@ -63,3 +63,6 @@ CloVarS depends on the following third-party packages:
 
 ## License
 CloVarS is distributed under the MIT license. Read the `LICENSE.md` file for details.
+
+## Cite us
+If you use CloVarS, cite us: *Faccioni, JL; Lenz, G.* (in preparation).
