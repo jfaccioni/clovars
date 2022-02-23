@@ -31,11 +31,14 @@ def main() -> None:
 
 def parse_command_line_arguments() -> dict[str, str]:
     parser = ArgumentParser(description='Execute CloVarS')
-    parser.add_argument('mode', nargs='?', help='CloVarS execution mode (run/analyse/view)', default='run')
+    parser.add_argument('mode', nargs='?', help='CloVarS execution mode (run/analyse/view)', default='')
     parser.add_argument('settings-path', nargs='?', help='Path to the settings file', default='')
     parser.add_argument('colonies-path', nargs='?', help='Path to the colonies file (for run mode)', default='')
     args_dict = vars(parser.parse_args())
-    mode = args_dict['mode']
+    if not args_dict['mode']:  # no execution mode was given
+        print('WARNING: no execution mode provided, defaulting to run mode')
+        args_dict['mode'] = 'run'
+    mode = args_dict['mode'].lower()
     # SETTINGS CHECK
     if not args_dict['settings-path']:  # no settings path was given
         try:
