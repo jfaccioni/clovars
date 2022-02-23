@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import os
+import sys
 from argparse import ArgumentParser
 
 import toml
 
-from clovars import ANALYSE_SETTINGS_PATH, COLONIES_PATH, RUN_SETTINGS_PATH, VIEW_SETTINGS_PATH
+from clovars import DEFAULT_ANALYSIS_PATH, DEFAULT_COLONIES_PATH, DEFAULT_RUN_PATH, DEFAULT_VIEW_PATH, ROOT_PATH
 from clovars.simulation import analyse_simulation_function, run_simulation_function, view_simulation_function
 
 
@@ -34,17 +35,35 @@ def parse_command_line_arguments() -> dict[str, str]:
     parser.add_argument('settings-path', nargs='?', help='Path to the settings file', default='')
     parser.add_argument('colonies-path', nargs='?', help='Path to the colonies file (for run mode)', default='')
     args_dict = vars(parser.parse_args())
+    mode = args_dict['mode']
+    # SETTINGS CHECK
     if not args_dict['settings-path']:  # no settings path was given
-        mode = args_dict['mode']
         try:
-            args_dict['settings-path'] = {
-                'run': RUN_SETTINGS_PATH,
-                'view': VIEW_SETTINGS_PATH,
-                'analyse': ANALYSE_SETTINGS_PATH,
-            }[mode]
+            default_settings_path = {
+                'run': DEFAULT_RUN_PATH,
+                'view': DEFAULT_VIEW_PATH,
+                'analyse': DEFAULT_ANALYSIS_PATH,
+                }[mode]
         except KeyError:
-            print(f'Invalid mode {mode}. Exiting...')
-        args_dict['colonies-path'] = COLONIES_PATH
+            raise ValueError(f'Invalid mode {mode}')
+        if input(
+            'WARNING: no settings path provided for {mode} mode. Use default colonies?\n'
+            f'Default {mode} settings are located at: \n\n{ROOT_PATH / default_settings_path}\n\n'
+            '(y/n): '
+        ).lower() != 'y':
+            print('User chose not to use default settings.')
+            sys.exit(0)
+        args_dict['settings-path'] = default_settings_path
+    # COLONY CHECK
+    if mode == 'run' and not args_dict['colonies-path']:  # user wants to run clovars but no colonies path was given
+        if input(
+                'WARNING: no colonies path provided. Use default settings?\n'
+                f'Default colonies are located at: \n\n{ROOT_PATH / DEFAULT_COLONIES_PATH}\n\n'
+                '(y/n): '
+        ).lower() != 'y':
+            print('User chose not to use default colonies.')
+            sys.exit(0)
+    args_dict['colonies-path'] = DEFAULT_COLONIES_PATH
     return args_dict
 
 
