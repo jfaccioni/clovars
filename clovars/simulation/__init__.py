@@ -9,6 +9,3 @@ from clovars.simulation.analysis.simulation_analyzer import SimulationAnalyzer
 from clovars.simulation.run.run_simulation import run_simulation_function
 from clovars.simulation.view.view_simulation import view_simulation_function
 from clovars.simulation.analysis.analyse_simulation import analyse_simulation_function
-from clovars.simulation.combined.run_and_analyse_simulation import run_and_analyse_simulation
-from clovars.simulation.combined.run_and_view_simulation import run_and_view_simulation
-from clovars.simulation.combined.run_view_analyse_simulation import run_view_analyse_simulation

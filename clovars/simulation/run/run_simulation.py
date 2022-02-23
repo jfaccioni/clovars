@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Any
 
 from clovars.IO import ColonyLoader, SimulationWriter, WellLoader
-from clovars._deprecated.settings import get_run_settings
 from clovars.simulation import SimulationRunner
 
 
@@ -52,7 +51,3 @@ def run_simulation_function(
     )
     if verbose is True:
         print('Simulation has ended.')
-
-
-if __name__ == '__main__':
-    run_simulation_function(**get_run_settings())

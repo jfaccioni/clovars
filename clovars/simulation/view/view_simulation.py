@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Any
 
 from clovars.IO import SimulationLoader
-from clovars._deprecated.settings import get_view_settings
 from clovars.simulation import SimulationViewer
 
 
@@ -32,7 +31,3 @@ def view_simulation_function(
         verbose=verbose,
     )
     simulation_viewer.generate_output(settings=view_settings)
-
-
-if __name__ == '__main__':
-    view_simulation_function(**get_view_settings())

@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Any
 
 from clovars.IO import SimulationLoader
-from clovars._deprecated.settings import get_analysis_settings
 from clovars.simulation import SimulationAnalyzer
 
 
@@ -33,7 +32,3 @@ def analyse_simulation_function(
         output_folder=output_folder,
     )
     simulation_analyzer.analyse(settings=analysis_settings)
-
-
-if __name__ == '__main__':
-    analyse_simulation_function(**get_analysis_settings())
