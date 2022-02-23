@@ -3,6 +3,7 @@ import unittest
 from clovars._deprecated.settings import get_run_settings, get_view_settings, get_analysis_settings
 
 
+@unittest.skip("Deprecated module")
 class TestSettings(unittest.TestCase):
     """Class representing unit-tests of the clovars.settings module."""
     def test_get_settings_functions_returns_dictionaries(self) -> None:

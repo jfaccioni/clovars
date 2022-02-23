@@ -2,9 +2,10 @@ import unittest
 from unittest import mock
 from unittest.mock import MagicMock
 
-from clovars.simulation import run_and_view_simulation
+from clovars._deprecated.combined.run_and_view_simulation import run_and_view_simulation
 
 
+@unittest.skip("Deprecated module")
 class TestRunAndViewSimulation(unittest.TestCase):
     """Class representing unit-tests of the clovars.simulation.combined.run_and_view_simulation module."""
 
