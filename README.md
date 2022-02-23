@@ -27,28 +27,34 @@ CloVarS can be executed in the following modes:
 - `view` - visualize the results of a previous simulation run (figures, images, videos);
 - `analyse` - run analytical tools on the result of a previous simulation run.
 
-You also need to provide the necessary [settings files](settings). These files use the [TOML](https://toml.io/en/) syntax, which makes it easy to open and edit them in any text editor.
+You also need to provide the necessary **settings files**. These files use the [TOML](https://toml.io/en/) syntax, which makes it easy to open and edit them in any text editor.
 
-[This folder](settings) has examples for the structure of the settings files. **CloVarS will likely run into errors if the setting files have missing / wrong values!**
-### Run CloVarS
+[This folder](examples) has examples for the structure of the settings files. Be sure to use them: **CloVarS will likely run into errors if the setting files have incorrect or missing values!**
+### Run
 ```shell
-clovars run <path-to-run-settings> <path-to-colonies>
+clovars run <path-to-run-settings-file> <path-to-colonies-file>
 ```
 where: 
 - `path-to-run-settings` is the path for a TOML file with the run settings;
 - `path-to-colonies` is the path for a TOML file with the colony description.
-### View CloVarS
+### View
 ```shell
-clovars view <path-to-view-settings>
+clovars view <path-to-view-settings-file>
 ```
 where:
 - `path-to-view-settings` is the path for a TOML file with the view settings.
-### Analyse CloVarS
+### Analyse
 ```shell
-clovars analyse <path-to-analysis-settings>
+clovars analyse <path-to-analysis-settings-file>
 ```
 where: 
 - `path-to-analysis-settings` is the path for a TOML file with the analysis settings.
+
+## Fitting experimental data (WIP)
+You will be able to fit experimental data to CloVarS's distributions using the command:
+```shell
+clovars fit <path-to-table-file>
+```
 
 ## Dependencies
 CloVarS depends on the following third-party packages:

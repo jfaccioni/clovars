@@ -1,0 +1,39 @@
+verbose = true
+
+[input]
+simulation_input_folder = 'output'
+parameters_file_name = 'params.json'
+cell_csv_file_name = 'cell_output.csv'
+colony_csv_file_name = 'colony_output.csv'
+
+[view]
+colormap_name = 'plasma'  # valid colormaps: any matplotlib colormap name
+layout = 'family'  # valid layouts: family, time, age, generation, division, death, signal,
+figure_dpi = 320
+
+[2D_view]
+display = false
+render = false
+render_file_name = '2D'
+render_file_extension = 'png'  # valid extensions: png, svg
+
+[2D_video]
+render = false
+render_file_name = '2D'
+render_file_extension = 'mp4'  # valid extensions: mp4  -- WARNING: rendering might take some time!
+
+[3D_view]
+display = false
+render = false
+display_well = false
+z_axis_ratio = 1.2  # use 1.0 for a square display, larger values for "tall" trees
+render_file_name = '3D'
+render_file_extension = 'png'  # valid extensions: png, svg
+
+[treatment_curves]
+show_division = false
+show_death = false
+display = false
+render = false
+render_file_name = 'treatments'
+render_file_extension = 'png'  # valid extensions: png, svg

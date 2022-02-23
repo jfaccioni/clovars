@@ -1,0 +1,20 @@
+verbose = true
+delta = 3600  # time between two simulation frames (in seconds)
+
+[well]
+well_radius = 13351.624  # in µm
+
+[output]
+output_folder = 'output'
+parameters_file_name = 'params.json'
+cell_csv_file_name = 'cell_output.csv'
+colony_csv_file_name = 'colony_output.csv'
+confirm_overwrite = true  # asks for confirmation when overwriting files
+
+[stop_conditions]  # use "#" to activate/deactivate the stop conditions below
+# ### simulation ends after these many simulation frames
+stop_at_frame = 144
+# ### simulation ends once 1 colony reaches this size
+# stop_at_single_colony_size = 50
+# ### simulation ends once all colonies reach this size
+# stop_at_all_colonies_size = 8

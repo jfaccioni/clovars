@@ -1,0 +1,38 @@
+verbose = true
+
+[input]
+simulation_input_folder = 'output/'
+parameters_file_name = 'params.json'
+cell_csv_file_name = 'cell_output.csv'
+colony_csv_file_name = 'colony_output.csv'
+
+[tree_stats]
+perform = false
+bootstrap_n = 1000
+
+[dynafit]
+perform = false
+start_day = 4.0
+end_day = 7.0
+filter_colonies_smaller_than = 0
+merge_colonies_of_different_sizes = false
+number_of_bins_to_merge_on = 10
+bootstrap_n = 100
+use_log2_colony_size = false
+
+[cell_fate_distribution]
+display = false
+render = false
+join_treatments = false
+render_file_name = 'cell_fate_distribution'
+render_file_extension = 'png'  # valid extensions: png, svg
+
+[cell_fitness_distribution]
+perform = false
+
+[colony_division_times]
+perform = false
+
+[videos]
+render_colony_signal_vs_size = false
+render_colony_fitness_distribution = false
