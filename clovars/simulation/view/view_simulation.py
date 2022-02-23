@@ -8,7 +8,7 @@ from clovars.simulation import SimulationViewer
 
 
 def view_simulation_function(
-        output_folder: str = '.',
+        output_folder: str = 'view',
         simulation_loader_settings: dict[str, Any] | None = None,
         view_settings: dict[str, Any] | None = None,
         verbose: bool = False,
@@ -22,6 +22,7 @@ def view_simulation_function(
         print('Loading Simulation parameters and trees...')
     simulation_loader = SimulationLoader(settings=simulation_loader_settings)
     if verbose is True:
+        print(f'loading from input folder:\n"{simulation_loader.input_folder}"\n')
         print('Visualizing Simulation trees...')
     simulation_viewer = SimulationViewer(
         cell_data=simulation_loader.cell_data,
