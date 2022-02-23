@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "clovars"
-version = "0.1.0"
+version = "0.1.1"
 description = "Clonal Variability Simulation"
 license = "MIT"
 authors = ["Juliano Faccioni <julianofaccioni@gmail.com>"]
