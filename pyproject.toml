@@ -9,7 +9,7 @@ homepage = "http://www.ufrgs.br/labsinal/clovars/"
 repository = "https://github.com/jfaccioni/clovars"
 documentation = "http://www.ufrgs.br/labsinal/clovars/docs"
 keywords = ["Simulation", "Biology", "Single Cells", "Heterogeneity", "Fitness"]
-include = ["settings/*"]
+include = ["clovars/default_settings/*"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
