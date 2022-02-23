@@ -15,7 +15,7 @@ The example below depicts a single colony, starting from a single cell, which gr
 </p>
 
 ## Installation
-CloVarS requires **Python version 3.9+** in order to run. You can install CloVarS in your Python environment with the command:
+CloVarS requires **Python version 3.8+** in order to run. You can install CloVarS in your Python environment with the command:
 ```shell
 pip install clovars
 ```
