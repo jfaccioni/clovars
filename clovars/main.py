@@ -23,8 +23,8 @@ def main() -> None:
         view_settings = format_view_settings(view_settings=toml_settings)  # noqa
         view_simulation_function(**view_settings)
     elif mode == 'analyse':
-        analyse_settings = format_analyse_settings(analyse_settings=toml_settings)  # noqa
-        analyse_simulation_function(**analyse_settings)
+        analysis_settings = format_analysis_settings(analysis_settings=toml_settings)  # noqa
+        analyse_simulation_function(**analysis_settings)
     else:
         print(f'Something went wrong, got -> invalid mode {mode}. Exiting...')
 
@@ -146,15 +146,15 @@ def format_view_settings(view_settings: dict) -> dict:
     }
 
 
-def format_analyse_settings(analyse_settings: dict) -> dict:
-    """Formats the analyse settings parsed from the TOML file, as expected by CloVarS."""
-    input_dict = analyse_settings.get('input', {})
-    tree_stats_dict = analyse_settings.get('tree_stats', {})
-    dynafit_dict = analyse_settings.get('dynafit', {})
-    cell_fate_dict = analyse_settings.get('cell_fate_distribution', {})
-    cell_fitness_dict = analyse_settings.get('cell_fitness_distribution', {})
-    colony_division_times_dict = analyse_settings.get('colony_division_times', {})
-    videos_dict = analyse_settings.get('videos', {})
+def format_analysis_settings(analysis_settings: dict) -> dict:
+    """Formats the analysis settings parsed from the TOML file, as expected by CloVarS."""
+    input_dict = analysis_settings.get('input', {})
+    tree_stats_dict = analysis_settings.get('tree_stats', {})
+    dynafit_dict = analysis_settings.get('dynafit', {})
+    cell_fate_dict = analysis_settings.get('cell_fate_distribution', {})
+    cell_fitness_dict = analysis_settings.get('cell_fitness_distribution', {})
+    colony_division_times_dict = analysis_settings.get('colony_division_times', {})
+    videos_dict = analysis_settings.get('videos', {})
     return {
         'output_folder': os.path.join(input_dict.get('simulation_input_folder', '.'), 'analysis'),
         'simulation_loader_settings': input_dict,
@@ -179,7 +179,7 @@ def format_analyse_settings(analyse_settings: dict) -> dict:
             'write_video_colony_signal_vs_size_over_time': videos_dict.get('render_colony_signal_vs_size', False),
             'write_video_colony_fitness_over_time': videos_dict.get('render_colony_fitness_distribution', False),
         },
-        'verbose': analyse_settings.get('verbose', False)
+        'verbose': analysis_settings.get('verbose', False)
     }
 
 
