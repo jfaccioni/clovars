@@ -30,6 +30,8 @@ CloVarS can be executed in the following modes:
 You also need to provide the necessary **settings files**. These files use the [TOML](https://toml.io/en/) syntax, which makes it easy to open and edit them in any text editor.
 
 [This folder](examples) has examples for the structure of the settings files. Be sure to use them: **CloVarS will likely run into errors if the setting files have incorrect or missing values!**
+
+For more information on the settings and their meaning, please [read the docs here](http://www.ufrgs.br/labsinal/clovars/docs).
 ### Run
 ```shell
 clovars run <path-to-run-settings-file> <path-to-colonies-file>
