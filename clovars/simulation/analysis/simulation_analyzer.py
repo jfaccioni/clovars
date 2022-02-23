@@ -372,7 +372,6 @@ class SimulationAnalyzer(QuietPrinterMixin, PathCreatorMixin):
         """Shows the distributions on a matplotlib plot."""
         for figure, _ in self.yield_distributions(join_treatments=join_treatments):
             plt.subplots_adjust(top=0.921, bottom=0.067, left=0.051, right=0.991, hspace=0.2, wspace=0.166)
-            plt.get_current_fig_manager().window.showMaximized()
             plt.show()
 
     def render_cell_fate_distributions(
