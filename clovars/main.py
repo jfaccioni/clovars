@@ -47,7 +47,7 @@ def parse_command_line_arguments() -> dict[str, str]:
         except KeyError:
             raise ValueError(f'Invalid mode {mode}')
         if input(
-            'WARNING: no settings path provided for {mode} mode. Use default settings?\n'
+            f'WARNING: no settings path provided for {mode} mode. Use default settings?\n'
             f'Default {mode} settings are located at: \n\n{ROOT_PATH / default_settings_path}\n\n'
             '(y/n): '
         ).lower() != 'y':
