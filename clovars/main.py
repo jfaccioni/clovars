@@ -47,7 +47,7 @@ def parse_command_line_arguments() -> dict[str, str]:
         except KeyError:
             raise ValueError(f'Invalid mode {mode}')
         if input(
-            'WARNING: no settings path provided for {mode} mode. Use default colonies?\n'
+            'WARNING: no settings path provided for {mode} mode. Use default settings?\n'
             f'Default {mode} settings are located at: \n\n{ROOT_PATH / default_settings_path}\n\n'
             '(y/n): '
         ).lower() != 'y':
@@ -57,7 +57,7 @@ def parse_command_line_arguments() -> dict[str, str]:
     # COLONY CHECK
     if mode == 'run' and not args_dict['colonies-path']:  # user wants to run clovars but no colonies path was given
         if input(
-                'WARNING: no colonies path provided. Use default settings?\n'
+                'WARNING: no colonies path provided. Use default colonies?\n'
                 f'Default colonies are located at: \n\n{ROOT_PATH / DEFAULT_COLONIES_PATH}\n\n'
                 '(y/n): '
         ).lower() != 'y':
