@@ -24,13 +24,19 @@ class SimulationLoader:
         self._cell_data = self._colony_data = self._params = self._treatments = None
         if settings is None:
             settings = {}
-        input_folder = settings.get('simulation_input_folder', self.default_simulation_input_folder)
-        self.cell_data_path = Path(input_folder, settings.get('cell_csv_file_name', self.default_cell_csv_file_name))
+        self.input_folder = Path(settings.get('simulation_input_folder', self.default_simulation_input_folder))
+        self.cell_data_path = Path(
+            self.input_folder,
+            settings.get('cell_csv_file_name', self.default_cell_csv_file_name)
+        )
         self.colony_data_path = Path(
-            input_folder,
+            self.input_folder,
             settings.get('colony_csv_file_name', self.default_colony_csv_file_name),
         )
-        self.params_path = Path(input_folder, settings.get('parameters_file_name', self.default_parameters_file_name))
+        self.params_path = Path(
+            self.input_folder,
+            settings.get('parameters_file_name', self.default_parameters_file_name)
+        )
 
     @property
     def cell_data(self) -> pd.DataFrame:

@@ -61,7 +61,7 @@ class TestSimulationLoader(NotEmptyTestCase):
 
     def test_simulation_loader_has_expected_path_attributes(self) -> None:
         """Tests whether a SimulationLoader has the expected path attributes (Path instances)."""
-        for attr_name in ['cell_data_path', 'colony_data_path', 'params_path']:
+        for attr_name in ['input_folder', 'cell_data_path', 'colony_data_path', 'params_path']:
             self.assertTrue(hasattr(self.simulation_loader, attr_name))
             self.assertIsInstance(getattr(self.simulation_loader, attr_name), Path)
 
