@@ -27,9 +27,11 @@ CloVarS can be executed in the following modes:
 - `view` - visualize the results of a previous simulation run (figures, images, videos);
 - `analyse` - run analytical tools on the result of a previous simulation run.
 
-You also need to provide the necessary **settings files**. These files use the [TOML](https://toml.io/en/) syntax, which makes it easy to open and edit them in any text editor.
+You also need to provide the necessary **settings files** as command-line arguments. 
 
-[This folder](examples) has examples for the structure of the settings files. Be sure to use them: **CloVarS will likely run into errors if the setting files have incorrect or missing values!**
+These files use the [TOML](https://toml.io/en/) syntax, which makes it easy to open and edit them in any text editor. [This folder](examples) has examples for the structure of the settings files.
+
+Be sure to pay attention: CloVarS will likely **run into errors** if the setting files have **incorrect or missing values!**
 
 For more information on the settings and their meaning, please [read the docs here](http://www.ufrgs.br/labsinal/clovars/docs).
 ### Run
@@ -59,16 +61,16 @@ clovars fit <path-to-table-file>
 ```
 
 ## Dependencies
-CloVarS depends on the following third-party packages:
-- ete3
-- matplotlib
-- numpy
-- pandas
-- scipy
-- seaborn
+CloVarS depends on the following third-party Python packages:
+- [ete3](http://etetoolkit.org/)
+- [matplotlib](https://matplotlib.org/)
+- [numpy](https://numpy.org/)
+- [pandas](https://pandas.pydata.org/)
+- [scipy](https://scipy.org/)
+- [seaborn](https://seaborn.pydata.org/)
 
 ## License
-CloVarS is distributed under the MIT license. Read the `LICENSE.md` file for details.
+CloVarS is distributed under the MIT license. Read the [`LICENSE.md`](LICENSE.md) file for details.
 
 ## Cite us
 If you use CloVarS, cite us: *Faccioni, JL; Lenz, G.* (in preparation).
