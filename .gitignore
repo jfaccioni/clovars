@@ -10,6 +10,8 @@
 /.idea
 # editable pip install files
 /clovars.egg-info
+# build and dist files
 /build
+/dist
 # Default CloVarS output folder
 /output
