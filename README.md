@@ -36,28 +36,28 @@ Be sure to pay attention: CloVarS will likely **run into errors** if the setting
 For more information on the settings and their meaning, please [read the docs here](http://www.ufrgs.br/labsinal/clovars/docs).
 ### Run
 ```shell
-clovars run <path-to-run-settings-file> <path-to-colonies-file>
+clovars run <run-settings-file> <colonies-file>
 ```
 where: 
-- `path-to-run-settings` is the path for a TOML file with the run settings;
-- `path-to-colonies` is the path for a TOML file with the colony description.
+- `run-settings-file` is the path for a TOML file with the run settings;
+- `colonies-file` is the path for a TOML file with the colony description.
 ### View
 ```shell
-clovars view <path-to-view-settings-file>
+clovars view <view-settings-file>
 ```
 where:
-- `path-to-view-settings` is the path for a TOML file with the view settings.
+- `view-settings-file` is the path for a TOML file with the view settings.
 ### Analyse
 ```shell
-clovars analyse <path-to-analysis-settings-file>
+clovars analyse <analysis-settings-file>
 ```
 where: 
-- `path-to-analysis-settings` is the path for a TOML file with the analysis settings.
+- `analysis-settings-file` is the path for a TOML file with the analysis settings.
 
-## Fitting experimental data (WIP)
+### Fitting experimental data (WIP)
 You will be able to fit experimental data to CloVarS's distributions using the command:
 ```shell
-clovars fit <path-to-table-file>
+clovars fit <table-file>
 ```
 
 ## Dependencies
