@@ -1,4 +1,4 @@
-# CloVarS: a clonal variability simulation of single cells!
+# CloVarS: a clonal variability simulation of single cells
 This repository contains the source code accompanying the article "CloVarS: a simulation of clonal variability in single cells" (in preparation).
 
 <p align="center" width="100%">
@@ -34,6 +34,7 @@ These files use the [TOML](https://toml.io/en/) syntax, which makes it easy to o
 Be sure to pay attention: CloVarS will likely **run into errors** if the setting files have **incorrect or missing values!**
 
 For more information on the settings and their meaning, please [read the docs here](http://www.ufrgs.br/labsinal/clovars/docs).
+
 ### Run
 ```shell
 clovars run <run-settings-file> <colonies-file>
@@ -41,12 +42,14 @@ clovars run <run-settings-file> <colonies-file>
 where: 
 - `run-settings-file` is the path for a TOML file with the run settings;
 - `colonies-file` is the path for a TOML file with the colony description.
+
 ### View
 ```shell
 clovars view <view-settings-file>
 ```
 where:
 - `view-settings-file` is the path for a TOML file with the view settings.
+
 ### Analyse
 ```shell
 clovars analyse <analysis-settings-file>
@@ -54,11 +57,12 @@ clovars analyse <analysis-settings-file>
 where: 
 - `analysis-settings-file` is the path for a TOML file with the analysis settings.
 
-### Fitting experimental data (WIP)
-You will be able to fit experimental data to CloVarS's distributions using the command:
+### Fit experimental data
 ```shell
-clovars fit <table-file>
+clovars fit <fit-settings-file>
 ```
+where:
+- `fit-settings-file` is the path for a TOML file with the fit settings.
 
 ## Dependencies
 CloVarS depends on the following third-party Python packages:
