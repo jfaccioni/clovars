@@ -22,13 +22,15 @@ For fitting experimental data into treatments, CloVarS expects a table of values
 - A column containing the **death times (in hours)** of cells observed in experimental data.
 
 This table should look something like this:
-```csv
-division_times,death_times
-23.4,33.5
-12.4,56.9
-22.9,38.5
-# ... etc
-```
+
+| Division Times | Death Times |
+|----------------|-------------|
+| 24.3           | 33.5        |
+| 12.4           | 56.9        |
+| 22.9           | 38.5        |
+| 18.8           | 40.0        |
+| .....          | .....       |
+
 Both `.csv` and `.xlsx` files are supported. The columns do not need to have the same number of values.
 
 Parameters like file path, column names etc are all read from the corresponding TOML file (see `fit.toml` for an example).
