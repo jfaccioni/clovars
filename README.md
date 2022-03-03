@@ -65,7 +65,7 @@ clovars fit <fit-settings-file>
 where:
 - `fit-settings-file` is the path for a TOML file with the fit settings.
 
-Please refer to the [this folder](examples) for examples on how the experimental data should be formatted. 
+Please refer to [this folder](examples) for examples on how the experimental data should be formatted. 
 
 ## Dependencies
 CloVarS depends on the following third-party Python packages:
