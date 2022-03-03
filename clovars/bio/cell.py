@@ -68,14 +68,14 @@ class Cell:
             self,
             delta: int,
     ) -> float:
-        """Returns the chance that the Cell has to divide at the current moment in time."""
+        """Returns the chance that the Cell has to divide at the next moment in time."""
         return self.treatment.division_chance(x=self.hours_since_birth + (delta / 3600))
 
     def calculate_death_chance(
             self,
             delta: int,
     ) -> float:
-        """Returns the chance that the Cell has to die at the current moment in time."""
+        """Returns the chance that the Cell has to die at the next moment in time."""
         return self.treatment.death_chance(x=self.hours_since_birth + (delta / 3600))
 
     @property
