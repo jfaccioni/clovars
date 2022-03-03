@@ -8,7 +8,7 @@ from clovars.utils import SimulationError
 
 @mock.patch('clovars.simulation.run.run_simulation.SimulationWriter')  # do not write output!
 class TestRunSimulation(unittest.TestCase):
-    """Class representing unit-tests of the clovars.run_simulation module."""
+    """Class representing unit-tests of the run_simulation module."""
     mock_run_settings = {
         'delta': 3600,
         'stop_conditions': {}

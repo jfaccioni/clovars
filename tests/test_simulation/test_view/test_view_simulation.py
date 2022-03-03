@@ -7,7 +7,7 @@ from clovars.simulation import view_simulation_function
 
 @mock.patch('clovars.simulation.view.view_simulation.SimulationLoader')  # do not actually attempt to load data!
 class TestViewSimulation(unittest.TestCase):
-    """Class representing unit-tests of the clovars.view_simulation module."""
+    """Class representing unit-tests of the view_simulation module."""
 
     def test_view_simulation_function_runs_without_arguments(
             self,

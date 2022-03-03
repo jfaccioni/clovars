@@ -7,7 +7,7 @@ from clovars.simulation import analyse_simulation_function
 
 @mock.patch('clovars.simulation.analysis.analyse_simulation.SimulationLoader')  # do not actually attempt to load data!
 class TestAnalyseSimulation(unittest.TestCase):
-    """Class representing unit-tests of the clovars.analyse_simulation module."""
+    """Class representing unit-tests of the analyse_simulation module."""
 
     def test_analyse_simulation_function_runs_without_any_arguments(
             self,
