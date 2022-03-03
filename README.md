@@ -26,44 +26,42 @@ CloVarS can be executed in the following modes:
 - `run` - run a simulation with the given settings;
 - `view` - visualize the results of a previous simulation run (figures, images, videos);
 - `analyse` - run analytical tools on the result of a previous simulation run;
-- `fit` - fut experimental data to a variety of curves.
+- `fit` - fit experimental data to a variety of curves.
 
-You also need to provide the necessary **settings files** as command-line arguments. 
+You also need to provide the path to the necessary **settings files** as a command-line argument. Settings files use the [TOML](https://toml.io/en/) syntax, which makes it easy to open and edit them in any text editor.
 
-These files use the [TOML](https://toml.io/en/) syntax, which makes it easy to open and edit them in any text editor. [This folder](examples) has examples for the structure of the settings files.
+[This folder](examples) has examples for the structure of the settings files. Be sure to pay attention: CloVarS will likely **run into errors** if the setting files have **incorrect or missing values!**
 
-Be sure to pay attention: CloVarS will likely **run into errors** if the setting files have **incorrect or missing values!**
+For more information on the settings and their meaning, please [read the docs here](http://www.ufrgs.br/labsinal/clovars/docs) (coming soon!).
 
-For more information on the settings and their meaning, please [read the docs here](http://www.ufrgs.br/labsinal/clovars/docs).
-
-### Run
+### Run CloVarS
 ```shell
-clovars run <run-settings-file> <colonies-file>
+clovars run path_to/run_settings.toml path_to/colonies.toml
 ```
 where: 
-- `run-settings-file` is the path for a TOML file with the run settings;
-- `colonies-file` is the path for a TOML file with the colony description.
+- `path_to/run_settings.toml` is the path for a TOML file with the run settings;
+- `path_to/colonies.toml` is the path for a TOML file describing the colonies to simulate.
 
-### View
+### View CloVarS results
 ```shell
-clovars view <view-settings-file>
+clovars view path_to/view_settings.toml
 ```
 where:
-- `view-settings-file` is the path for a TOML file with the view settings.
+- `path_to/view_settings.toml` is the path for a TOML file with the view settings.
 
-### Analyse
+### Analyse CloVarS results
 ```shell
-clovars analyse <analysis-settings-file>
+clovars analyse path_to/analysis_settings.toml
 ```
 where: 
-- `analysis-settings-file` is the path for a TOML file with the analysis settings.
+- `path_to/analysis_settings.toml` is the path for a TOML file with the analysis settings.
 
-### Fit experimental data
+### Fit experimental data to treatments
 ```shell
-clovars fit <fit-settings-file>
+clovars fit path_to/fit_settings.toml
 ```
 where:
-- `fit-settings-file` is the path for a TOML file with the fit settings.
+- `path_to/fit_settings.toml` is the path for a TOML file with the fit settings.
 
 Please refer to [this folder](examples) for examples on how the experimental data should be formatted. 
 
@@ -80,4 +78,7 @@ CloVarS depends on the following third-party Python packages:
 CloVarS is distributed under the MIT license. Read the [`LICENSE.md`](LICENSE.md) file for details.
 
 ## Cite us
-If you use CloVarS, cite us: *Faccioni, JL; Lenz, G.* (in preparation).
+If you use CloVarS, cite us: 
+```text
+Faccioni, JL; Oliveira, MM; Lenz, G. CloVarS: a simulation of clonal variability in single cells. (in preparation).
+```
