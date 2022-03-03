@@ -6,8 +6,20 @@ from argparse import ArgumentParser
 
 import toml
 
-from clovars import DEFAULT_ANALYSIS_PATH, DEFAULT_COLONIES_PATH, DEFAULT_RUN_PATH, DEFAULT_VIEW_PATH, ROOT_PATH
-from clovars.simulation import analyse_simulation_function, run_simulation_function, view_simulation_function
+from clovars import (
+    DEFAULT_ANALYSIS_PATH,
+    DEFAULT_COLONIES_PATH,
+    DEFAULT_FIT_PATH,
+    DEFAULT_RUN_PATH,
+    DEFAULT_VIEW_PATH,
+    ROOT_PATH,
+)
+from clovars.simulation import (
+    analyse_simulation_function,
+    fit_experimental_data_function,
+    run_simulation_function,
+    view_simulation_function,
+)
 
 
 def main() -> None:
@@ -25,6 +37,9 @@ def main() -> None:
     elif mode == 'analyse':
         analysis_settings = format_analysis_settings(analysis_settings=toml_settings)  # noqa
         analyse_simulation_function(**analysis_settings)
+    elif mode == 'fit':
+        fit_settings = format_fit_settings(fit_settings=toml_settings)  # noqa
+        fit_experimental_data_function(**fit_settings)
     else:
         print(f'Something went wrong, got -> invalid mode {mode}. Exiting...')
 
@@ -35,6 +50,7 @@ def parse_command_line_arguments() -> dict[str, str]:
     parser.add_argument('settings-path', nargs='?', help='Path to the settings file', default='')
     parser.add_argument('colonies-path', nargs='?', help='Path to the colonies file (for run mode)', default='')
     args_dict = vars(parser.parse_args())
+    # MODE CHECK
     if not args_dict['mode']:  # no execution mode was given
         print('WARNING: no execution mode provided, defaulting to run mode')
         args_dict['mode'] = 'run'
@@ -46,6 +62,7 @@ def parse_command_line_arguments() -> dict[str, str]:
                 'run': DEFAULT_RUN_PATH,
                 'view': DEFAULT_VIEW_PATH,
                 'analyse': DEFAULT_ANALYSIS_PATH,
+                'fit': DEFAULT_FIT_PATH,
                 }[mode]
         except KeyError:
             raise ValueError(f'Invalid mode {mode}')
@@ -180,6 +197,18 @@ def format_analysis_settings(analysis_settings: dict) -> dict:
             'write_video_colony_fitness_over_time': videos_dict.get('render_colony_fitness_distribution', False),
         },
         'verbose': analysis_settings.get('verbose', False)
+    }
+
+
+def format_fit_settings(fit_settings: dict) -> dict:
+    """Formats the fit settings parsed from the TOML file, as expected by CloVarS."""
+    input_dict = fit_settings.get('input', {})
+    return {
+        'input_file': input_dict.get('input_file', None),
+        'sheet_name': input_dict.get('sheet_name', None),
+        'division_times_column': input_dict.get('division_hours_column_name', None),
+        'death_times_column': input_dict.get('death_hours_column_name', None),
+        'verbose': fit_settings.get('verbose', False)
     }
 
 
