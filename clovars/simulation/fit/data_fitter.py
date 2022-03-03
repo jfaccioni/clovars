@@ -1,43 +1,41 @@
 from __future__ import annotations
 
 import os
-from argparse import ArgumentParser
-from typing import Any
 import sys
+from argparse import ArgumentParser
+from pathlib import Path
+from typing import Any
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from scipy.stats import exponnorm, gamma, lognorm, norm
 import seaborn as sns
+from scipy.stats import exponnorm, gamma, lognorm, norm
 
-sns.set()
+from clovars.utils import QuietPrinterMixin
 
 
-class DistributionEstimator:
+class DataFitter(QuietPrinterMixin):
     """Class responsible for estimating the best-fit curve for a given dataset."""
-    def __init__(self) -> None:
-        """Initializes a DistributionEstimator instance."""
-        args = self.parse_command_line_args()
-        self.validate_file_path(file_path=args['file_path'])
-        self.file_path = args['file_path']
-        self.sheet_name = args['sheet_name']
-        self.division_times_column = args['division_label']
-        self.death_times_column = args['death_label']
-        self.verbose = args['verbose']
+    def __init__(
+            self,
+            input_file: str,
+            sheet_name: str = '',
+            division_times_column: str = '',
+            death_times_column: str = '',
+            verbose: bool = False,
+    ) -> None:
+        """Initializes a DataFitter instance."""
+        super().__init__(verbose=verbose)
+        self.file_path = Path(input_file)
+        self.sheet_name = sheet_name
+        self.division_times_column = division_times_column
+        self.death_times_column = death_times_column
+        self.validate_file_path()
         self.data = self.parse_input_data()
         self.validate_column_names()
         self.death_fit = None
         self.division_fit = None
-
-    def qprint(
-            self,
-            *args,
-            **kwargs,
-    ) -> None:
-        """Prints to the console only if the verbose flag is set to True."""
-        if self.verbose is True:
-            print(*args, **kwargs)
 
     @staticmethod
     def parse_command_line_args() -> dict[str, Any]:
@@ -50,11 +48,10 @@ class DistributionEstimator:
         parser.add_argument('-v', '--verbose', help='Increases output verbosity', action='store_true')
         return vars(parser.parse_args(sys.argv[1:]))
 
-    @staticmethod
-    def validate_file_path(file_path: str) -> None:
+    def validate_file_path(self) -> None:
         """Validates the file path argument, raising a ValueError if it does not exist."""
-        if not os.path.exists(file_path):
-            raise ValueError(f"File {file_path} does not exist!")
+        if not os.path.exists(self.file_path):
+            raise ValueError(f"File {self.file_path} does not exist!")
 
     def validate_column_names(self) -> None:
         """Validates the column names of the data."""
@@ -71,30 +68,29 @@ class DistributionEstimator:
 
     def parse_input_data(self) -> pd.DataFrame:
         """Parses and returns the input data."""
-        if self.file_path.endswith('.csv'):
+        if (suffix := self.file_path.suffix) == '.csv':
             df = pd.read_csv(self.file_path, index_col=None)
-        elif self.file_path.endswith('.xlsx'):
+        elif suffix == '.xlsx':
             if self.sheet_name is None:
                 raise ValueError('Data from Excel requires a sheet name argument!')
             df = pd.read_excel(self.file_path, sheet_name=self.sheet_name, index_col=None)
         else:
-            file_ext = self.file_path.split('.')[-1]
-            raise ValueError(f"Unsupported file type: .{file_ext}. Only .csv or .xlsx files are supported.")
+            raise ValueError(f"Unsupported file type: {suffix}. Only .csv or .xlsx files are supported.")
         return df
 
     def fit(self) -> None:
         if self.division_times_column is not None:
-            self.qprint(f'Calculating best fit for division...')
+            self.quiet_print(f'Calculating best fit for division...')
             division_data = self.data[self.division_times_column].dropna().values
             self.division_fit = self.calculate_best_fit(data=division_data)
         else:
-            self.qprint(f'Skipped calculations for division column because it is None.')
+            self.quiet_print(f'Skipped calculations for division column because it is None.')
         if self.death_times_column is not None:
-            self.qprint(f'Calculating best fit for death...')
+            self.quiet_print(f'Calculating best fit for death...')
             death_data = self.data[self.death_times_column].dropna().values
             self.death_fit = self.calculate_best_fit(data=death_data)
         else:
-            self.qprint(f'Skipped calculations for death column because it is None.')
+            self.quiet_print(f'Skipped calculations for death column because it is None.')
 
     @staticmethod
     def calculate_best_fit(data: np.ndarray) -> dict[str, Any]:
@@ -123,22 +119,24 @@ class DistributionEstimator:
     def display(self) -> None:
         """Displays the previously calculated fit data."""
         if self.division_fit is None:
-            self.qprint('Skipped displaying division fit data because it is None.')
+            self.quiet_print('Skipped displaying division fit data because it is None.')
         else:
-            self.qprint('Displaying best fit for division times...')
+            self.quiet_print('Displaying best fit for division times...')
             self.display_fit_by_rank(fit_data=self.division_fit)
         print('\n' + '-*' * 20 + '-\n\n')
         if self.death_fit is None:
-            self.qprint('Skipped displaying death fit data because it is None.')
+            self.quiet_print('Skipped displaying death fit data because it is None.')
         else:
-            self.qprint('Displaying best fit for death times...')
+            self.quiet_print('Displaying best fit for death times...')
             self.display_fit_by_rank(fit_data=self.death_fit)
 
-    @staticmethod
-    def display_fit_by_rank(fit_data: dict[str, Any]) -> None:
+    def display_fit_by_rank(
+            self,
+            fit_data: dict[str, Any],
+    ) -> None:
         """Prints the data fitted by its RMSE ranking."""
         for i, (fit_name, fit_values) in enumerate(sorted(fit_data.items(), key=lambda tup: tup[1]['RMSE']), 1):
-            rank = to_ordinal(i)
+            rank = self.to_ordinal(i)
             RMSE = fit_values['RMSE']
             params_str = '\n    '.join([
                 k.replace('$', '').replace('\\', '') + f" = {v}"
@@ -156,11 +154,11 @@ class DistributionEstimator:
     def plot(self) -> None:
         """Plots the previously calculated fit data."""
         if self.division_fit is None:
-            self.qprint('Skipped plotting division fit data because it is None.')
+            self.quiet_print('Skipped plotting division fit data because it is None.')
         else:
             self.plot_fit(fit_data=self.division_fit, column_name=self.division_times_column, title_label='division')
         if self.death_fit is None:
-            self.qprint('Skipped plotting death fit data because it is None.')
+            self.quiet_print('Skipped plotting death fit data because it is None.')
         else:
             self.plot_fit(fit_data=self.death_fit, column_name=self.death_times_column, title_label='death')
 
@@ -187,25 +185,12 @@ class DistributionEstimator:
         plt.ylim(top=0.05)
         fig.suptitle(f'Fit for {title_label}')
 
-
-def main() -> None:
-    """Main function of this script."""
-    de = DistributionEstimator()
-    de.fit()
-    de.display()
-    de.plot()
-    plt.show()
-
-
-def to_ordinal(n: int) -> str:
-    """Convert an integer into its ordinal representation."""
-    # Source: https://stackoverflow.com/a/50992575/11161432
-    if 11 <= (n % 100) <= 13:
-        suffix = 'th'
-    else:
-        suffix = ['th', 'st', 'nd', 'rd', 'th'][min(n % 10, 4)]
-    return str(n) + suffix
-
-
-if __name__ == '__main__':
-    main()
+    @staticmethod
+    def to_ordinal(n: int) -> str:
+        """Convert an integer into its ordinal string representation."""
+        # Source: https://stackoverflow.com/a/50992575/11161432
+        if 11 <= (n % 100) <= 13:
+            suffix = 'th'
+        else:
+            suffix = ['th', 'st', 'nd', 'rd', 'th'][min(n % 10, 4)]
+        return str(n) + suffix
