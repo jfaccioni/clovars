@@ -25,7 +25,8 @@ This adds the `clovars` command to your Python environment, and also installs th
 CloVarS can be executed in the following modes: 
 - `run` - run a simulation with the given settings;
 - `view` - visualize the results of a previous simulation run (figures, images, videos);
-- `analyse` - run analytical tools on the result of a previous simulation run.
+- `analyse` - run analytical tools on the result of a previous simulation run;
+- `fit` - fut experimental data to a variety of curves.
 
 You also need to provide the necessary **settings files** as command-line arguments. 
 
@@ -63,6 +64,8 @@ clovars fit <fit-settings-file>
 ```
 where:
 - `fit-settings-file` is the path for a TOML file with the fit settings.
+
+Please refer to the [this folder](examples) for examples on how this data should be formatted. 
 
 ## Dependencies
 CloVarS depends on the following third-party Python packages:
