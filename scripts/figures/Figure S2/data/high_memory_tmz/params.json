@@ -1,0 +1,72 @@
+{
+    "colony_data": [
+        {
+            "treatment_data": {
+                "0": {
+                    "name": "Control",
+                    "division_curve": {
+                        "name": "Gamma",
+                        "mean": 0.0,
+                        "std": 0.9,
+                        "a": 28.47
+                    },
+                    "death_curve": {
+                        "name": "Gaussian",
+                        "mean": 100.0,
+                        "std": 1.0
+                    }
+                },
+                "72": {
+                    "name": "Temozolomide",
+                    "fitness_memory_disturbance": 0.5,
+                    "signal_disturbance": {
+                        "name": "Gaussian",
+                        "initial_value": 0.0,
+                        "std": 0.15
+                    },
+                    "division_curve": {
+                        "name": "EMGaussian",
+                        "mean": 13.09,
+                        "std": 7.17,
+                        "k": 3.54
+                    },
+                    "death_curve": {
+                        "name": "EMGaussian",
+                        "mean": 55.09,
+                        "std": 23.75,
+                        "k": 2.93
+                    }
+                }
+            },
+            "copies": 100,
+            "initial_size": 1,
+            "cells": {
+                "radius": 20,
+                "max_speed": 0.020351,
+                "fitness_memory": 0.9,
+                "signal": {
+                    "name": "Gaussian",
+                    "initial_value": 0.0,
+                    "std": 0.05
+                }
+            }
+        }
+    ],
+    "well_settings": {
+        "well_radius": 13351.624
+    },
+    "simulation_writer_settings": {
+        "output_folder": "output/2022-03-09_tests/high_memory_tmz",
+        "parameters_file_name": "params.json",
+        "cell_csv_file_name": "cell_output.csv",
+        "colony_csv_file_name": "colony_output.csv",
+        "confirm_overwrite": true
+    },
+    "simulation_runner_settings": {
+        "delta": 3600,
+        "stop_conditions": {
+            "stop_at_frame": 144
+        }
+    },
+    "verbose": true
+}
