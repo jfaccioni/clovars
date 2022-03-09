@@ -83,7 +83,7 @@ def parse_command_line_arguments() -> dict[str, str]:
         ).lower() != 'y':
             print('User chose not to use default colonies.')
             sys.exit(0)
-    args_dict['colonies-path'] = DEFAULT_COLONIES_PATH
+        args_dict['colonies-path'] = DEFAULT_COLONIES_PATH
     return args_dict
 
 
