@@ -19,5 +19,5 @@ class PathCreatorMixin:
     def create_path(folder: str) -> Path:
         """Creates the output folder and returns it as a Path object."""
         path = Path(folder)
-        path.mkdir(exist_ok=True)
+        path.mkdir(parents=True, exist_ok=True)
         return path
