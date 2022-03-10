@@ -16,7 +16,7 @@ pd.set_option('display.max_columns', None)
 pd.set_option('display.width', None)
 pd.set_option('display.max_colwidth', None)
 
-BASE_PATH = Path('scripts', 'figures', 'Figure S2', 'data')
+BASE_PATH = Path('scripts', 'data')
 INPUT_PATHS = [
     BASE_PATH / 'low_memory_control' / 'cell_output.csv',
     BASE_PATH / 'low_memory_tmz' / 'cell_output.csv',

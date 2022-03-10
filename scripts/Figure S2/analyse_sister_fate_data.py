@@ -8,7 +8,7 @@ import seaborn as sns
 
 sns.set()
 
-BASE_PATH = Path('scripts', 'figures', 'Figure S2', 'data')
+BASE_PATH = Path('scripts', 'data')
 INPUT_PATH = BASE_PATH / 'sister_fate_data.csv'
 
 
