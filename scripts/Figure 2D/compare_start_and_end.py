@@ -43,21 +43,21 @@ def main(input_paths: list[Path]) -> None:
     )
     # FIG 2
     fig, ax = plt.subplots()
-    sns.lineplot(
-        ax=ax,
-        data=grouped_data,
-        x='simulation_days',
-        y='colony_size',
-        hue='memory',
-        hue_order=['low', 'high'],
-        palette=['#993e50', '#50993e'],
-        zorder=1,
-        linewidth=0.5,
-        linestyle='solid',
-        estimator=None,
-        units='colony_name',
-        alpha=0.5,
-    )
+    # sns.lineplot(
+    #     ax=ax,
+    #     data=grouped_data,
+    #     x='simulation_days',
+    #     y='colony_size',
+    #     hue='memory',
+    #     hue_order=['low', 'high'],
+    #     palette=['#993e50', '#50993e'],
+    #     zorder=1,
+    #     linewidth=0.5,
+    #     linestyle='solid',
+    #     estimator=None,
+    #     units='colony_name',
+    #     alpha=0.5,
+    # )
     sns.lineplot(
         ax=ax,
         data=grouped_data,
@@ -69,10 +69,10 @@ def main(input_paths: list[Path]) -> None:
         zorder=2,
         linewidth=5,
         linestyle='dashed',
-        ci=None,
-        alpha=0.5
+        ci='sd',
+        alpha=0.5,
     )
-    ax.set_yscale('log')
+    # ax.set_yscale('log')
     plt.show()
 
 
