@@ -60,10 +60,16 @@ class DataFitter(QuietPrinterMixin):
         elif self.division_times_column not in self.data:
             print('Division label not found in data, skipping division times from analysis...')
             self.division_times_column = None
+        elif self.data[self.division_times_column].isna().all():
+            print('Skipping division times from analysis since it is empty...')
+            self.division_times_column = None
         if self.death_times_column is None:
             print('No death label added, skipping death times from analysis...')
         elif self.death_times_column not in self.data:
             print('Death label not found in data, skipping death times from analysis...')
+            self.death_times_column = None
+        elif self.data[self.death_times_column].isna().all():
+            print('Skipping death times from analysis since it is empty...')
             self.death_times_column = None
 
     def parse_input_data(self) -> pd.DataFrame:
