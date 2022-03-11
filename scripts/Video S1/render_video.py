@@ -28,17 +28,17 @@ def main(
         df['memory'], df['treatment'] = get_info_from_path_name(path=path)
         dfs.append(df)
     data = pd.concat(dfs, ignore_index=True)
-    data['memory'] = data['memory'].astype(str)
+    data['$f_m$'] = data['memory'].astype(str)
     fig, (top_ax, bottom_ax) = plt.subplots(figsize=(16, 16), nrows=2)
     grouped_data = (
         data
-        .groupby(['memory', 'colony_name', 'simulation_hours'])['division_threshold']
+        .groupby(['$f_m$', 'colony_name', 'simulation_hours'])['division_threshold']
         .mean()
         .reset_index()
     )
     grouped_data['colony_size'] = (
         data
-        .groupby(['memory', 'colony_name', 'simulation_hours'])['division_threshold']
+        .groupby(['$f_m$', 'colony_name', 'simulation_hours'])['division_threshold']
         .count()
         .reset_index(drop=True)
     )
@@ -50,33 +50,40 @@ def main(
         print( f'Video is: {round(100 * (hour/max_hours), 1)}% done...', end='')
         hour_data = grouped_data.loc[grouped_data['simulation_hours'] == hour]
         palette = ['#82cb70', '#cb7082']
+        # TOP AX
         top_ax.clear()
-        top_ax.set_title(f'Simulation time: {round(hour, 1)} hours')
-        top_ax.set_xlim(-0.1, 1.1)
-        top_ax.set_ylim(0, 3)
-        sns.kdeplot(
+        sns.violinplot(ax=top_ax, data=hour_data, x='colony_size', y='$f_m$', palette=palette)
+        sns.stripplot(
             ax=top_ax,
             data=hour_data,
-            x='division_threshold',
-            hue='memory',
-            palette=palette,
-            linewidth=3,
-            alpha=0.7,
-        )
-        sns.rugplot(ax=top_ax, data=hour_data, x='division_threshold', hue='memory', palette=palette)
-        bottom_ax.clear()
-        bottom_ax.set_title('Colony size distribution')
-        sns.violinplot(ax=bottom_ax, data=hour_data, x='memory', y='colony_size', palette=palette)
-        sns.stripplot(
-            ax=bottom_ax,
-            data=hour_data,
-            x='memory',
-            y='colony_size',
+            x='colony_size',
+            y='$f_m$',
             color='0.8',
             edgecolor='0.3',
             linewidth=1,
             size=5,
         )
+        top_ax.set_title('Distribution of colony sizes (N=100 per $f_m$)')
+        top_ax.set_xlabel('Colony size')
+        top_ax.set_xticks([tick for tick in top_ax.get_xticks() if tick.is_integer()])
+        # BOTTOM AX
+        bottom_ax.clear()
+        sns.kdeplot(
+            ax=bottom_ax,
+            data=hour_data,
+            x='division_threshold',
+            hue='$f_m$',
+            palette=palette,
+            linewidth=3,
+            alpha=0.7,
+        )
+        sns.rugplot(ax=bottom_ax, data=hour_data, x='division_threshold', hue='$f_m$', palette=palette)
+        bottom_ax.set_title('Distribution of mean colony $t_{div}$ (N=100 per $f_m$)')
+        bottom_ax.set_xlabel('Mean colony $t_{div}$')
+        bottom_ax.set_xlim(-0.1, 1.1)
+        bottom_ax.set_ylim(0, 3)
+        # FIG
+        fig.suptitle(f'Simulation time: {round(hour, 1)} hours')
         fig.tight_layout()
 
     ani = FuncAnimation(fig, update, frames=grouped_data['simulation_hours'].unique())
