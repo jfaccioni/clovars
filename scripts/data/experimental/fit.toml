@@ -1,0 +1,7 @@
+verbose = true
+
+[input]
+input_file = 'scripts/data/experimental/tmz.csv'
+sheet_name = 'Sheet1'
+division_hours_column_name = 'division'
+death_hours_column_name = 'death'
