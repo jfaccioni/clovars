@@ -8,10 +8,10 @@ import seaborn as sns
 
 sns.set()
 
-BASE_PATH = Path('scripts', 'data')
+BASE_PATH = Path('scripts')
 INPUT_PATHS = [
-    BASE_PATH / 'low_memory_control' / 'cell_output.csv',
-    BASE_PATH / 'high_memory_control' / 'cell_output.csv',
+    BASE_PATH / 'data' / 'memory_run' / 'low_memory_control' / 'cell_output.csv',
+    BASE_PATH / 'data' / 'memory_run' / 'high_memory_control' / 'cell_output.csv',
 ]
 
 

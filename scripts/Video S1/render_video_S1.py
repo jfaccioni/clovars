@@ -11,8 +11,8 @@ sns.set(font_scale=2)
 
 BASE_PATH = Path('scripts')
 INPUT_PATHS = [
-    BASE_PATH / 'data' / 'low_memory_control' / 'cell_output.csv',
-    BASE_PATH / 'data' / 'high_memory_control' / 'cell_output.csv',
+    BASE_PATH / 'data' / 'memory_run' / 'low_memory_control' / 'cell_output.csv',
+    BASE_PATH / 'data' / 'memory_run' / 'high_memory_control' / 'cell_output.csv',
 ]
 OUTPUT_PATH = BASE_PATH / 'Video S1' / 'Supplementary Video S1.mp4'
 
