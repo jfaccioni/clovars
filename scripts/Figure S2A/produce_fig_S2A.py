@@ -10,7 +10,7 @@ from scipy.stats import gamma, exponnorm
 
 sns.set()
 
-BASE_PATH = Path('scripts', 'data', 'experimental')
+BASE_PATH = Path('..', 'data', 'experimental')
 INPUT_PATHS = [
     BASE_PATH / 'control.csv',
     BASE_PATH / 'tmz.csv',
