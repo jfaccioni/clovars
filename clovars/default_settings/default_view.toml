@@ -12,7 +12,7 @@ layout = 'family'  # valid layouts: family, time, age, generation, division, dea
 figure_dpi = 320
 
 [2D_view]
-display = false
+display = true
 render = false
 render_file_name = '2D'
 render_file_extension = 'png'  # valid extensions: png, svg
