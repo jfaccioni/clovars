@@ -255,7 +255,7 @@ class TreeDrawer3D:
             root_node: CellNode,
     ) -> None:
         """Draws the root Cell on a matplotlib 3D plot"""
-        ax.scatter(root_node.x, root_node.y, root_node.simulation_hours, color='blue', marker='s', zorder=2)
+        ax.scatter(root_node.x, root_node.y, root_node.simulation_hours, color='blue', marker='s', zorder=2, s=100)
 
     def draw_parents(
             self,
@@ -265,7 +265,7 @@ class TreeDrawer3D:
         """Draws the parent Cells on a matplotlib 3D plot."""
         xs, ys, zs = self.get_xyz_from_cell_nodes(cell_nodes=parent_nodes)
         if self.layout == 'family':
-            ax.scatter(xs, ys, zs, color='green', marker='^', zorder=2)
+            ax.scatter(xs, ys, zs, color='green', marker='^', zorder=2, s=100)
         else:
             ax.scatter(xs, ys, zs, color='black', marker='.', s=100, alpha=0.5, zorder=2)
 
@@ -276,7 +276,7 @@ class TreeDrawer3D:
     ) -> None:
         """Draws the dead Cells on a matplotlib 3D plot."""
         xs, ys, zs = self.get_xyz_from_cell_nodes(cell_nodes=dead_nodes)
-        ax.scatter(xs, ys, zs, color='red', marker='x', zorder=2)
+        ax.scatter(xs, ys, zs, color='red', marker='x', zorder=2, s=100)
 
     def draw_leaf_cells(
             self,
@@ -285,7 +285,7 @@ class TreeDrawer3D:
     ) -> None:
         """Draws the leaf Cells on a matplotlib 3D plot."""
         xs, ys, zs = self.get_xyz_from_cell_nodes(cell_nodes=leaf_nodes)
-        ax.scatter(xs, ys, zs, color='orange', marker='*', zorder=2)
+        ax.scatter(xs, ys, zs, color='orange', marker='*', zorder=2, s=100)
 
     def add_colorbar(
             self,
