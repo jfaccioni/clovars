@@ -10,10 +10,10 @@ from matplotlib.animation import FuncAnimation
 
 sns.set(font_scale=2)
 
-BASE_PATH = Path('scripts')
+BASE_PATH = Path('..', 'data', 'memory_demo')
 INPUT_PATHS = [
-    BASE_PATH / 'data' / 'memory_run' / 'low_memory_control' / 'cell_output.csv',
-    BASE_PATH / 'data' / 'memory_run' / 'high_memory_control' / 'cell_output.csv',
+    BASE_PATH / 'low_memory_control' / 'cell_output.csv',
+    BASE_PATH / 'high_memory_control' / 'cell_output.csv',
 ]
 OUTPUT_PATH = BASE_PATH / 'Video S2' / 'Supplementary Video S2.mp4'
 
