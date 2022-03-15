@@ -121,6 +121,7 @@ class TreeDrawer3D:
         if display_well is True:
             self.draw_well(ax=ax, well_radius=well_radius)
             self.set_well_limits(ax=ax, well_radius=well_radius)
+        self.add_legend(ax=ax)
         figure.tight_layout()
         return figure
 
@@ -132,10 +133,7 @@ class TreeDrawer3D:
         """Draws the tree on a matplotlib 3D plot."""
         for branch in root_node.yield_branches():
             self.draw_branch(ax=ax, branch=branch)
-        if self.layout == 'family':
-            self.format_family_layout(ax=ax, root_node=root_node)
-        else:
-            self.format_non_family_layout(ax=ax, root_node=root_node)
+        self.draw_important_cells(ax=ax, root_node=root_node)
 
     def draw_branch(
             self,
@@ -226,66 +224,65 @@ class TreeDrawer3D:
         """Returns the branch color in the plot, when plotting the tree with the signal layout."""
         return self.signal_normalizer([node.signal_value for node in branch_segment])
 
-    def format_family_layout(
+    def draw_important_cells(
             self,
             ax: plt.Axes,
             root_node: CellNode,
     ) -> None:
-        """Formats the tree according to the family layout."""
+        """Draws important cells (root, parents, dead cells and leaf cells) in the tree."""
         self.draw_root(ax=ax, root_node=root_node)
-        parent_nodes = root_node.search_nodes(fate_at_next_frame='division')
-        self.draw_parents(ax=ax, parent_nodes=parent_nodes)
-        dead_nodes = root_node.search_nodes(fate_at_next_frame='death')
-        self.draw_dead_cells(ax=ax, dead_nodes=dead_nodes)
-        leaf_nodes = [node for node in root_node.get_leaves() if node not in dead_nodes]
-        self.draw_leaf_cells(ax=ax, leaf_nodes=leaf_nodes)
+        self.draw_parents(ax=ax, root_node=root_node)
+        self.draw_dead_cells(ax=ax, root_node=root_node)
+        self.draw_leaf_cells(ax=ax, root_node=root_node)
 
-    def format_non_family_layout(
+    def draw_cell_nodes(
+            self,
+            ax: plt.Axes,
+            cell_nodes: list[CellNode],
+            node_marker: str = 'o',
+            node_color: str = 'gray',
+            node_size: float = 100.0,
+            node_zorder: int = 2,
+    ) -> None:
+        """Draws the given CellNodes on a matplotlib 3D plot."""
+        xs, ys, zs = self.get_xyz_from_cell_nodes(cell_nodes=cell_nodes)
+        ax.scatter(xs, ys, zs, marker=node_marker, color=node_color, s=node_size, zorder=node_zorder)
+
+    def draw_root(
             self,
             ax: plt.Axes,
             root_node: CellNode,
     ) -> None:
-        """Formats the tree according to the non-family layout"""
-        parent_nodes = root_node.search_nodes(fate_at_next_frame='division')
-        self.draw_parents(ax=ax, parent_nodes=parent_nodes)
-
-    @staticmethod
-    def draw_root(
-            ax: plt.Axes,
-            root_node: CellNode,
-    ) -> None:
-        """Draws the root Cell on a matplotlib 3D plot"""
-        ax.scatter(root_node.x, root_node.y, root_node.simulation_hours, color='blue', marker='s', zorder=2, s=100)
+        """Given a CellNode, draws the tree's root on a matplotlib 3D plot"""
+        self.draw_cell_nodes(ax=ax, cell_nodes=[root_node], node_marker='o', node_color='#3e5199')
 
     def draw_parents(
             self,
             ax: plt.Axes,
-            parent_nodes: list[CellNode],
+            root_node: CellNode,
     ) -> None:
-        """Draws the parent Cells on a matplotlib 3D plot."""
-        xs, ys, zs = self.get_xyz_from_cell_nodes(cell_nodes=parent_nodes)
-        if self.layout == 'family':
-            ax.scatter(xs, ys, zs, color='green', marker='^', zorder=2, s=100)
-        else:
-            ax.scatter(xs, ys, zs, color='black', marker='.', s=100, alpha=0.5, zorder=2)
+        """Given a CellNode, draws the tree's parents on a matplotlib 3D plot"""
+        parent_nodes = root_node.search_nodes(fate_at_next_frame='division')
+        self.draw_cell_nodes(ax=ax, cell_nodes=parent_nodes, node_marker='o', node_color='#50993e')
 
     def draw_dead_cells(
             self,
             ax: plt.Axes,
-            dead_nodes: list[CellNode],
+            root_node: CellNode,
     ) -> None:
-        """Draws the dead Cells on a matplotlib 3D plot."""
-        xs, ys, zs = self.get_xyz_from_cell_nodes(cell_nodes=dead_nodes)
-        ax.scatter(xs, ys, zs, color='red', marker='x', zorder=2, s=100)
+        """Given a CellNode, draws the tree's dead cells on a matplotlib 3D plot."""
+        dead_nodes = root_node.search_nodes(fate_at_next_frame='death')
+        self.draw_cell_nodes(ax=ax, cell_nodes=dead_nodes, node_marker='X', node_color='#993e50')
 
     def draw_leaf_cells(
             self,
             ax: plt.Axes,
-            leaf_nodes: list[CellNode],
+            root_node: CellNode,
     ) -> None:
         """Draws the leaf Cells on a matplotlib 3D plot."""
-        xs, ys, zs = self.get_xyz_from_cell_nodes(cell_nodes=leaf_nodes)
-        ax.scatter(xs, ys, zs, color='orange', marker='*', zorder=2, s=100)
+        dead_nodes = root_node.search_nodes(fate_at_next_frame='death')
+        leaf_nodes = [node for node in root_node.get_leaves() if node not in dead_nodes]
+        self.draw_cell_nodes(ax=ax, cell_nodes=leaf_nodes)
 
     def add_colorbar(
             self,
@@ -329,3 +326,13 @@ class TreeDrawer3D:
         ax.set_xlim(0, well_radius * 2)
         ax.set_ylim(0, well_radius * 2)
         ax.set_zlim(bottom=0)
+
+    @staticmethod
+    def add_legend(ax: plt.Axes) -> None:
+        """Adds a legend to the Figure."""
+        handles = [
+            plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='#3e5199', markersize=15, label='root cell'),
+            plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='#50993e', markersize=15, label='parent cell'),
+            plt.Line2D([0], [0], marker='X', color='w', markerfacecolor='#993e50', markersize=15, label='dead cell'),
+        ]
+        ax.legend(handles=handles)
