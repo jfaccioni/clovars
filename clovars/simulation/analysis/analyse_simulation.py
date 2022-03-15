@@ -31,4 +31,5 @@ def analyse_simulation_function(
         verbose=verbose,
         output_folder=output_folder,
     )
+    # TODO: display an informative message if no output will be generated!
     simulation_analyzer.analyse(settings=analysis_settings)
