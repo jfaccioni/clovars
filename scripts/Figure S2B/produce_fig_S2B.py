@@ -8,7 +8,7 @@ import numpy as np
 
 from clovars.main import main as clovars_main
 
-RANDOMNESS_SEED = 64
+RANDOMNESS_SEED = 42
 
 
 def main() -> None:

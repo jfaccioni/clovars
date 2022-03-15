@@ -1,5 +1,5 @@
 [[colony]]
-copies = 1
+copies = 10
 initial_size = 1
 
   [colony.cells]
