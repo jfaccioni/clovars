@@ -1,0 +1,46 @@
+[[colony]]
+copies = 1
+initial_size = 1
+
+  [colony.cells]
+  radius = 20
+  max_speed = 0.020351
+  fitness_memory = 0.0
+
+  [[colony.treatment]]
+  name = 'Scenario i low memory'
+  added_on_frame = 0
+    [colony.treatment.division_curve]
+    name = 'Gamma'
+    mean = 16.23
+    std = 5.84
+    a = 3.32
+    [colony.treatment.death_curve]
+    name = 'Gaussian'
+    mean = 100.00
+    std = 1.00
+
+#####
+
+[[colony]]
+copies = 1
+initial_size = 1
+
+  [colony.cells]
+  radius = 20
+  max_speed = 0.020351
+  fitness_memory = 0.9
+
+  [[colony.treatment]]
+  name = 'Scenario i high memory'
+  added_on_frame = 0
+    [colony.treatment.division_curve]
+    name = 'Gamma'
+    mean = 16.23
+    std = 5.84
+    a = 3.32
+    [colony.treatment.death_curve]
+    name = 'Gaussian'
+    mean = 100.00
+    std = 1.00
+
