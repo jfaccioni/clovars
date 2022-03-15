@@ -32,7 +32,8 @@ class SimulationRunner(QuietPrinterMixin):
             # Output current simulation_runner time
             simulation_hours = self.get_simulation_hours(delta=delta, current_frame=current_frame)
             simulation_seconds = self.get_simulation_seconds(delta=delta, current_frame=current_frame)
-            self.quiet_print(f'Current frame: {current_frame} ({round(simulation_hours, 2)} h)')
+            message = f'Current frame: {current_frame} ({round(simulation_hours, 2)} h)'
+            self.quiet_print(len(message) * '\b' + message, end='')
             # Attempt to modify the treatment regimens in each colony
             well.modify_colony_treatment_regimens(current_frame=current_frame)
             # Define fate for each Cell (for the next iteration)
@@ -46,12 +47,14 @@ class SimulationRunner(QuietPrinterMixin):
             )
             # Check for stop conditions
             if self.reached_stop_condition(well=well, current_frame=current_frame, stop_conditions=stop_conditions):
+                print('---*---*---')  # Proper format to end of simulation message
                 break
             # Simulate Cells for one frame
             well.pass_time(delta=delta, current_seconds=simulation_seconds)
 
         else:  # no stop condition was met -> self.default_max_iters reached
-            self.quiet_print(f"No stop condition met, program ran for {self.max_iteration} iterations (default value).")
+            print('---*---*---')  # Proper format to end of simulation message
+            self.quiet_print(f"No stop condition met, program ran for {self.max_iteration} iterations.")
 
     @staticmethod
     def validate_settings(settings: dict[str, Any]) -> tuple[int, dict[str, int | None]]:
