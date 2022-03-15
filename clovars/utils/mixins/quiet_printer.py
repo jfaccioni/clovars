@@ -15,8 +15,9 @@ class QuietPrinterMixin:
 
     def quiet_print(
             self,
-            message: str,
+            *args,
+            **kwargs
     ) -> None:
         """Prints the message only if the verbose flag is set to True."""
         if self.verbose is True:
-            print(message)
+            print(*args, **kwargs)
