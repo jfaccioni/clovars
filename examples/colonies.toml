@@ -5,7 +5,7 @@ initial_size = 1
   [colony.cells]
   radius = 20  # im µm
   max_speed = 0.020351  # in µm/s
-  fitness_memory = 0.5  # between 0 and 1
+  fitness_memory = 0.0  # between 0 and 1
     [colony.cells.signal]
     name = 'Gaussian'
     initial_value = 0.0  # between -1 and 1
@@ -21,10 +21,10 @@ initial_size = 1
     # std = 0.15
     [colony.treatment.division_curve]
     name = 'Gamma'
-    mean = 0.00
-    std = 0.90
+    mean = 16.23
+    std = 2.84
     # k = 1.0  # for EMGaussian only
-    a = 28.47  # for Gamma only
+    a = 3.32  # for Gamma only
     # s = 1.0  # for Lognormal only
     [colony.treatment.death_curve]
     name = 'Gaussian'
@@ -37,16 +37,16 @@ initial_size = 1
   [[colony.treatment]]
   name = 'Temozolomide'
   added_on_frame = 72
-  fitness_memory_disturbance = 0.5  # new fitness memory after applying treatment
-    [colony.treatment.signal_disturbance]  # new signal after applying treatment
-    name = 'Gaussian'
-    initial_value = 0.0
-    std = 0.15
+  # fitness_memory_disturbance = 0.5  # new fitness memory after applying treatment
+    # [colony.treatment.signal_disturbance]  # new signal after applying treatment
+    # name = 'Gaussian'
+    # initial_value = 0.0
+    # std = 0.15
     [colony.treatment.division_curve]
     name = 'EMGaussian'
-    mean = 13.09
-    std = 7.17
-    k = 3.54  # for EMGaussian only
+    mean = 12.72
+    std = 8.50
+    k = 2.87  # for EMGaussian only
     # a = 1.0  # for Gamma only
     # s = 1.0  # for Lognormal only
     [colony.treatment.death_curve]
@@ -57,5 +57,4 @@ initial_size = 1
     # a = 1.0  # for Gamma only
     # s = 1.0  # for Lognormal only
 
-# [[colony]]
-# Define additional colonies here
+# [[colony]]  # define additional colonies here

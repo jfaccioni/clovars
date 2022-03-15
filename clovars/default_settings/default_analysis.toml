@@ -21,7 +21,7 @@ bootstrap_n = 100
 use_log2_colony_size = false
 
 [cell_fate_distribution]
-display = false
+display = true
 render = false
 join_treatments = false
 render_file_name = 'cell_fate_distribution'

@@ -201,13 +201,13 @@ class TreeDrawer2D(QuietPrinterMixin):
     def get_family_color(node: CellNode) -> str:
         """Returns the CellNode's color in the plot, when plotting the tree with the family layout."""
         if node.is_initial_cell():
-            return 'blue'
+            return '#3e5199'
         elif node.is_dead():
-            return 'red'
+            return '#993e50'
         elif node.is_leaf():
-            return 'orange'
+            return 'gray'
         elif node.is_parent():
-            return 'green'
+            return '#50993e'
         else:
             return 'gray'
 
@@ -267,13 +267,13 @@ class TreeDrawer2D(QuietPrinterMixin):
     def get_family_marker(node: CellNode) -> str:
         """Returns the CellNode's marker in the plot, when plotting the tree with the family layout."""
         if node.is_initial_cell():
-            return 's'
+            return 'o'
         elif node.is_dead():
-            return 'x'
+            return 'X'
         elif node.is_leaf():
-            return '*'
+            return '.'
         elif node.is_parent():
-            return '>'
+            return 'o'
         else:  # regular node
             return '.'
 
@@ -291,14 +291,14 @@ class TreeDrawer2D(QuietPrinterMixin):
     def get_family_size(node: CellNode) -> float:
         """Returns the CellNode's size in the plot, when plotting the tree with the family layout."""
         if node.is_initial_cell():
-            return 10.0
+            return 50.0
         elif node.is_dead():
-            return 10.0
+            return 50.0
         elif node.is_leaf():
-            return 10.0
+            return 15.0
         elif node.is_parent():
-            return 10.0
-        else:
+            return 50.0
+        else:  # regular node
             return 15.0
 
     @staticmethod
@@ -312,11 +312,10 @@ class TreeDrawer2D(QuietPrinterMixin):
     def add_legend(ax: plt.Axes) -> None:
         """Adds a legend to the Figure."""
         handles = [
-            plt.Line2D([0], [0], marker='.', color='w', markerfacecolor='0.7', markersize=15, label='cell'),
-            plt.Line2D([0], [0], marker='>', color='w', markerfacecolor='green', markersize=10, label='parent'),
-            plt.Line2D([0], [0], marker='X', color='w', markerfacecolor='red', markersize=10, label='dead'),
-            plt.Line2D([0], [0], marker='*', color='w', markerfacecolor='orange', markersize=15, label='leaf'),
-            plt.Line2D([0], [0], marker='s', color='w', markerfacecolor='blue', markersize=10, label='root'),
+            plt.Line2D([0], [0], marker='.', color='w', markerfacecolor='gray', markersize=15, label='cell'),
+            plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='#3e5199', markersize=15, label='root cell'),
+            plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='#50993e', markersize=15, label='parent cell'),
+            plt.Line2D([0], [0], marker='X', color='w', markerfacecolor='#993e50', markersize=15, label='dead cell'),
         ]
         ax.legend(handles=handles)
 
