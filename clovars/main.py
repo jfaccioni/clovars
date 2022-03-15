@@ -43,6 +43,12 @@ def main() -> None:
     else:
         print(f'Something went wrong, got -> invalid mode {mode}. Exiting...')
 
+# TODO: the functions below should be refactored to a single class that:
+#  - parses the command-line arguments
+#  - reads and parses dictionaries from the TOML files
+#  - validates keys and values in these dictionaries
+#  - warns the user of any important keys missing / default values being used
+
 
 def parse_command_line_arguments() -> dict[str, str]:
     parser = ArgumentParser(description='Execute CloVarS')
