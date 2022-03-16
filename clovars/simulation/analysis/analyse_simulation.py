@@ -33,3 +33,4 @@ def analyse_simulation_function(
     )
     # TODO: display an informative message if no output will be generated!
     simulation_analyzer.analyse(settings=analysis_settings)
+    simulation_analyzer.delete_if_empty()

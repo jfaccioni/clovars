@@ -3,6 +3,7 @@ from unittest import mock
 from unittest.mock import MagicMock
 
 from clovars.simulation import analyse_simulation_function
+from tests import SKIP_TESTS
 
 
 @mock.patch('clovars.simulation.analysis.analyse_simulation.SimulationLoader')  # do not actually attempt to load data!
@@ -44,6 +45,10 @@ class TestAnalyseSimulation(unittest.TestCase):
         with mock.patch('clovars.simulation.analysis.analyse_simulation.SimulationAnalyzer.analyse') as mock_analyse:
             analyse_simulation_function()
         mock_analyse.assert_called_once()
+
+    @unittest.skipIf(SKIP_TESTS is True, "SKIP TESTS is set to True")
+    def test_analyse_simulation_function_removes_analysis_dir_if_it_is_empty(self) -> None:
+        self.fail("Write the test!")
 
 
 if __name__ == '__main__':

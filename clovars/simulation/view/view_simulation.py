@@ -32,3 +32,4 @@ def view_simulation_function(
     )
     # TODO: display an informative message if no output will be generated!
     simulation_viewer.generate_output(settings=view_settings)
+    simulation_viewer.delete_if_empty()

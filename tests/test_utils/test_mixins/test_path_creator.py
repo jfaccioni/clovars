@@ -3,7 +3,6 @@ from pathlib import Path
 from unittest import mock
 
 from clovars.utils import PathCreatorMixin
-
 from tests import SKIP_TESTS
 
 
