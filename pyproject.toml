@@ -10,7 +10,7 @@ repository = "https://github.com/jfaccioni/clovars"
 documentation = "http://www.ufrgs.br/labsinal/clovars/docs"
 keywords = ["Simulation", "Biology", "Single Cells", "Heterogeneity", "Fitness"]
 include = ["clovars/default_settings/*"]
-exclude = ["tests/*", "clovars/_deprecated/*"]
+exclude = ["tests/*", "scripts/*"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
