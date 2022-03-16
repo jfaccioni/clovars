@@ -15,3 +15,5 @@
 /dist
 # Default CloVarS output folder
 /output
+# Python cache files
+__pycache__/
