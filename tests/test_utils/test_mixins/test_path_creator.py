@@ -4,6 +4,8 @@ from unittest import mock
 
 from clovars.utils import PathCreatorMixin
 
+from tests import SKIP_TESTS
+
 
 class TestPathCreatorMixin(unittest.TestCase):
     """Class representing unit-tests for clovars.utils.mixins.path_creator.PathCreatorMixin class."""
@@ -33,3 +35,8 @@ class TestPathCreatorMixin(unittest.TestCase):
         """Tests whether the "create_path" method returns a Path object."""
         return_value = self.path_creator.create_path(folder=self.test_folder)
         self.assertIsInstance(return_value, Path)
+
+    @unittest.skipIf(SKIP_TESTS is True, "SKIP TESTS is set to True")
+    def test_delete_if_empty_method(self) -> None:
+        """docstring."""
+        self.fail('Write the test!')

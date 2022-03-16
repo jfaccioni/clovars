@@ -21,3 +21,8 @@ class PathCreatorMixin:
         path = Path(folder)
         path.mkdir(parents=True, exist_ok=True)
         return path
+
+    def delete_if_empty(self) -> None:
+        """Deleted the folder if it is empty."""
+        if not any(self.path.iterdir()):
+            self.path.rmdir()
