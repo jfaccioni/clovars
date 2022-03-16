@@ -31,9 +31,9 @@ render_file_name = '3D'
 render_file_extension = 'png'  # valid extensions: png, svg
 
 [treatment_curves]
-show_division = false
-show_death = false
 display = false
 render = false
+show_division = false
+show_death = false
 render_file_name = 'treatments'
 render_file_extension = 'png'  # valid extensions: png, svg
