@@ -195,11 +195,191 @@ class RunParameterValidator(ParameterValidator):
         }
 
 
+class ViewParameterValidator(ParameterValidator):
+    """Class representing a validator of the simulation's view parameters."""
+    expected_params = {
+        'input.simulation_input_folder': ('required', str, 'output'),
+        'input.parameters_file_name': ('required', str, 'params.json'),
+        'input.cell_csv_file_name': ('required', str, 'cell_output.csv'),
+        'input.colony_csv_file_name': ('required', str, 'colony_output.csv'),
+        'view.colormap_name': ('required', str, 'viridis'),
+        'view.layout': ('required', str, 'family'),
+        'view.figure_dpi': ('optional', int, 320),
+        '2D_view.display': ('optional', bool, False),
+        '2D_view.render': ('optional', bool, False),
+        '2D_view.render_file_name': ('optional', str, '2D'),
+        '2D_view.render_file_extension': ('optional', str, 'png'),
+        '2D_video.render': ('optional', bool, False),
+        '2D_video.render_file_name': ('optional', str, '2D'),
+        '2D_video.render_file_extension': ('optional', str, 'mp4'),
+        '3D_view.display': ('optional', bool, False),
+        '3D_view.render': ('optional', bool, False),
+        '3D_view.display_well': ('optional', bool, False),
+        '3D_view.z_axis_ratio': ('optional', float, 1.2),
+        '3D_view.render_file_name': ('optional', str, '3D'),
+        '3D_view.render_file_extension': ('optional', str, 'png'),
+        'treatment_curves.display': ('optional', bool, False),
+        'treatment_curves.render': ('optional', bool, False),
+        'treatment_curves.show_division': ('optional', bool, False),
+        'treatment_curves.show_death': ('optional', bool, False),
+        'treatment_curves.render_file_name': ('optional', str, 'treatments'),
+        'treatment_curves.render_file_extension': ('optional', str, 'png'),
+        'verbose': ('optional', bool, True),
+    }
+
+    @property
+    def output_folder(self) -> str:
+        """Returns the path to the view output folder."""
+        return str(Path(self.params.get('input.simulation_input_folder', '.'), 'view'))
+
+    @property
+    def simulation_loader_settings(self) -> dict[str, Any]:
+        """Returns the simulation loader settings dictionary."""
+        return {
+            'simulation_input_folder': self.params['input.simulation_input_folder'],
+            'parameters_file_name': self.params['input.parameters_file_name'],
+            'cell_csv_file_name': self.params['input.cell_csv_file_name'],
+            'colony_csv_file_name': self.params['input.colony_csv_file_name'],
+        }
+
+    @property
+    def view_settings(self) -> dict[str, Any]:
+        """Returns the view settings dictionary."""
+        return {
+            'colormap_name': self.params['view.colormap_name'],
+            'layout': self.params['view.layout'],
+            'dpi': self.params['view.figure_dpi'],
+            'display_2D': self.params['2D_view.display'],
+            'render_2D': self.params['2D_view.render'],
+            'file_name_2D': self.params['2D_view.render_file_name'],
+            'file_extension_2D': self.params['2D_view.render_file_extension'],
+            'render_video_2D': self.params['2D_video.render'],
+            'file_name_video_2D': self.params['2D_video.render_file_name'],
+            'file_extension_video_2D': self.params['2D_video.render_file_extension'],
+            'display_3D': self.params['3D_view.display'],
+            'render_3D': self.params['3D_view.render'],
+            'display_well': self.params['3D_view.display_well'],
+            'z_axis_ratio': self.params['3D_view.z_axis_ratio'],
+            'file_name_3D': self.params['3D_view.render_file_name'],
+            'file_extension_3D': self.params['3D_view.render_file_extension'],
+            'display_treatments': self.params['treatment_curves.display'],
+            'render_treatments': self.params['treatment_curves.render'],
+            'show_division': self.params['treatment_curves.show_division'],
+            'show_death': self.params['treatment_curves.show_death'],
+            'file_name_treatments': self.params['treatment_curves.render_file_name'],
+            'file_extension_treatments': self.params['treatment_curves.render_file_extension'],
+        }
+
+    @property
+    def verbose(self) -> bool:
+        """Returns the verbose flag."""
+        return self.params['verbose']
+
+    def to_simulation(self) -> dict[str, Any]:
+        """Returns a dictionary as expected by the view_simulation_function."""
+        return {
+            'output_folder': self.output_folder,
+            'simulation_loader_settings': self.simulation_loader_settings,
+            'view_settings': self.view_settings,
+            'verbose': self.verbose,
+        }
+
+
+class AnalysisParameterValidator(ParameterValidator):
+    """Class representing a validator of the simulation's analysis parameters."""
+    expected_params = {
+        'input.simulation_input_folder': ('required', str, 'output'),
+        'input.parameters_file_name': ('required', str, 'params.json'),
+        'input.cell_csv_file_name': ('required', str, 'cell_output.csv'),
+        'input.colony_csv_file_name': ('required', str, 'colony_output.csv'),
+        'tree_stats.perform': ('optional', bool, False),
+        'tree_stats.bootstrap_n': ('optional', int, 1000),
+        'dynafit.perform': ('optional', bool, False),
+        'dynafit.start_day': ('optional', float, 4.0),
+        'dynafit.end_day': ('optional', float, 7.0),
+        'dynafit.filter_colonies_smaller_than': ('optional', int, 0),
+        'dynafit.merge_colonies_of_different_sizes': ('optional', bool, False),
+        'dynafit.number_of_bins_to_merge_on': ('optional', int, 10),
+        'dynafit.bootstrap_n': ('optional', int, 1000),
+        'dynafit.use_log2_colony_size': ('optional', bool, False),
+        'cell_fate_distribution.display': ('optional', bool, False),
+        'cell_fate_distribution.render': ('optional', bool, False),
+        'cell_fate_distribution.join_treatments': ('optional', bool, False),
+        'cell_fate_distribution.render_file_name': ('optional', str, 'cell_fate_distribution'),
+        'cell_fate_distribution.render_file_extension': ('optional', str, 'png'),
+        'cell_fitness_distribution.perform': ('optional', bool, False),
+        'colony_division_times.perform': ('optional', bool, False),
+        'videos.render_colony_signal_vs_size': ('optional', bool, False),
+        'videos.render_colony_fitness_distribution': ('optional', bool, False),
+    }
+
+    @property
+    def output_folder(self) -> str:
+        """Returns the path to the view output folder."""
+        return str(Path(self.params.get('input.simulation_input_folder', '.'), 'analysis'))
+
+    @property
+    def simulation_loader_settings(self) -> dict[str, Any]:
+        """Returns the simulation loader settings dictionary."""
+        return {
+            'simulation_input_folder': self.params['input.simulation_input_folder'],
+            'parameters_file_name': self.params['input.parameters_file_name'],
+            'cell_csv_file_name': self.params['input.cell_csv_file_name'],
+            'colony_csv_file_name': self.params['input.colony_csv_file_name'],
+        }
+
+    @property
+    def analysis_settings(self) -> dict[str, Any]:
+        """Returns the analysis settings dictionary."""
+        return {
+            'compare_treatments': self.params['tree_stats.perform'],
+            'treatments_bootstrap_n': self.params['tree_stats.bootstrap_n'],
+            'plot_dynafit': self.params['dynafit.perform'],
+            'dynafit_start_day': self.params['dynafit.start_day'],
+            'dynafit_end_day': self.params['dynafit.end_day'],
+            'cs_group_filter': self.params['dynafit.filter_colonies_smaller_than'],
+            'cs_merge': self.params['dynafit.merge_colonies_of_different_sizes'],
+            'cs_bins': self.params['dynafit.number_of_bins_to_merge_on'],
+            'dynafit_bootstrap_n': self.params['dynafit.bootstrap_n'],
+            'use_log_colony_size': self.params['dynafit.use_log2_colony_size'],
+            'show_cell_fate_distributions': self.params['cell_fate_distribution.display'],
+            'render_cell_fate_distributions': self.params['cell_fate_distribution.render'],
+            'join_treatments': self.params['cell_fate_distribution.join_treatments'],
+            'distributions_file_name': self.params['cell_fate_distribution.render_file_name'],
+            'distributions_file_extension': self.params['cell_fate_distribution.render_file_extension'],
+            'show_cell_fitness_distributions': self.params['cell_fitness_distribution.perform'],
+            'show_colony_division_times_cv': self.params['colony_division_times.perform'],
+            'write_video_colony_signal_vs_size_over_time': self.params['videos.render_colony_signal_vs_size'],
+            'write_video_colony_fitness_over_time': self.params['videos.render_colony_fitness_distribution'],
+        }
+
+    @property
+    def verbose(self) -> bool:
+        """Returns the verbose flag."""
+        return self.params['verbose']
+
+    def to_simulation(self) -> dict[str, Any]:
+        """Returns a dictionary as expected by the view_simulation_function."""
+        return {
+            'output_folder': self.output_folder,
+            'simulation_loader_settings': self.simulation_loader_settings,
+            'analysis_settings': self.analysis_settings,
+            'verbose': self.verbose,
+        }
+
+
 if __name__ == '__main__':
-    p = RunParameterValidator()
-    print(p)
-    p.parse_toml(toml_path=Path('../default_settings/default_run.toml'))
-    print(p)
-    p.validate()
-    print(p)
-    print(p.to_simulation())
+    for path, validator in (
+        ('../default_settings/default_run.toml', RunParameterValidator),
+        ('../default_settings/default_view.toml', ViewParameterValidator),
+        ('../default_settings/default_analysis.toml', AnalysisParameterValidator),
+    ):
+        print('----------------------------------')
+        print(validator)
+        v = validator()
+        print(v)
+        v.parse_toml(toml_path=Path(path))
+        print(v)
+        v.validate()
+        print(v)
+        print(v.to_simulation())
