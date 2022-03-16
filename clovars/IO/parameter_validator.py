@@ -31,7 +31,7 @@ class ParameterValidator:
 
     def parse_toml(
             self,
-            toml_path: Path,
+            toml_path: str,
     ) -> None:
         """Loads the data from the TOML file into the self.params."""
         for key, value in toml.load(toml_path).items():
@@ -141,9 +141,9 @@ class RunParameterValidator(ParameterValidator):
         ]
         if not any(stop_condition_key in self.params for stop_condition_key in stop_condition_keys):
             prompt_message = 'No stop condition detected. Use default of stop at frame = 120? (y/n)'
-            self.prompt_default(key='stop_at_frame', default=120, prompt_message=prompt_message)
-            self.params['stop_at_single_colony_size'] = None
-            self.params['stop_at_all_colonies_size'] = None
+            self.prompt_default(key='stop_conditions.stop_at_frame', default=120, prompt_message=prompt_message)
+            self.params['stop_conditions.stop_at_single_colony_size'] = None
+            self.params['stop_conditions.stop_at_all_colonies_size'] = None
 
     @property
     def well_settings(self) -> dict[str, Any]:
@@ -311,6 +311,7 @@ class AnalysisParameterValidator(ParameterValidator):
         'colony_division_times.perform': ('optional', bool, False),
         'videos.render_colony_signal_vs_size': ('optional', bool, False),
         'videos.render_colony_fitness_distribution': ('optional', bool, False),
+        'verbose': ('optional', bool, True),
     }
 
     @property
@@ -368,18 +369,89 @@ class AnalysisParameterValidator(ParameterValidator):
         }
 
 
-if __name__ == '__main__':
-    for path, validator in (
-        ('../default_settings/default_run.toml', RunParameterValidator),
-        ('../default_settings/default_view.toml', ViewParameterValidator),
-        ('../default_settings/default_analysis.toml', AnalysisParameterValidator),
-    ):
-        print('----------------------------------')
-        print(validator)
-        v = validator()
-        print(v)
-        v.parse_toml(toml_path=Path(path))
-        print(v)
-        v.validate()
-        print(v)
-        print(v.to_simulation())
+class FitParameterValidator(ParameterValidator):
+    """Class representing a validator of the simulation's fit parameters."""
+    expected_params = {
+        'input.input_file': ('required', str, 'data.csv'),
+        'input.sheet_name': ('optional', str, 'Sheet1'),
+        'input.division_hours_column_name': ('required', str, 'Division Times'),
+        'input.death_hours_column_name': ('required', str, 'Death Times'),
+        'verbose': ('optional', bool, True),
+    }
+
+    def validate(self) -> None:
+        """Validates the file type and change the required arguments accordingly before resuming standard validation."""
+        if self.input_file.endswith('.xlsx'):
+            self.expected_params['input.input_sheet_name'] = ('required', str, 'Sheet1')
+        super().validate()
+
+    @property
+    def input_file(self) -> str:
+        """Returns the path to the fit input file."""
+        return self.params['input.input_file']
+
+    @property
+    def sheet_name(self) -> str:
+        """Returns the sheet name parameter."""
+        return self.params['input.sheet_name']
+
+    @property
+    def division_times_column(self) -> str:
+        """Returns the division times column name."""
+        return self.params['input.division_hours_column_name']
+
+    @property
+    def death_times_column(self) -> str:
+        """Returns the death times column name."""
+        return self.params['input.death_hours_column_name']
+
+    @property
+    def verbose(self) -> bool:
+        """Returns the verbose flag."""
+        return self.params['verbose']
+
+    def to_simulation(self) -> dict[str, Any]:
+        """Returns a dictionary as expected by the fit_experimental_data_function."""
+        return {
+            'input_file': self.input_file,
+            'sheet_name': self.sheet_name,
+            'division_times_column': self.division_times_column,
+            'death_times_column': self.death_times_column,
+            'verbose': self.verbose,
+        }
+
+
+class ColonyDataFormatter:
+    """Class representing a formatter of the simulation's colony data (does not perform actual validation)."""
+
+    def __init__(self) -> None:
+        """Initializes a ColonyDataFormatter instance."""
+        self.data = []
+
+    def __str__(self) -> str:
+        """Returns a string-version of ColonyDataFormatter."""
+        return f'ColonyDataFormatter({self.data=})'
+
+    def parse_toml(
+            self,
+            toml_path: str,
+    ) -> None:
+        """Parses the data from the TOML file and sets it to the self.data attribute."""
+        for colony_data in toml.load(toml_path).get('colony', {}):
+            parsed_treatment_data = {}
+            for treatment_data in colony_data.get('treatment', {}):
+                try:
+                    start_treatment_frame = treatment_data.pop('added_on_frame')
+                except KeyError:  # ignore this treatment since we don't know when to add it
+                    continue
+                parsed_treatment_data[start_treatment_frame] = treatment_data
+            self.data.append({
+                'treatment_data': parsed_treatment_data,
+                'copies': colony_data.get('copies', 1),
+                'initial_size': colony_data.get('initial_size', 1),
+                'cells': colony_data.get('cells', {}),
+            })
+
+    def to_simulation(self) -> list[dict[str, Any]]:
+        """Returns the colony data as expected by the run_simulation_function."""
+        return self.data
