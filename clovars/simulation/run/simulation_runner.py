@@ -33,7 +33,7 @@ class SimulationRunner(QuietPrinterMixin):
             simulation_hours = self.get_simulation_hours(delta=delta, current_frame=current_frame)
             simulation_seconds = self.get_simulation_seconds(delta=delta, current_frame=current_frame)
             message = f'Current frame: {current_frame} ({round(simulation_hours, 2)} h)'
-            self.quiet_print(len(message) * '\b' + message, end='')
+            self.quiet_print(len(message) * '\b' + message, end='', flush=True)
             # Attempt to modify the treatment regimens in each colony
             well.modify_colony_treatment_regimens(current_frame=current_frame)
             # Define fate for each Cell (for the next iteration)
@@ -111,21 +111,21 @@ class SimulationRunner(QuietPrinterMixin):
         """Returns whether the settings should stop at this iteration, given the stop conditions."""
         frame_limit = stop_conditions.get('stop_at_frame', None)
         if self.reached_frame_limit(current_frame=current_frame, frame_limit=frame_limit):
-            self.quiet_print(f'Reached stop condition: the current simulation_runner frame is >= {frame_limit}')
+            self.quiet_print(f'\nReached stop condition: the current simulation_runner frame is >= {frame_limit}')
             return True
         single_colony_size_limit = stop_conditions.get('stop_at_single_colony_size', None)
         if self.reached_single_colony_size_limit(
                 largest_colony_size=well.largest_colony_size,
                 single_colony_size_limit=single_colony_size_limit
         ):
-            self.quiet_print(f'Reached stop condition: a colony size is >= {single_colony_size_limit}')
+            self.quiet_print(f'\nReached stop condition: a colony size is >= {single_colony_size_limit}')
             return True
         all_colonies_size_limit = stop_conditions.get('stop_at_all_colonies_size', None)
         if self.reached_all_colonies_size_limit(
                 all_colony_sizes=well.colony_sizes,
                 all_colonies_size_limit=all_colonies_size_limit
         ):
-            self.quiet_print(f'Reached stop condition: all colony sizes are >= {all_colonies_size_limit}')
+            self.quiet_print(f'\nReached stop condition: all colony sizes are >= {all_colonies_size_limit}')
             return True
         else:
             return False
