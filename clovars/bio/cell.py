@@ -169,12 +169,20 @@ class Cell:
             delta: int,
     ) -> None:
         """Sets the Cell fate for the next frame."""
-        if self.should_die(delta=delta):
-            self.fate = 'death'
-        elif self.should_divide(delta=delta):
-            self.fate = 'division'
-        else:
-            self.fate = 'migration'
+        if random.random() >= 0.5:  # test death first
+            if self.should_die(delta=delta):
+                self.fate = 'death'
+            elif self.should_divide(delta=delta):
+                self.fate = 'division'
+            else:
+                self.fate = 'migration'
+        else:  # test division first
+            if self.should_divide(delta=delta):
+                self.fate = 'division'
+            elif self.should_die(delta=delta):
+                self.fate = 'death'
+            else:
+                self.fate = 'migration'
 
     def should_die(
             self,
