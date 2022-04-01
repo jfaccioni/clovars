@@ -9,12 +9,13 @@ from matplotlib.animation import FuncAnimation
 
 sns.set(font_scale=2)
 
-BASE_PATH = Path('..', 'data', 'memory_demo')
+SCRIPTS_FOLDER_PATH = Path('..')
+DATA_PATH = SCRIPTS_FOLDER_PATH / 'data' / 'memory_demo'
 INPUT_PATHS = [
-    BASE_PATH / 'low_memory_control' / 'cell_output.csv',
-    BASE_PATH / 'high_memory_control' / 'cell_output.csv',
+    DATA_PATH / 'low_memory_control' / 'cell_output.csv',
+    DATA_PATH / 'high_memory_control' / 'cell_output.csv',
 ]
-OUTPUT_PATH = BASE_PATH / 'Video S1' / 'Supplementary Video S1.mp4'
+OUTPUT_PATH = SCRIPTS_FOLDER_PATH / 'Video S1' / 'Supplementary Video S1.mp4'
 
 
 def main(
@@ -49,7 +50,7 @@ def main(
         print('\b' * 100, end='')
         print( f'Video is: {round(100 * (hour/max_hours), 1)}% done...', end='')
         hour_data = grouped_data.loc[grouped_data['simulation_hours'] == hour]
-        palette = ['#82cb70', '#cb7082']
+        palette = ['#029e73', '#de8f05']
         # TOP AX
         top_ax.clear()
         sns.violinplot(ax=top_ax, data=hour_data, x='colony_size', y='$f_m$', palette=palette)

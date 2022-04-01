@@ -10,12 +10,13 @@ from matplotlib.animation import FuncAnimation
 
 sns.set(font_scale=2)
 
-BASE_PATH = Path('..', 'data', 'memory_demo')
+SCRIPTS_FOLDER_PATH = Path('..')
+DATA_PATH = SCRIPTS_FOLDER_PATH / 'data' / 'memory_demo'
 INPUT_PATHS = [
-    BASE_PATH / 'low_memory_control' / 'cell_output.csv',
-    BASE_PATH / 'high_memory_control' / 'cell_output.csv',
+    DATA_PATH / 'low_memory_control' / 'cell_output.csv',
+    DATA_PATH / 'high_memory_control' / 'cell_output.csv',
 ]
-OUTPUT_PATH = BASE_PATH / 'Video S2' / 'Supplementary Video S2.mp4'
+OUTPUT_PATH = SCRIPTS_FOLDER_PATH / 'Video S2' / 'Supplementary Video S2.mp4'
 
 
 def main(
@@ -71,7 +72,7 @@ def main(
                 x='colony_size_jitter',
                 y=f'colony_signal_{label}',
                 hue='$f_m$',
-                palette=['#82cb70', '#cb7082'],
+                palette=['#029e73', '#de8f05'],
             )
             ax.set_title(f'Distribution of signal {label} in colonies (N=100 per $f_m$)')
             ax.set_xlabel('Colony size')
