@@ -238,6 +238,9 @@ class Cell:
         new_x, new_y = self.get_new_xy_coordinates(delta=delta, event_name='division')
         new_division_threshold, new_death_threshold = self.get_child_fitness()
         new_name = f'{self.name}.{branch_name}'
+        new_signal = self.signal.split()
+        for _ in range(20):
+            new_signal.oscillate(seconds=delta)
         child = self.__class__(
             name=new_name,
             max_speed=self.max_speed,
@@ -247,7 +250,7 @@ class Cell:
             division_threshold=new_division_threshold,
             death_threshold=new_death_threshold,
             radius=self.radius,
-            signal=self.signal.split(),
+            signal=new_signal,
             treatment=self.treatment,
         )
         return child
