@@ -118,7 +118,7 @@ class Colony:
                 cells_to_add.extend(outcome)
                 cells_to_drop.append(cell)
             elif outcome is cell:  # Cell has migrated or has just died in this iteration, outcome is the Cell itself
-                pass
+                continue
             else:
                 raise ValueError(f"Cell.pass_time returned an unexpected outcome: {outcome}")
         self.cells = [cell for cell in self.cells if cell not in cells_to_drop] + cells_to_add
