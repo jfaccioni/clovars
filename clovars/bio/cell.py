@@ -209,11 +209,13 @@ class Cell:
             return None
         elif self.fate == 'division':
             result = self.divide(delta=delta)
+            for child_cell in result:
+                child_cell.fluctuate_signal(current_seconds=current_seconds, has_divided=True)
         elif self.fate == 'migration':
             result = self.migrate(delta=delta)
+            result.fluctuate_signal(current_seconds=current_seconds)
         else:
             raise ValueError(f'Bad Cell fate: {self.fate}')
-        self.fluctuate_signal(current_seconds=current_seconds)
         return result
 
     def die(self) -> None:
@@ -292,7 +294,8 @@ class Cell:
 
     def fluctuate_signal(
             self,
-            current_seconds: int,
+            *args,
+            **kwargs,
     ) -> None:
         """Fluctuates the CellSignal."""
-        self.signal.oscillate(current_seconds=current_seconds)
+        self.signal.oscillate(*args, **kwargs)
