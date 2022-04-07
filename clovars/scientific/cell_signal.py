@@ -8,6 +8,8 @@ from typing import Optional
 import numpy as np
 from scipy.stats import norm, exponnorm
 
+from clovars.scientific import reflect_around_interval
+
 
 class CellSignal:
     """Represents an abstract Feature that can fluctuate over time."""
@@ -31,7 +33,7 @@ class CellSignal:
             **kwargs,
     ) -> None:
         """Oscillates the current Feature value, adding it to the list of values."""
-        self.value = self.get_new_value(*args, **kwargs)
+        self.value = reflect_around_interval(x=self.get_new_value(*args, **kwargs), lower_bound=-1.0, upper_bound=1.0)
 
     def get_new_value(
             self,
