@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 class Cell:
     """Class representing a single Cell in a specific point in time and space."""
     cell_id_counter = itertools.count()
+    min_time_to_division = 12 * 3600  # Wait at least 12h before dividing
 
     def __init__(
             self,
@@ -196,6 +197,8 @@ class Cell:
             delta: int,
     ) -> bool:
         """Returns whether the Cell should die at this point in time or not."""
+        if self.seconds_since_birth < self.min_time_to_division:
+            return False
         return self.calculate_division_chance(delta=delta) > self.division_threshold
 
     def pass_time(
