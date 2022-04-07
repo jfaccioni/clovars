@@ -165,12 +165,34 @@ class GaussianCellSignal(CellSignal):
 
     def normal(self) -> float:
         """Returns a Gaussian value floating around the GaussianCellSignal's current value."""
-        if (new_value := self.value + norm.rvs(loc=self.mean, scale=self.std)) > 1.0:
-            return 1.0
-        elif new_value < -1.0:
-            return -1.0
-        else:
-            return new_value
+        return self.value + norm.rvs(loc=self.mean, scale=self.std)
+
+
+class DivisionGaussianCellSignal(GaussianCellSignal):
+    """Represents a feature which oscillates around a mean, with different amplitudes when a cell division occurs."""
+    def __init__(
+            self,
+            initial_value: float = 0.0,
+            mean: float = 0.0,
+            std: float = 0.05,
+            std_division_scaling: float = 1.0,
+    ) -> None:
+        """Initializes a GaussianCellSignal instance."""
+        super().__init__(initial_value=initial_value, mean=mean, std=std)
+        self.std_division_scaling = std_division_scaling
+
+    def get_new_value(
+            self,
+            has_divided: bool = False,
+            *args,
+            **kwargs,
+    ) -> float:
+        """Implements the abstract method responsible for getting a new Signal value."""
+        return self.normal() if not has_divided else self.division_normal()
+
+    def division_normal(self) -> float:
+        """Returns a Gaussian value floating around the GaussianCellSignal's current value."""
+        return self.value + norm.rvs(loc=self.mean, scale=self.std * self.std_division_scaling)
 
 
 class EMGaussianCellSignal(CellSignal):
@@ -229,6 +251,7 @@ def get_cell_signal(
         stochastic_weight: Optional[float] = None,
         mean: Optional[float] = None,
         std: Optional[float] = None,
+        std_division_scaling: Optional[float] = None,
         k: Optional[float] = None,
 ) -> CellSignal:
     """Returns a CellSignal instance, according to the input parameters."""
@@ -239,6 +262,7 @@ def get_cell_signal(
     stochastic_weight = stochastic_weight if stochastic_weight is not None else 0.5
     mean = mean if mean is not None else 0.0
     std = std if std is not None else 1.0
+    std_division_scaling = std_division_scaling if std_division_scaling is not None else 1.0
     k = k if k is not None else 1.0
     signals = {
         'Stochastic': partial(StochasticCellSignal, initial_value=initial_value, noise=noise),
@@ -251,6 +275,13 @@ def get_cell_signal(
             stochastic_weight=stochastic_weight
         ),
         'Gaussian': partial(GaussianCellSignal, initial_value=initial_value, mean=mean, std=std),
+        'DivisionGaussian': partial(
+            DivisionGaussianCellSignal,
+            initial_value=initial_value,
+            mean=mean,
+            std=std,
+            std_division_scaling=std_division_scaling,
+        ),
         'EMGaussian': partial(EMGaussianCellSignal, initial_value=initial_value, mean=mean, std=std, k=k),
         'Constant': partial(ConstantCellSignal, initial_value=initial_value),
     }
