@@ -40,7 +40,7 @@ CloVarS can be executed in the following modes:
 You also need to provide the path to the necessary **settings files** as a command-line argument. If no arguments are provided, clovars will use the [default settings files](clovars/default_settings). These files are set up for demonstration purposes, so we encourage you to use your own when designing new simulations to run.
 
 ### Simulation Settings
-Settings files use the [TOML](https://toml.io/en/) syntax, which makes it easy to open and edit them in any text editor. [This folder](examples) has examples for the structure of the settings files. Be sure to pay attention: CloVarS will likely **run into errors** if the setting files have **incorrect or missing values!**
+The settings files use the [TOML](https://toml.io/en/) syntax, which makes it easy to open and edit them in any text editor. [This folder](examples) has examples for the structure of the settings files. Be sure to pay attention: CloVarS will likely **run into errors** if the setting files have **incorrect or missing values!**
 
 For more information on the settings and their meaning, please [read the docs here](http://www.ufrgs.br/labsinal/clovars/docs) (coming soon!).
 
@@ -74,6 +74,10 @@ where:
 - `path_to/fit_settings.toml` is the path for a TOML file with the fit settings.
 
 Please refer to [the examples folder](examples) for examples on how the experimental data should be formatted. 
+
+## Troubleshooting / FAQ
+**When I use the command `pip install clovars`, I get the error message `ERROR: No matching distribution found for clovars`**
+- Please make sure that you're using Python version 3.8 or newer when trying to `pip install clovars`. You can check your Python version by writing the command `python --version` in the terminal/CMD.
 
 ## Dependencies
 CloVarS depends on the following third-party Python packages:
