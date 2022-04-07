@@ -1,5 +1,5 @@
-# CloVarS: a clonal variability simulation of single cells
-This repository contains the source code accompanying the article "CloVarS: a simulation of clonal variability in single cells" (in preparation).
+# CloVarS: a simulation of single-cell clonal variability
+This repository contains the source code accompanying the article "CloVarS: a simulation of single-cell clonal variability" (in preparation).
 
 <p align="center" width="100%">
     <img src="docs/_static/clovars_overview.png" alt="CloVarS basic workflow">
