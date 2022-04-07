@@ -11,7 +11,7 @@ The **Clo**nal **Var**iability **S**imulation (CloVarS) is a cell culture simula
 The example below depicts a single colony, starting from a single cell, which grows over 7 days:
 
 <p align="center" width="100%">
-    <img width="50%" src="docs/_static/family_tree_01.gif" alt="Simulation Family Tree">
+    <img width="70%" src="docs/_static/family_tree_01.gif" alt="Simulation Family Tree">
 </p>
 
 ## Quickstart
