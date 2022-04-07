@@ -73,7 +73,7 @@ clovars fit path_to/fit_settings.toml
 where:
 - `path_to/fit_settings.toml` is the path for a TOML file with the fit settings.
 
-Please refer to [this folder](examples) for examples on how the experimental data should be formatted. 
+Please refer to [the examples folder](examples) for examples on how the experimental data should be formatted. 
 
 ## Dependencies
 CloVarS depends on the following third-party Python packages:
