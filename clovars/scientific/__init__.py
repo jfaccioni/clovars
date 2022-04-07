@@ -1,9 +1,5 @@
-from clovars.scientific.brownian_motion import (
-    brownian_motion,
-    bounded_brownian_motion,
-    reflect_around_interval,
-    triangular_wave,
-)
+from clovars.scientific.utils import reflect_around_interval, triangular_wave
+from clovars.scientific.brownian_motion import brownian_motion, bounded_brownian_motion
 from clovars.scientific.cell_signal import (
     CellSignal,
     ConstantCellSignal,
