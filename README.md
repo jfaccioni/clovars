@@ -11,15 +11,24 @@ The **Clo**nal **Var**iability **S**imulation (CloVarS) is a cell culture simula
 The example below depicts a single colony, starting from a single cell, which grows over 7 days:
 
 <p align="center" width="100%">
-    <img width="80%" src="docs/_static/family_tree_01.gif" alt="Simulation Family Tree">
+    <img width="50%" src="docs/_static/family_tree_01.gif" alt="Simulation Family Tree">
 </p>
+
+## Quickstart
+- Confirm that you have Python 3.8 or newer installed in your computer
+- Open a terminal/CMD
+- Type the command `pip install clovars` to download and install CloVarS
+- Type `clovars run` to run CloVarS with the default settings
+- Simulation results are placed in the folder named `output` (placed in the folder where your terminal is at)
 
 ## Installation
 CloVarS requires **Python version 3.8+** in order to run. You can install CloVarS in your Python environment with the command:
 ```shell
 pip install clovars
 ```
-This adds the `clovars` command to your Python environment, and also installs the necessary [dependencies](#dependencies).
+**Note**: this is meant to be typed in your system terminal / CMD, **not** in the Python shell.
+
+Once installation is complete, the `clovars` command is added yo your system. All necessary [dependencies](#dependencies) are installed automatically.
 
 ## How to use CloVarS
 CloVarS can be executed in the following modes: 
@@ -28,9 +37,10 @@ CloVarS can be executed in the following modes:
 - `analyse` - run analytical tools on the result of a previous simulation run;
 - `fit` - fit experimental data to a variety of curves.
 
-You also need to provide the path to the necessary **settings files** as a command-line argument. Settings files use the [TOML](https://toml.io/en/) syntax, which makes it easy to open and edit them in any text editor.
+You also need to provide the path to the necessary **settings files** as a command-line argument. If no arguments are provided, clovars will use the [default settings files](clovars/default_settings). These files are set up for demonstration purposes, so we encourage you to use your own when designing new simulations to run.
 
-[This folder](examples) has examples for the structure of the settings files. Be sure to pay attention: CloVarS will likely **run into errors** if the setting files have **incorrect or missing values!**
+### Simulation Settings
+Settings files use the [TOML](https://toml.io/en/) syntax, which makes it easy to open and edit them in any text editor. [This folder](examples) has examples for the structure of the settings files. Be sure to pay attention: CloVarS will likely **run into errors** if the setting files have **incorrect or missing values!**
 
 For more information on the settings and their meaning, please [read the docs here](http://www.ufrgs.br/labsinal/clovars/docs) (coming soon!).
 
@@ -38,7 +48,7 @@ For more information on the settings and their meaning, please [read the docs he
 ```shell
 clovars run path_to/run_settings.toml path_to/colonies.toml
 ```
-where: 
+where:
 - `path_to/run_settings.toml` is the path for a TOML file with the run settings;
 - `path_to/colonies.toml` is the path for a TOML file describing the colonies to simulate.
 
