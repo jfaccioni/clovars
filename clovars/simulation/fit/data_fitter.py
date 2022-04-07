@@ -97,6 +97,7 @@ class DataFitter(QuietPrinterMixin):
             self.death_fit = self.calculate_best_fit(data=death_data)
         else:
             self.quiet_print(f'Skipped calculations for death column because it is None.')
+        self.quiet_print('------\n')
 
     @staticmethod
     def calculate_best_fit(data: np.ndarray) -> dict[str, Any]:
@@ -127,13 +128,13 @@ class DataFitter(QuietPrinterMixin):
         if self.division_fit is None:
             self.quiet_print('Skipped displaying division fit data because it is None.')
         else:
-            self.quiet_print('Displaying best fit for division times...')
+            self.quiet_print('Displaying best fit for division times...\n-----\n')
             self.display_fit_by_rank(fit_data=self.division_fit)
         print('\n' + '-*' * 20 + '-\n\n')
         if self.death_fit is None:
             self.quiet_print('Skipped displaying death fit data because it is None.')
         else:
-            self.quiet_print('Displaying best fit for death times...')
+            self.quiet_print('Displaying best fit for death times...\n-----\n')
             self.display_fit_by_rank(fit_data=self.death_fit)
 
     def display_fit_by_rank(

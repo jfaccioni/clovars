@@ -21,7 +21,7 @@ def analyse_simulation_function(
         print('Loading Simulation parameters and trees...')
     simulation_loader = SimulationLoader(settings=simulation_loader_settings)
     if verbose is True:
-        print(f'loading from input folder:\n"{simulation_loader.input_folder}"\n')
+        print(f'loading simulations results from the following input folder:\n"{simulation_loader.input_folder}"\n')
         print('Analyzing Simulation trees...')
     simulation_analyzer = SimulationAnalyzer(
         cell_data=simulation_loader.cell_data,

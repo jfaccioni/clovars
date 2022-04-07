@@ -32,7 +32,7 @@ def run_simulation_function(
         print('Setting Simulation files...')
     simulation_writer = SimulationWriter(settings=simulation_writer_settings)
     if verbose is True:
-        print(f'Using output folder:\n"{simulation_writer.path}"\n')
+        print(f'The following output folder will be used:\n"{simulation_writer.path}"\n')
     simulation_writer.set_files()
     simulation_writer.write_params(
         colony_data=colony_data,
@@ -50,4 +50,4 @@ def run_simulation_function(
         settings=simulation_runner_settings,
     )
     if verbose is True:
-        print('Simulation has ended.')
+        print(f'Simulation has ended.\nOutput files are located in folder "{simulation_writer.path}"')

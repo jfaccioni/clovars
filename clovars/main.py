@@ -32,6 +32,7 @@ if TYPE_CHECKING:
 
 def main() -> None:
     """Main function of CloVarS."""
+    print('----- CloVarS -----\n')
     mode, settings_path, colonies_path = parse_command_line_arguments()
     validator, simulation_function = get_validator_and_function(mode=mode)
     validator.parse_toml(settings_path)
@@ -120,6 +121,7 @@ def prompt_use_default_settings(
             '(y/n): '
         ).lower()
         if answer == 'y':
+            print('\n', end='')
             return
         elif answer == 'n':
             print('User chose not to use default settings.')
@@ -144,6 +146,7 @@ def prompt_use_default_colonies() -> None:
             '(y/n): '
         ).lower()
         if answer == 'y':
+            print('\n', end='')
             return
         elif answer == 'n':
             print('User chose not to use default colonies.')
