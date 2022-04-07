@@ -90,5 +90,5 @@ CloVarS is distributed under the MIT license. Read the [`LICENSE.md`](LICENSE.md
 ## Cite us
 If you use CloVarS, cite us: 
 ```text
-Faccioni, JL; Oliveira, MM; Lenz, G. CloVarS: a simulation of clonal variability in single cells. (in preparation).
+Juliano L. Faccioni, Julieti H. Buss, Karine R. Begnini, Leonardo G. Brunnet, Manuel M. Oliveira and Guido Lenz. CloVarS: a simulation of single-cell clonal variability (in preparation).
 ```
