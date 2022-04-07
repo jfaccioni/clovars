@@ -22,7 +22,12 @@ class PathCreatorMixin:
         path.mkdir(parents=True, exist_ok=True)
         return path
 
+    @property
+    def is_empty(self) -> bool:
+        """Returns whether the output folder is empty or not."""
+        return not any(self.path.iterdir())
+
     def delete_if_empty(self) -> None:
         """Deleted the folder if it is empty."""
-        if not any(self.path.iterdir()):
+        if self.is_empty:
             self.path.rmdir()

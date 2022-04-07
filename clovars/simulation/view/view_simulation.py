@@ -30,6 +30,10 @@ def view_simulation_function(
         output_folder=output_folder,
         verbose=verbose,
     )
-    # TODO: display an informative message if no output will be generated!
     simulation_viewer.generate_output(settings=view_settings)
+    if verbose is True:
+        if not simulation_viewer.is_empty:  # TODO: should check if render flags are on, not if dir is empty
+            print(f'Output files written to the following output folder: {output_folder}')
+        else:
+            print('No output files were written (modify the settings file if you want to save output files)')
     simulation_viewer.delete_if_empty()

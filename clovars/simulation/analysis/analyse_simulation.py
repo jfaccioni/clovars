@@ -31,6 +31,10 @@ def analyse_simulation_function(
         verbose=verbose,
         output_folder=output_folder,
     )
-    # TODO: display an informative message if no output will be generated!
     simulation_analyzer.analyse(settings=analysis_settings)
+    if verbose is True:
+        if not simulation_analyzer.is_empty:  # TODO: should check if render flags are on, not if dir is empty
+            print(f'Output files written to the following output folder: {output_folder}')
+        else:
+            print('No output files were written (modify the settings file if you want to save output files)')
     simulation_analyzer.delete_if_empty()
