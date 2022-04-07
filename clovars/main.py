@@ -37,15 +37,17 @@ def main() -> None:
     validator.parse_toml(settings_path)
     validator.validate()
     params = validator.to_simulation()
-    print(f'Executing CloVarS in mode {mode}\n--- Parameters:\n{params}')
     if mode == 'run':  # need to format the colony data
         formatter = ColonyDataFormatter()
         formatter.parse_toml(colonies_path)
         colony_data = formatter.to_simulation()
-        print(f'--- Colony data:\n{colony_data}')
-        simulation_function(colony_data=colony_data, **params)
-    else:
-        simulation_function(**params)
+        params['colony_data'] = colony_data
+        print(f'--- Colony data:\n{colony_data}\n\n')
+    elif mode == 'fit' and settings_path == DEFAULT_FIT_PATH:  # clovars fit demo, need to change the input file path
+        params['input_file'] = str(ROOT_PATH / 'clovars' / 'default_settings' / 'data.csv')
+
+    print(f'Executing CloVarS in mode {mode}\n--- Parameters:\n{params}\n\n')
+    simulation_function(**params)
 
 
 def get_validator_and_function(mode: str) -> tuple[ParameterValidator, Callable]:
