@@ -3,10 +3,9 @@ from __future__ import annotations
 import sys
 
 import toml
-from PyQt5 import QtGui as qtg, QtWidgets as qtw
+from PySide6 import QtGui as qtg, QtWidgets as qtw
 
 from clovars import DEFAULT_ANALYSIS_PATH, DEFAULT_COLONIES_PATH, DEFAULT_RUN_PATH, DEFAULT_VIEW_PATH
-from clovars.main import format_analysis_settings, format_run_settings, format_view_settings
 from clovars.simulation import analyse_simulation_function, run_simulation_function, view_simulation_function
 
 
