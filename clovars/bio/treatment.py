@@ -17,7 +17,7 @@ class Treatment:
             division_curve: Curve | None = None,
             death_curve: Curve | None = None,
             signal_disturbance: dict | None = None,
-            fitness_memory_disturbance: int | None = None,
+            fitness_memory_disturbance: float | None = None,
     ) -> None:
         """Initializes a Treatment instance."""
         if name is None:
