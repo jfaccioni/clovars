@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Iterator
 
 import numpy as np
 import pandas as pd
@@ -10,14 +10,17 @@ from PySide6 import QtCore as qtc, QtWidgets as qtw
 
 class SignalModel(qtc.QAbstractTableModel):
     """Model containing a signal's Data."""
+    dataPrinted = qtc.Signal(int)
+
     def __init__(
             self,
+            name: str,
             parameters: list[Param],
             parent: qtc.QObject = None,
     ) -> None:
         """Initializes a SignalModel instance."""
         super().__init__(parent=parent)
-
+        self.name = name
         self._data = pd.DataFrame({
             'active': False,
             'name': [p.name for p in parameters],
@@ -99,6 +102,13 @@ class SignalModel(qtc.QAbstractTableModel):
         if role == qtc.Qt.DisplayRole and orientation == qtc.Qt.Horizontal:  # Display the column headers
             return str(self._data.columns[section])
 
+    @qtc.Property(int, int, )
+    def printData(
+            self,
+    ) -> None:
+        """Prints the current data selected in the Model."""
+        print(self._data)
+
 
 def from_numpy_dtype(data: Any) -> Any:
     """Converts the data from a numpy dtype to a native Python type."""
@@ -128,14 +138,33 @@ MEAN = Param(name='Mean', value=0.0, minimum=-100.0, maximum=100.0, step=0.05)
 STD = Param(name='Std. dev.', value=0.05, minimum=0.0, maximum=100.0, step=0.05)
 K = Param(name='K', value=0.01, minimum=0.0, maximum=100.0, step=0.05)
 
-MODELS = {
-    'Sinusoidal': SignalModel([INITIAL_VALUE, PERIOD]),
-    'Stochastic': SignalModel([INITIAL_VALUE, NOISE]),
-    'Stoch. + Sin.': SignalModel([INITIAL_VALUE, PERIOD, NOISE]),
-    'Gaussian': SignalModel([INITIAL_VALUE, MEAN, STD]),
-    'E. M. Gaussian': SignalModel([INITIAL_VALUE, MEAN, STD, K]),
-    'Constant': SignalModel([INITIAL_VALUE]),
-}
+
+class ModelManager(qtc.QObject):
+    def __init__(
+            self,
+            parent: qtc.QObject = None
+    ):
+        super().__init__(parent=parent)
+        self.sinusoidal = SignalModel('Sinusoidal', [INITIAL_VALUE, PERIOD])
+        self.stochastic = SignalModel('Stochastic', [INITIAL_VALUE, NOISE])
+        self.stochSin = SignalModel('StochSin', [INITIAL_VALUE, PERIOD, NOISE])
+        self.gaussian = SignalModel('Gaussian', [INITIAL_VALUE, MEAN, STD])
+        self.EMGaussian = SignalModel('EMGaussian', [INITIAL_VALUE, MEAN, STD, K])
+        self.constant = SignalModel('Constant', [INITIAL_VALUE])
+
+    def __iter__(self) -> Iterator:
+        """Returns an iterator over all models."""
+        return iter(self.models)
+
+    @property
+    def models(self) -> list[SignalModel]:
+        """Returns the models."""
+        return [self.sinusoidal, self.stochastic, self.stochSin, self.gaussian, self.EMGaussian, self.constant]
+
+    @property
+    def names(self) -> list[str]:
+        """Return the names of the models."""
+        return [model.name for model in self]
 
 
 def main() -> None:
