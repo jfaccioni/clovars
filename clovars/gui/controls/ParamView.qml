@@ -2,22 +2,33 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import Qt.labs.qmlmodels 1.0
 import QtQuick.Layouts
+import examples.adding.people 1.0
+
 
 ColumnLayout {
-    property var paramModel
+    PyParams {
+        id: pyParam
+        name: "Some Param"
+        value: 2.5
+    }
     CheckBox {
         id: checkbox
-        text: model.name
-        checked: paramModel.activeState
-        onClicked: paramModel.activeState = checkbox.checked
+        text: pyParam.name
+        checked: false
+        onClicked: checked ? pyParam.value = null: pyParam.value = value
     }
     DoubleSpinBox {
-        dValue: paramModel.value
-        dFrom: paramModel.minimum
-        dTo: paramModel.maximum
-        dStepSize:paramModel.step
+        id: spinbox
+        dValue: pyParam.value
+        dFrom: pyParam.minimum
+        dTo: pyParam.maximum
+        dStepSize: pyParam.step
         editable: true
         enabled: checkbox.checked
-        onDValueChanged: paramModel.value = dValue
+        onDValueChanged: pyParam.value = dValue
+    }
+    Button {
+        text: "Show value"
+        onClicked: console.log(pyParam.value)
     }
 }

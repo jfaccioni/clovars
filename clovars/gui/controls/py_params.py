@@ -5,8 +5,12 @@ import sys
 
 from PySide6 import QtCore as qtc, QtQml as qtqml, QtWidgets as qtw, QtQuickWidgets as qtqw, QtGui as qtg
 
+QML_IMPORT_NAME = "examples.adding.people"
+QML_IMPORT_MAJOR_VERSION = 1
 
-class ParamModel(qtc.QObject):
+
+@qtqml.QmlElement
+class PyParams(qtc.QObject):
     """Model containing a parameter, including its value and min/max/step."""
     nameChanged = qtc.Signal(str)
     valueChanged = qtc.Signal(float)
@@ -145,14 +149,11 @@ def mainloop(qml_path: str) -> None:
     # window.show()
     # sys.exit(app.exec())
 
-    app = qtg.QGuiApplication(sys.argv)
-    param_model = ParamModel()
+    app = qtw.QApplication(sys.argv)
+    qtqml.qmlRegisterType(PyParams, 'examples.adding.people', 1, 0,  'PyParams')
 
-    engine = qtqml.QQmlApplicationEngine()
-
-    engine.rootContext().setContextProperty('_pyParam', param_model)
+    engine = qtqml.QQmlEngine()
     engine.quit.connect(app.quit)  # noqa
-
     engine.load(qml_path)
     if not engine.rootObjects():
         sys.exit(-1)
@@ -161,5 +162,5 @@ def mainloop(qml_path: str) -> None:
 
 
 if __name__ == '__main__':
-    QML_PATH = os.path.join('../controls/ParamView.qml')
+    QML_PATH = os.path.join('ParamView.qml')
     mainloop(qml_path=QML_PATH)
