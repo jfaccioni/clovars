@@ -1,13 +1,41 @@
 from __future__ import annotations
 
-from clovars.gui.cell_signal import ParamModel
+from clovars.gui.param.param_widget import ParamModel, CurveParamWidget, SignalParamWidget
 
-_VALID_SIGNAL_NAMES = ['Sinusoidal', 'Stochastic', 'SinusoidalStochastic', 'Gaussian', 'EMGaussian', 'Constant']
+VALID_SIGNAL_NAMES = ['Sinusoidal', 'Stochastic', 'SinusoidalStochastic', 'Gaussian', 'EMGaussian', 'Constant']
+VALID_CURVE_NAMES = ['Gaussian', 'EMGaussian', 'Gamma', 'Lognormal']
 
 
-def _get_params(signal_name: str) -> list[ParamModel] | None:
+def get_curve_params(curve_name: str) -> list[ParamModel] | None:
+    """Returns a list of ParamModel instances, given the curve name (returns None if the name is invalid)."""
+    if curve_name not in VALID_CURVE_NAMES:
+        return None
+    return {
+        'Gaussian': [
+            ParamModel(name='Mean', value=18.0, minimum=0.0, maximum=1_000.0, step=0.5),
+            ParamModel(name='Std. dev.', value=2.0, minimum=0.0, maximum=1_000_000.0, step=0.5),
+        ],
+        'EMGaussian': [
+            ParamModel(name='Mean', value=18.0, minimum=0.0, maximum=1_000.0, step=0.5),
+            ParamModel(name='Std. dev.', value=2.0, minimum=0.0, maximum=1_000_000.0, step=0.5),
+            ParamModel(name='K', value=2.0, minimum=0.0, maximum=1_000.0, step=0.5),
+        ],
+        'Gamma': [
+            ParamModel(name='Mean', value=18.0, minimum=0.0, maximum=1_000.0, step=0.5),
+            ParamModel(name='Std. dev.', value=2.0, minimum=0.0, maximum=1_000_000.0, step=0.5),
+            ParamModel(name='a', value=2.0, minimum=0.0, maximum=1_000.0, step=0.5),
+        ],
+        'Lognormal': [
+            ParamModel(name='Mean', value=18.0, minimum=0.0, maximum=1_000.0, step=0.5),
+            ParamModel(name='Std. dev.', value=2.0, minimum=0.0, maximum=1_000_000.0, step=0.5),
+            ParamModel(name='s', value=2.0, minimum=0.0, maximum=1_000.0, step=0.5),
+        ],
+    }[curve_name]
+
+
+def get_signal_params(signal_name: str) -> list[ParamModel] | None:
     """Returns a list of ParamModel instances, given the signal name (returns None if the name is invalid)."""
-    if signal_name not in _VALID_SIGNAL_NAMES:
+    if signal_name not in VALID_SIGNAL_NAMES:
         return None
     return {
         'Sinusoidal': [

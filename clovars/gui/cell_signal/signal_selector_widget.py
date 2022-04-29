@@ -6,7 +6,8 @@ from typing import Iterator
 
 from PySide6 import QtCore as qtc, QtWidgets as qtw
 
-from clovars.gui.cell_signal import _VALID_SIGNAL_NAMES, CellSignalModel, CellSignalWidget
+from clovars.gui.param import VALID_SIGNAL_NAMES
+from clovars.gui.cell_signal import CellSignalModel, CellSignalWidget
 
 
 @dataclass
@@ -15,7 +16,7 @@ class SignalSelectorModel:
     signal_models: list[CellSignalModel] = None
 
     def __post_init__(self):
-        self.signal_models = [CellSignalModel(name=signal_name) for signal_name in _VALID_SIGNAL_NAMES]
+        self.signal_models = [CellSignalModel(name=signal_name) for signal_name in VALID_SIGNAL_NAMES]
 
     def __iter__(self) -> Iterator[CellSignalModel]:
         """Implements iteration over SignalSelectorModels by iterating over their list of CellSignalModels."""
@@ -35,6 +36,7 @@ class SignalSelectorWidget(qtw.QWidget):
     """Widget used to manage multiple CellSignalWidgets."""
     def __init__(
             self,
+            adjust_margins: bool = False,
             model: SignalSelectorModel = None,
             parent: qtc.QObject = None,
     ) -> None:
@@ -46,7 +48,7 @@ class SignalSelectorWidget(qtw.QWidget):
         layout = qtw.QVBoxLayout()
         self.setLayout(layout)
 
-        self.checkbox = qtw.QCheckBox("Add CellSignal disturbance?")
+        self.checkbox = qtw.QCheckBox("Treatment changes cell signal?")
         layout.addWidget(self.checkbox)
 
         self.combobox = qtw.QComboBox()
@@ -62,10 +64,9 @@ class SignalSelectorWidget(qtw.QWidget):
             self.stack.addWidget(signal_widget)
             self.signal_widgets.append(signal_widget)
 
-        self.button = qtw.QPushButton('Save')
-        layout.addWidget(self.button)
-
         self.setup()
+        if adjust_margins is True:
+            self.adjust_layout_margins()
 
     def setup(self) -> None:
         """Sets up the default appearance of the SignalSelectorWidget."""
@@ -75,26 +76,46 @@ class SignalSelectorWidget(qtw.QWidget):
         for signal_widget in self.signal_widgets:
             self.checkbox.toggled.connect(signal_widget.setEnabled)  # noqa
         self.checkbox.toggled.emit(False)  # starts the GUI with the checkbox off, disables widgets  # noqa
-        self.button.clicked.connect(lambda: print(self.on_button_clicked()))  # noqa
 
-    def on_button_clicked(self) -> dict:
+    def get_value(self) -> dict | None:
         """Returns the parameters on the interface."""
         current_index = self.combobox.currentIndex()
         current_signal = self.model[current_index]
-        return {
-            current_signal.name: {param.name: param.value for param in current_signal.param_models}
-        }
+        if current_signal.is_empty():
+            return None
+        curve_params = {param.name: param.value for param in current_signal.param_models}
+        curve_params['Type'] = current_signal.name
+        return curve_params
+
+    def display_value(self) -> None:
+        """Prints the parameters from the interface."""
+        print(self.get_value())
+
+    def adjust_layout_margins(self) -> None:
+        """Adjusts the margins for all layouts in the widget."""
+        self.layout().setContentsMargins(0, 0, 0, 0)
+        self.layout().setSpacing(0)
+        self.layout().addStretch()
+        for signal_widget in self.signal_widgets:
+            signal_widget.layout().setContentsMargins(0, 0, 0, 0)
+            signal_widget.layout().setSpacing(0)
+            signal_widget.layout().addStretch()
+            for param_widget in signal_widget.param_widgets:
+                param_widget.layout().setContentsMargins(0, 0, 0, 0)
+                param_widget.layout().setSpacing(0)
+                param_widget.layout().addStretch()
 
 
 def test_loop():
     """Tests the signal_selector_widget.py script."""
     app = qtw.QApplication(sys.argv)
     widget = SignalSelectorWidget()
+    _add_show_value_button(widget=widget)
     window = _wrap_in_window(widget=widget)
     window.show()
     sys.exit(app.exec())
 
 
 if __name__ == '__main__':
-    from clovars.gui import _add_show_model_button, _wrap_in_window
+    from clovars.gui import _add_show_value_button, _wrap_in_window
     test_loop()

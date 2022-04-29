@@ -1,0 +1,1 @@
+from clovars.gui.treatment.fitness_memory_widget import FitnessMemorySelectorWidget

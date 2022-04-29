@@ -10,7 +10,7 @@ from PySide6 import QtCore as qtc, QtWidgets as qtw
 class ParamModel:
     """Class holding information of a Parameter, including its name, value, and max/min/step."""
     name: str = 'Param'
-    value: float = 5.0
+    value: float | None = 5.0
     minimum: float = 0.0
     maximum: float = 10.0
     step: float = 1.0
@@ -25,24 +25,28 @@ class ParamModel:
         }
 
     def as_signal_param(self) -> dict[str, float]:
-        """Returns the values as expected by a clovars Signal."""
+        """Returns the values as expected by a clovars CellSignal."""
         return {
             self.name: self.value,
         }
 
+    def is_empty(self) -> bool:
+        """Returns whether the Param is considered "empty" (i.e. its value is None)."""
+        return self.value is None
 
-class ParamWidget(qtw.QWidget):
-    """Widget holding Parameter visualization."""
+
+class SignalParamWidget(qtw.QWidget):
+    """Widget holding Parameter visualization for CellSignals."""
     def __init__(
             self,
-            model: ParamModel,
+            model: ParamModel = None,
             parent: qtc.QObject = None,
     ) -> None:
-        """Initializes a ParamWidget instance."""
+        """Initializes a SignalParamWidget instance."""
         super().__init__(parent=parent)
-        self.model = model
+        self.model = model or ParamModel()
 
-        layout = qtw.QVBoxLayout()
+        layout = qtw.QHBoxLayout()
         self.setLayout(layout)
 
         self.checkbox = qtw.QCheckBox(self.model.name)
@@ -75,11 +79,46 @@ class ParamWidget(qtw.QWidget):
         self.model.value = new_value
 
 
+class CurveParamWidget(qtw.QWidget):
+    """Widget holding Parameter visualization for Curves."""
+    def __init__(
+            self,
+            model: ParamModel = None,
+            parent: qtc.QObject = None,
+    ) -> None:
+        """Initializes a CurveParamWidget instance."""
+        super().__init__(parent=parent)
+        self.model = model or ParamModel()
+
+        layout = qtw.QHBoxLayout()
+        self.setLayout(layout)
+
+        self.label = qtw.QLabel(self.model.name)
+        layout.addWidget(self.label)
+
+        self.spinbox = qtw.QDoubleSpinBox(**self.model.to_spinbox())
+        layout.addWidget(self.spinbox)
+
+        self.setup()
+
+    def setup(self) -> None:
+        """Sets up the default appearance of the ParamWidget."""
+        self.spinbox.valueChanged.connect(self.on_spinbox_value_changed)  # noqa
+
+    def on_spinbox_value_changed(
+            self,
+            new_value: float,
+    ) -> None:
+        """Method called when the value in the spinbox is changed."""
+        self.model.value = new_value
+
+
 def test_loop():
     """Tests the param_widget.py script."""
     app = qtw.QApplication(sys.argv)
     model = ParamModel()
-    widget = ParamWidget(model=model)
+    # widget = SignalParamWidget(model=model)
+    widget = CurveParamWidget(model=model)
     _add_show_model_button(widget=widget)
     window = _wrap_in_window(widget=widget)
     window.show()

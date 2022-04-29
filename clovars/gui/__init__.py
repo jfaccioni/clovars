@@ -18,6 +18,18 @@ def _add_show_model_button(widget: qtw.QWidget) -> None:
         layout.addWidget(debug_button)
 
 
+def _add_show_value_button(widget: qtw.QWidget) -> None:
+    """Adds a button to the widget's layout, which prints the widget's get_value() returned value when clicked."""
+    try:
+        layout = widget.layout()
+    except AttributeError:
+        pass
+    else:
+        debug_button = qtw.QPushButton('Show Value')
+        debug_button.clicked.connect(widget.display_value)  # noqa
+        layout.addWidget(debug_button)
+
+
 def _wrap_in_window(widget: qtw.QWidget) -> qtw.QMainWindow:
     """Wraps the widget in a QMainWindow and then returns the window."""
     window = qtw.QMainWindow()
