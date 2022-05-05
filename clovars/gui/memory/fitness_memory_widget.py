@@ -82,6 +82,17 @@ class FitnessMemorySelectorWidget(qtw.QWidget):
         """Prints the parameters from the interface."""
         print(self.get_value())
 
+    def load_from_json(
+            self,
+            json_value: float | None,
+    ) -> None:
+        """Sets values on the interface from a properly-formatted JSON dictionary."""
+        if json_value is None:
+            self.checkbox.setChecked(False)
+        else:
+            self.checkbox.setChecked(True)
+            self.spinbox.setValue(json_value)
+
     def adjust_layout_margins(self) -> None:
         """Adjusts the margins for all layouts in the widget."""
         self.layout().setContentsMargins(0, 0, 0, 0)
@@ -99,5 +110,5 @@ def test_loop():
 
 
 if __name__ == '__main__':
-    from clovars.gui import _add_show_value_button, _wrap_in_window
+    from clovars.gui.gui_utils import _add_show_value_button, _wrap_in_window
     test_loop()

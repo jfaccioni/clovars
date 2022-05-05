@@ -6,8 +6,7 @@ from typing import Iterator
 
 from PySide6 import QtCore as qtc, QtWidgets as qtw
 
-from clovars.gui.param import VALID_SIGNAL_NAMES
-from clovars.gui.cell_signal import CellSignalModel, CellSignalWidget
+from clovars.gui.signal import CellSignalModel, CellSignalWidget, VALID_SIGNAL_NAMES
 
 
 @dataclass
@@ -69,7 +68,7 @@ class SignalSelectorWidget(qtw.QWidget):
             self.adjust_layout_margins()
 
     def setup(self) -> None:
-        """Sets up the default appearance of the SignalSelectorWidget."""
+        """Sets up the connections and the default appearance of the SignalSelectorWidget."""
         self.combobox.currentIndexChanged.connect(self.stack.setCurrentIndex)  # noqa
         self.checkbox.stateChanged.connect(self.stack.setEnabled)  # noqa
         self.checkbox.stateChanged.connect(self.combobox.setEnabled)  # noqa
@@ -77,11 +76,19 @@ class SignalSelectorWidget(qtw.QWidget):
             self.checkbox.toggled.connect(signal_widget.setEnabled)  # noqa
         self.checkbox.toggled.emit(False)  # starts the GUI with the checkbox off, disables widgets  # noqa
 
+    def get_current_signal(self) -> CellSignalModel:
+        """Returns the CellSignalModel of the currently selected signal."""
+        current_index = self.combobox.currentIndex()
+        return self.model[current_index]
+
+    def get_current_signal_widget(self) -> CellSignalWidget:
+        """Returns the CellSignalWidget of the currently selected signal."""
+        current_index = self.combobox.currentIndex()
+        return self.signal_widgets[current_index]
+
     def get_value(self) -> dict | None:
         """Returns the parameters on the interface."""
-        current_index = self.combobox.currentIndex()
-        current_signal = self.model[current_index]
-        if current_signal.is_empty():
+        if (current_signal := self.get_current_signal()).is_empty():
             return None
         curve_params = {param.name: param.value for param in current_signal.param_models}
         curve_params['Type'] = current_signal.name
@@ -91,19 +98,25 @@ class SignalSelectorWidget(qtw.QWidget):
         """Prints the parameters from the interface."""
         print(self.get_value())
 
+    def load_from_json(
+            self,
+            json_dict: dict | None,
+    ) -> None:
+        """Sets values on the interface from a properly-formatted JSON dictionary."""
+        if json_dict is None:
+            self.checkbox.setChecked(False)
+        else:
+            self.checkbox.setChecked(True)
+            self.combobox.setCurrentText(json_dict['Type'])
+            current_curve_widget = self.get_current_signal_widget()
+            current_curve_widget.load_from_json(json_dict=json_dict)
+
     def adjust_layout_margins(self) -> None:
         """Adjusts the margins for all layouts in the widget."""
         self.layout().setContentsMargins(0, 0, 0, 0)
         self.layout().setSpacing(0)
-        self.layout().addStretch()
         for signal_widget in self.signal_widgets:
-            signal_widget.layout().setContentsMargins(0, 0, 0, 0)
-            signal_widget.layout().setSpacing(0)
-            signal_widget.layout().addStretch()
-            for param_widget in signal_widget.param_widgets:
-                param_widget.layout().setContentsMargins(0, 0, 0, 0)
-                param_widget.layout().setSpacing(0)
-                param_widget.layout().addStretch()
+            signal_widget.adjust_layout_margins()
 
 
 def test_loop():
@@ -117,5 +130,5 @@ def test_loop():
 
 
 if __name__ == '__main__':
-    from clovars.gui import _add_show_value_button, _wrap_in_window
+    from clovars.gui.gui_utils import _add_show_value_button, _wrap_in_window
     test_loop()

@@ -6,8 +6,7 @@ from typing import Iterator
 
 from PySide6 import QtCore as qtc, QtWidgets as qtw
 
-from clovars.gui.param import VALID_CURVE_NAMES
-from clovars.gui.curve import CurveModel, CurveWidget
+from clovars.gui.curve import CurveModel, CurveWidget, VALID_CURVE_NAMES
 
 
 @dataclass
@@ -72,17 +71,26 @@ class CurveSelectorWidget(qtw.QWidget):
             self.adjust_layout_margins()
 
     def setup(self) -> None:
-        """Sets up the default appearance of the CurveSelectorWidget."""
+        """Sets up the connections and the default appearance of the CurveSelectorWidget."""
         self.combobox.currentIndexChanged.connect(self.stack.setCurrentIndex)  # noqa
         self.combobox.currentIndexChanged.connect(self.emit_value)  # noqa
         for curve_widget in self.curve_widgets:
             for param_widget in curve_widget.param_widgets:
                 param_widget.spinbox.valueChanged.connect(self.emit_value)
 
+    def get_current_curve(self) -> CurveModel:
+        """Returns the CurveModel of the currently selected curve."""
+        current_index = self.combobox.currentIndex()
+        return self.model[current_index]
+
+    def get_current_curve_widget(self) -> CurveWidget:
+        """Returns the CurveWidget of the currently selected curve."""
+        current_index = self.combobox.currentIndex()
+        return self.curve_widgets[current_index]
+
     def get_value(self) -> dict:
         """Returns the parameters on the interface."""
-        current_index = self.combobox.currentIndex()
-        current_curve = self.model[current_index]
+        current_curve = self.get_current_curve()
         curve_params = {param.name: param.value for param in current_curve.param_models}
         curve_params['Type'] = current_curve.name
         return curve_params
@@ -95,18 +103,21 @@ class CurveSelectorWidget(qtw.QWidget):
         """Prints the parameters from the interface."""
         print(self.get_value())
 
+    def load_from_json(
+            self,
+            json_dict: dict,
+    ) -> None:
+        """Sets values on the interface from a properly-formatted JSON dictionary."""
+        self.combobox.setCurrentText(json_dict['Type'])
+        current_curve_widget = self.get_current_curve_widget()
+        current_curve_widget.load_from_json(json_dict=json_dict)
+
     def adjust_layout_margins(self) -> None:
         """Adjusts the margins for all layouts in the widget."""
         self.layout().setContentsMargins(0, 0, 0, 0)
         self.layout().setSpacing(0)
-        self.layout().addStretch()
         for curve_widget in self.curve_widgets:
-            curve_widget.layout().setContentsMargins(0, 0, 0, 0)
-            curve_widget.layout().setSpacing(0)
-            curve_widget.layout().addStretch()
-            for param_widget in curve_widget.param_widgets:
-                param_widget.layout().setContentsMargins(0, 0, 0, 0)
-                param_widget.layout().setSpacing(5)
+            curve_widget.adjust_layout_margins()
 
 
 def test_loop():
@@ -123,5 +134,5 @@ def test_loop():
 
 
 if __name__ == '__main__':
-    from clovars.gui import _add_show_value_button, _wrap_many_in_window
+    from clovars.gui.gui_utils import _add_show_value_button, _wrap_many_in_window
     test_loop()

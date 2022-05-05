@@ -6,23 +6,23 @@ from typing import Iterator, TYPE_CHECKING
 
 from PySide6 import QtCore as qtc, QtWidgets as qtw
 
-from clovars.gui.param import SignalParamWidget, get_signal_params
+from clovars.gui.signal import SignalParamWidget, get_signal_params
 
 if TYPE_CHECKING:
-    from clovars.gui.param import ParamModel
+    from clovars.gui.signal import SignalParamModel
 
 
 @dataclass
 class CellSignalModel:
     """Class holding information of a CellSignal, including its name and parameters."""
     name: str = 'Gaussian'
-    param_models: list[ParamModel] = None
+    param_models: list[SignalParamModel] = None
 
     def __post_init__(self) -> None:
         """Sets up the params list, given the CellSignal name."""
         self.param_models = get_signal_params(signal_name=self.name)
 
-    def __iter__(self) -> Iterator[ParamModel]:
+    def __iter__(self) -> Iterator[SignalParamModel]:
         """Implements iteration over CellSignalModels by iterating over their list of ParamModels."""
         return iter(self.param_models)
 
@@ -52,6 +52,7 @@ class CellSignalWidget(qtw.QWidget):
         for param_model in self.model:
             param_widget = SignalParamWidget(model=param_model)
             layout.addWidget(param_widget)
+            self.param_widgets.append(param_widget)
 
     @staticmethod
     def validate_name_and_model(
@@ -64,12 +65,27 @@ class CellSignalWidget(qtw.QWidget):
         if signal_name is not None and model is not None:
             raise ValueError('Cannot instantiate CellSignalWidget by providing both the model and the name (either/or)')
 
+    def load_from_json(
+            self,
+            json_dict: dict,
+    ) -> None:
+        """Sets values on the interface from a properly-formatted JSON dictionary."""
+        for param_widget in self.param_widgets:
+            param_widget.load_from_json(json_dict=json_dict)
 
-def test_loop():
+    def adjust_layout_margins(self) -> None:
+        """Adjusts the margins for all layouts in the widget."""
+        self.layout().setContentsMargins(0, 0, 0, 0)
+        self.layout().setSpacing(0)
+        self.layout().addStretch()
+        for param_widget in self.param_widgets:
+            param_widget.adjust_layout_margins()
+
+
+def test_loop(signal_names: list[str]):
     """Tests the cell_signal_widget.py script."""
     app = qtw.QApplication(sys.argv)
     widgets = []
-    signal_names = ['Sinusoidal', 'Stochastic', 'SinusoidalStochastic', 'Gaussian', 'EMGaussian', 'Constant']
     for signal_name in signal_names:
         widget = CellSignalWidget(signal_name=signal_name)
         _add_show_model_button(widget=widget)
@@ -81,5 +97,6 @@ def test_loop():
 
 
 if __name__ == '__main__':
-    from clovars.gui import _add_show_model_button, _wrap_many_in_window
-    test_loop()
+    from clovars.gui.gui_utils import _add_show_model_button, _wrap_many_in_window
+    from clovars.gui.signal import VALID_SIGNAL_NAMES
+    test_loop(signal_names=VALID_SIGNAL_NAMES)

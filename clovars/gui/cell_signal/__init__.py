@@ -1,2 +1,0 @@
-from clovars.gui.cell_signal.signal_widget import CellSignalModel, CellSignalWidget
-from clovars.gui.cell_signal.signal_selector_widget import SignalSelectorWidget

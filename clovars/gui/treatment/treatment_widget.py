@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sys
 from typing import Any
 
@@ -8,27 +9,11 @@ from PySide6 import QtCore as qtc, QtWidgets as qtw
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas, NavigationToolbar2QT as NavBar
 from matplotlib.figure import Figure
 from scipy.stats.distributions import norm, exponnorm, gamma, lognorm
-from clovars.gui.cell_signal import SignalSelectorWidget
+
+from clovars.gui.signal import SignalSelectorWidget
 from clovars.gui.curve import CurveSelectorWidget
-from clovars.gui.treatment import FitnessMemorySelectorWidget
-
-
-class GroupWidget(qtw.QGroupBox):
-    """Class representing grouped widgets inside a frame."""
-    def __init__(
-            self,
-            widgets: list[qtw.QWidget],
-            label: str = '',
-            orientation: str = 'horizontal',
-            parent: qtw.QWidget = None,
-    ) -> None:
-        """Initializes a GroupWidget."""
-        super().__init__(label, parent=parent)
-        layout = qtw.QHBoxLayout() if orientation == 'horizontal' else qtw.QVBoxLayout()
-        self.setLayout(layout)
-
-        for widget in widgets:
-            layout.addWidget(widget)
+from clovars.gui.memory import FitnessMemorySelectorWidget
+from clovars.gui import GroupWidget
 
 
 class NewTreatmentController(qtw.QWidget):
@@ -36,7 +21,9 @@ class NewTreatmentController(qtw.QWidget):
     treatmentNameChanged = qtc.Signal(str)
     divisionCurveChanged = qtc.Signal(dict)
     deathCurveChanged = qtc.Signal(dict)
-    treatmentConfirmed = qtc.Signal(dict)
+    saveTreatmentRequested = qtc.Signal(dict)
+    loadTreatmentRequested = qtc.Signal()
+    cancelTreatmentRequested = qtc.Signal()
 
     def __init__(
             self,
@@ -48,10 +35,12 @@ class NewTreatmentController(qtw.QWidget):
         layout = qtw.QVBoxLayout()
         self.setLayout(layout)
 
+        # TREATMENT NAME BOX
         self.line_edit = qtw.QLineEdit()
         self.name_group_widget = GroupWidget(label='Treatment name', widgets=[self.line_edit])
         layout.addWidget(self.name_group_widget)
 
+        # DIVISION CURVES BOX
         self.division_curve_widget = CurveSelectorWidget(curve_name='Division curve', adjust_margins=True)
         self.death_curve_widget = CurveSelectorWidget(curve_name='Death curve', adjust_margins=True)
         self.curve_group_widget = GroupWidget(
@@ -60,37 +49,54 @@ class NewTreatmentController(qtw.QWidget):
         )
         layout.addWidget(self.curve_group_widget)
 
+        # FITNESS MEMORY BOX
         self.fitness_memory_widget = FitnessMemorySelectorWidget(adjust_margins=True)
         self.fitness_memory_group = GroupWidget(label='Fitness memory', widgets=[self.fitness_memory_widget])
         layout.addWidget(self.fitness_memory_group)
 
+        # CELL SIGNAL BOX
         self.cell_signal_widget = SignalSelectorWidget(adjust_margins=True)
         self.cell_signal_group = GroupWidget(label='Cell signal', widgets=[self.cell_signal_widget])
         layout.addWidget(self.cell_signal_group)
 
-        self.confirm_button = qtw.QPushButton('Confirm Treatment')
-        layout.addWidget(self.confirm_button)
+        # BUTTONS BOX
+        self.load_button = qtw.QPushButton('Load and edit an existing Treatment')
+        self.save_button = qtw.QPushButton('Save current Treatment to file')
+        self.cancel_button = qtw.QPushButton('Cancel')
+        self.buttons_group = GroupWidget(
+            label='Options',
+            widgets=[self.load_button, self.save_button, self.cancel_button],
+            orientation='vertical'
+        )
+        layout.addWidget(self.buttons_group)
 
+        # SETUP
         layout.setContentsMargins(5, 5, 5, 5)
         layout.setSpacing(5)
-
         self.setup()
 
     def setup(self) -> None:
+        """Sets up the connections on the TreatmentController."""
         self.line_edit.textChanged.connect(self.treatmentNameChanged)  # noqa
         self.division_curve_widget.curveChanged.connect(self.divisionCurveChanged)  # noqa
         self.death_curve_widget.curveChanged.connect(self.deathCurveChanged)  # noqa
-        self.confirm_button.clicked.connect(self.on_confirm_button_clicked)  # noqa
+        self.save_button.clicked.connect(self.on_save_button_clicked)  # noqa
+        self.load_button.clicked.connect(self.loadTreatmentRequested)  # noqa
+        self.cancel_button.clicked.connect(self.cancelTreatmentRequested)  # noqa
 
-    def on_confirm_button_clicked(self) -> None:
+    def on_save_button_clicked(self) -> None:
         """Emits a signal containing the Treatment's information."""
-        self.treatmentConfirmed.emit({
+        self.saveTreatmentRequested.emit(self.get_value())
+
+    def get_value(self) -> dict:
+        """Returns the currently selected Treatment."""
+        return {
             'name': self.line_edit.text(),
             'fitness_memory_disturbance': self.get_fitness_memory(),
             'signal_disturbance': self.get_cell_signal(),
             'division_curve': self.get_division_curve(),
             'death_curve': self.get_death_curve(),
-        })
+        }
 
     def get_fitness_memory(self) -> float:
         """Returns the currently selected fitness memory value."""
@@ -107,6 +113,14 @@ class NewTreatmentController(qtw.QWidget):
     def get_death_curve(self) -> dict[str, Any]:
         """Returns the currently selected death curve parameters."""
         return self.death_curve_widget.get_value()
+
+    def load_from_json(self, json_dict: dict) -> None:
+        """Sets values on the interface from a properly-formatted JSON dictionary."""
+        self.line_edit.setText(json_dict['name'])
+        self.fitness_memory_widget.load_from_json(json_dict['fitness_memory_disturbance'])
+        self.cell_signal_widget.load_from_json(json_dict['signal_disturbance'])
+        self.division_curve_widget.load_from_json(json_dict['division_curve'])
+        self.death_curve_widget.load_from_json(json_dict['death_curve'])
 
 
 class NewTreatmentView(qtw.QWidget):
@@ -238,16 +252,47 @@ class NewTreatmentWidget(qtw.QWidget):
         self.treatment_controller.treatmentNameChanged.connect(self.treatment_view.update_plot_title)
         self.treatment_controller.divisionCurveChanged.connect(self.treatment_view.update_division_curve)
         self.treatment_controller.deathCurveChanged.connect(self.treatment_view.update_death_curve)
-        self.treatment_controller.treatmentConfirmed.connect(self.on_treatment_confirmed)
+        self.treatment_controller.saveTreatmentRequested.connect(self.on_save_treatment_requested)
+        self.treatment_controller.loadTreatmentRequested.connect(self.on_load_treatment_requested)
+        self.treatment_controller.cancelTreatmentRequested.connect(self.on_cancel_treatment_requested)
 
         self.treatment_controller.line_edit.setText('TMZ')
         self.treatment_controller.division_curve_widget.combobox.setCurrentText('Gaussian')
         self.treatment_controller.death_curve_widget.combobox.setCurrentText('EMGaussian')
 
-    @staticmethod
-    def on_treatment_confirmed(treatment: dict[str, Any]) -> None:
-        """Triggered when the treatment confirm button is clicked."""
-        print(treatment)
+    def on_save_treatment_requested(
+            self,
+            treatment: dict[str, Any],
+    ) -> None:
+        """Writes the selected Treatment to a JSON file. Triggered when the "Save Treatment" button is clicked."""
+        name, _ = qtw.QFileDialog.getSaveFileName(parent=self, caption='Save treatment...', filter='.json')
+        if name:
+            if not name.endswith('.json'):
+                name += '.json'
+            with open(name, 'w') as json_file:
+                json_file.write(json.dumps(treatment, indent=4))
+            self.close()
+
+    def on_load_treatment_requested(self) -> None:
+        """
+        Loads the selected Treatment (JSON file) onto the interface.
+        Triggered when the "Load Treatment" button is clicked.
+        """
+        name, _ = qtw.QFileDialog.getOpenFileName(parent=self, caption='Load treatment...', filter='.json')
+        if name:
+            with open(name, 'r') as json_file:
+                json_dict = json.loads(json_file.read())
+            self.treatment_controller.load_from_json(json_dict=json_dict)
+
+    def on_cancel_treatment_requested(self) -> None:
+        """Asks the user to confirm, then returns to the previous screen."""
+        answer = qtw.QMessageBox.question(  # does not work with keyword arguments!
+            self,
+            'Cancel Treatment',
+            'Cancel creating the new treatment? Unsaved changes will be lost.',
+        )
+        if answer == qtw.QMessageBox.Yes:
+            self.close()
 
 
 def test_loop():
