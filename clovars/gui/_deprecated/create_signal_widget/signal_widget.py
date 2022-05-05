@@ -2,7 +2,7 @@ import sys
 
 from PySide6 import QtGui as qtg, QtQml as qtqml
 
-from gui.create_signal_widget.model import SignalModelManager
+from gui._deprecated.create_signal_widget.model import SignalModelManager
 
 
 def mainloop(qml_path: str) -> None:

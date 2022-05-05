@@ -10,10 +10,10 @@ from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas,
 from matplotlib.figure import Figure
 from scipy.stats.distributions import norm, exponnorm, gamma, lognorm
 
-from clovars.gui.signal import SignalSelectorWidget
+from clovars.gui import GroupWidget
 from clovars.gui.curve import CurveSelectorWidget
 from clovars.gui.memory import FitnessMemorySelectorWidget
-from clovars.gui import GroupWidget
+from clovars.gui.signal import SignalSelectorWidget
 
 
 class NewTreatmentController(qtw.QWidget):

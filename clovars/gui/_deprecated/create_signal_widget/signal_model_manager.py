@@ -4,8 +4,8 @@ import pprint
 
 from PySide6 import QtCore as qtc
 
-from clovars.gui.create_signal_widget.param_model import ParamModel
-from clovars.gui.create_signal_widget.signal_model import SignalModel
+from gui._deprecated.create_signal_widget.param_model import ParamModel
+from gui._deprecated.create_signal_widget import SignalModel
 
 
 class SignalModelManager(qtc.QObject):

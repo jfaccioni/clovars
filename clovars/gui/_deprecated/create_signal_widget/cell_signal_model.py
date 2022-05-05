@@ -6,7 +6,7 @@ from typing import Any
 
 from PySide6 import QtCore as qtc, QtGui as qtg, QtQml as qtqml
 
-from clovars.gui.create_signal_widget.param_model import ParamModel
+from gui._deprecated.create_signal_widget.param_model import ParamModel
 
 
 class CellSignalModel(qtc.QAbstractListModel):
@@ -149,4 +149,4 @@ def mainloop(qml_path: str) -> None:
 
 
 if __name__ == '__main__':
-    mainloop(qml_path=os.path.join('..', 'controls', 'CellSignalViewWindow.qml'))
+    mainloop(qml_path=os.path.join('../..', 'controls', 'CellSignalViewWindow.qml'))

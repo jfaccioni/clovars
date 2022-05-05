@@ -2,7 +2,7 @@ import sys
 
 from PySide6 import QtGui as qtg, QtQml as qtq
 
-from gui.new_treatment_window.signal_models import MODELS
+from gui._deprecated.new_treatment_window.signal_models import MODELS
 
 
 def main() -> None:
