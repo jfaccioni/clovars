@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import sys
 from dataclasses import dataclass
-from typing import Iterator
+from typing import Iterator, Any
 
 from PySide6 import QtCore as qtc, QtWidgets as qtw
 
@@ -118,22 +118,14 @@ class CellParametersWidget(qtw.QWidget):
             spinbox.valueChanged.connect(slot)  # noqa
             row_layout.addWidget(spinbox)
 
-        self.signal_label = qtw.QLabel('Signal:')
-        layout.addWidget(self.signal_label)
+        self.signal_widget = SignalSelectorWidget(widget_type='colony')
+        self.signal_widget.set_current_signal(signal_name='Gaussian')
+        layout.addWidget(self.signal_widget)
 
-        # TODO: figure out how to do this in a clean way
-        self.signal_selector_widget = SignalSelectorWidget()
-        self.signal_selector_widget.layout().replaceWidget(self.signal_selector_widget.checkbox, qtw.QLabel('Signal'))
-        for signal_widget in self.signal_selector_widget.signal_widgets:
-            for param_widget in signal_widget.param_widgets:
-                param_widget.layout().replaceWidget(param_widget.checkbox, qtw.QLabel(param_widget.checkbox.text()))
-                param_widget.checkbox.setEnabled(True)
-        layout.addWidget(self.signal_selector_widget)
-
-    def get_value(self) -> dict:
+    def get_value(self) -> dict[str, Any]:
         """Returns the parameter's name."""
         params = self.model.get_value()
-        params['signal'] = self.signal_widget.get_value()
+        params['signal'] = self.signal_widget.get_value()  # noqa
         return params
 
     def adjust_layout_margins(self) -> None:
@@ -147,12 +139,12 @@ def test_loop():
     """Tests the param_widget.py script."""
     app = qtw.QApplication(sys.argv)
     widget = CellParametersWidget()
-    _add_show_model_button(widget=widget)
+    _add_get_value_button(widget=widget)
     window = _wrap_in_window(widget=widget)
     window.show()
     sys.exit(app.exec())
 
 
 if __name__ == '__main__':
-    from clovars.gui.gui_utils import _add_show_model_button, _wrap_in_window
+    from clovars.gui.gui_utils import _add_get_value_button, _wrap_in_window
     test_loop()
