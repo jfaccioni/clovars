@@ -99,6 +99,7 @@ class CellParametersWidget(qtw.QWidget):
     """Widget holding a CellParam."""
     def __init__(
             self,
+            adjust_margins: bool = False,
             model: CellParametersModel = None,
             parent: qtc.QObject = None,
     ) -> None:
@@ -118,9 +119,14 @@ class CellParametersWidget(qtw.QWidget):
             spinbox.valueChanged.connect(slot)  # noqa
             row_layout.addWidget(spinbox)
 
+        layout.addSpacing(10)
+
         self.signal_widget = SignalSelectorWidget(widget_type='colony')
         self.signal_widget.set_current_signal(signal_name='Gaussian')
         layout.addWidget(self.signal_widget)
+
+        if adjust_margins is True:
+            self.adjust_layout_margins()
 
     def get_value(self) -> dict[str, Any]:
         """Returns the parameter's name."""
