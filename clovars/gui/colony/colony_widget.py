@@ -12,9 +12,7 @@ from scipy.stats.distributions import norm, exponnorm, gamma, lognorm
 
 from clovars.gui import GroupWidget
 from clovars.gui.cell import CellParametersWidget
-from clovars.gui.memory import FitnessMemorySelectorWidget
-from clovars.gui.signal import SignalSelectorWidget
-
+from clovars.gui.colony import ColonyParametersWidget
 
 class NewColonyController(qtw.QWidget):
     """Widget bundling all widgets related to creating a new Colony."""
@@ -34,38 +32,44 @@ class NewColonyController(qtw.QWidget):
         self.name_group_widget = GroupWidget(label='Colony name', widgets=[self.line_edit])
         layout.addWidget(self.name_group_widget)
 
+        self.colony_parameters_widget = ColonyParametersWidget(adjust_margins=True)
+        self.colony_parameters_group = GroupWidget(label='Colony parameters', widgets=[self.colony_parameters_widget])
+        layout.addWidget(self.colony_parameters_group)
+
         # CELL PARAMETERS BOX
-        self.cell_parameters_widget = CellParametersWidget()
+        self.cell_parameters_widget = CellParametersWidget(adjust_margins=True)
         self.cell_parameters_group = GroupWidget(label='Cell parameters', widgets=[self.cell_parameters_widget])
-        layout.addWidget(self.name_group_widget)
+        layout.addWidget(self.cell_parameters_group)
 
-
-        # FITNESS MEMORY BOX
-        self.fitness_memory_widget = FitnessMemorySelectorWidget(adjust_margins=True)
-        self.fitness_memory_group = GroupWidget(label='Fitness memory', widgets=[self.fitness_memory_widget])
-        layout.addWidget(self.fitness_memory_group)
-
-        # CELL SIGNAL BOX
-        self.cell_signal_widget = SignalSelectorWidget(adjust_margins=True)
-        self.cell_signal_group = GroupWidget(label='Cell signal', widgets=[self.cell_signal_widget])
-        layout.addWidget(self.cell_signal_group)
-
-        # BUTTONS BOX
-        self.load_button = qtw.QPushButton('Load and edit an existing Treatment')
-        self.save_button = qtw.QPushButton('Save current Treatment to file')
-        self.cancel_button = qtw.QPushButton('Cancel')
-        self.buttons_group = GroupWidget(
-            label='Options',
-            widgets=[self.load_button, self.save_button, self.cancel_button],
-            orientation='vertical'
-        )
-        layout.addWidget(self.buttons_group)
-
-        # SETUP
-        layout.setContentsMargins(5, 5, 5, 5)
-        layout.setSpacing(5)
-        self.setup()
-
+        # TREATMENT REGIMEN BOX
+        self.treatment_regimen_
+        #
+        # # FITNESS MEMORY BOX
+        # self.fitness_memory_widget = FitnessMemorySelectorWidget(adjust_margins=True)
+        # self.fitness_memory_group = GroupWidget(label='Fitness memory', widgets=[self.fitness_memory_widget])
+        # layout.addWidget(self.fitness_memory_group)
+        #
+        # # CELL SIGNAL BOX
+        # self.cell_signal_widget = SignalSelectorWidget(adjust_margins=True)
+        # self.cell_signal_group = GroupWidget(label='Cell signal', widgets=[self.cell_signal_widget])
+        # layout.addWidget(self.cell_signal_group)
+        #
+        # # BUTTONS BOX
+        # self.load_button = qtw.QPushButton('Load and edit an existing Treatment')
+        # self.save_button = qtw.QPushButton('Save current Treatment to file')
+        # self.cancel_button = qtw.QPushButton('Cancel')
+        # self.buttons_group = GroupWidget(
+        #     label='Options',
+        #     widgets=[self.load_button, self.save_button, self.cancel_button],
+        #     orientation='vertical'
+        # )
+        # layout.addWidget(self.buttons_group)
+        #
+        # # SETUP
+        # layout.setContentsMargins(5, 5, 5, 5)
+        # layout.setSpacing(5)
+        # self.setup()
+        #
     def setup(self) -> None:
         """Sets up the connections on the TreatmentController."""
         self.line_edit.textChanged.connect(self.treatmentNameChanged)  # noqa
@@ -215,8 +219,8 @@ class NewTreatmentView(qtw.QWidget):
         return {k: v for k, v in kwargs.items() if v is not None}
 
 
-class NewTreatmentWidget(qtw.QWidget):
-    """Widget representing a window where the user can create a new Treatment."""
+class NewColonyWidget(qtw.QWidget):
+    """Widget representing a window where the user can create a new Colony."""
     def __init__(
             self,
             parent: qtw.QWidget = None,
@@ -227,16 +231,16 @@ class NewTreatmentWidget(qtw.QWidget):
         layout = qtw.QHBoxLayout()
         self.setLayout(layout)
 
-        self.treatment_controller = NewTreatmentController()
+        self.treatment_controller = NewColonyController()
         layout.addWidget(self.treatment_controller)
 
-        self.treatment_view = NewTreatmentView(
-            initial_division_curve=self.treatment_controller.get_division_curve(),
-            initial_death_curve=self.treatment_controller.get_death_curve(),
-        )
-        layout.addWidget(self.treatment_view)
-
-        self.setup()
+        # self.treatment_view = NewTreatmentView(
+        #     initial_division_curve=self.treatment_controller.get_division_curve(),
+        #     initial_death_curve=self.treatment_controller.get_death_curve(),
+        # )
+        # layout.addWidget(self.treatment_view)
+        #
+        # self.setup()
 
     def setup(self) -> None:
         """docstring."""
@@ -289,7 +293,7 @@ class NewTreatmentWidget(qtw.QWidget):
 def test_loop():
     """Tests the curve_selector_widget.py script."""
     app = qtw.QApplication(sys.argv)
-    window = NewTreatmentWidget()
+    window = NewColonyWidget()
     window.show()
     sys.exit(app.exec())
 
