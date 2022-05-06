@@ -49,7 +49,7 @@ class SignalSelectorWidget(qtw.QWidget):
         self.setLayout(layout)
 
         if widget_type == 'colony':  # Format widget to be placed in a New Colony window
-            self.top_widget = qtw.QLabel('Select Signal Type:')
+            self.top_widget = qtw.QLabel('Signal Type')
         elif widget_type == 'treatment':  # Format widget to be placed in a New Treatment window
             self.top_widget = qtw.QCheckBox("Treatment changes cell signal?")
         else:
