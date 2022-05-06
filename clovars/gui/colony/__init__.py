@@ -1,1 +1,1 @@
-
+from clovars.gui.colony.colony_param_widget import ColonyParametersWidget

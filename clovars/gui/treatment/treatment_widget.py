@@ -14,6 +14,7 @@ from clovars.gui import GroupWidget
 from clovars.gui.curve import CurveSelectorWidget
 from clovars.gui.memory import FitnessMemorySelectorWidget
 from clovars.gui.signal import SignalSelectorWidget
+from clovars.gui.file_handler import FileHandler
 
 
 class NewTreatmentController(qtw.QWidget):
@@ -265,24 +266,19 @@ class NewTreatmentWidget(qtw.QWidget):
             treatment: dict[str, Any],
     ) -> None:
         """Writes the selected Treatment to a JSON file. Triggered when the "Save Treatment" button is clicked."""
-        name, _ = qtw.QFileDialog.getSaveFileName(parent=self, caption='Save treatment...', filter='.json')
-        if name:
-            if not name.endswith('.json'):
-                name += '.json'
-            with open(name, 'w') as json_file:
-                json_file.write(json.dumps(treatment, indent=4))
-            self.close()
+        file_handler = FileHandler(parent=self)
+        file_handler.write_treatment(treatment_dict=treatment)
 
     def on_load_treatment_requested(self) -> None:
         """
         Loads the selected Treatment (JSON file) onto the interface.
         Triggered when the "Load Treatment" button is clicked.
         """
-        name, _ = qtw.QFileDialog.getOpenFileName(parent=self, caption='Load treatment...', filter='.json')
-        if name:
-            with open(name, 'r') as json_file:
-                json_dict = json.loads(json_file.read())
-            self.treatment_controller.load_from_json(json_dict=json_dict)
+        file_handler = FileHandler(parent=self)
+        data = file_handler.load_treatment()
+        if data is None:
+            return
+        self.treatment_controller.load_from_json(json_dict=data)
 
     def on_cancel_treatment_requested(self) -> None:
         """Asks the user to confirm, then returns to the previous screen."""
