@@ -35,6 +35,7 @@ class SignalSelectorWidget(qtw.QWidget):
     """Widget used to manage multiple CellSignalWidgets."""
     def __init__(
             self,
+            widget_type: str = 'treatment',
             adjust_margins: bool = False,
             model: SignalSelectorModel = None,
             parent: qtc.QObject = None,
@@ -47,8 +48,13 @@ class SignalSelectorWidget(qtw.QWidget):
         layout = qtw.QVBoxLayout()
         self.setLayout(layout)
 
-        self.checkbox = qtw.QCheckBox("Treatment changes cell signal?")
-        layout.addWidget(self.checkbox)
+        if widget_type == 'colony':  # Format widget to be placed in a New Colony window
+            self.top_widget = qtw.QLabel('Select Signal Type:')
+        elif widget_type == 'treatment':  # Format widget to be placed in a New Treatment window
+            self.top_widget = qtw.QCheckBox("Treatment changes cell signal?")
+        else:
+            raise ValueError('Bad widget_type value (valid values are: "colony", "treatment")')
+        layout.addWidget(self.top_widget)
 
         self.combobox = qtw.QComboBox()
         layout.addWidget(self.combobox)
@@ -59,7 +65,7 @@ class SignalSelectorWidget(qtw.QWidget):
         self.signal_widgets = []
         for signal_model in self.model:
             self.combobox.addItem(signal_model.name)
-            signal_widget = CellSignalWidget(model=signal_model)
+            signal_widget = CellSignalWidget(widget_type=widget_type, model=signal_model)
             self.stack.addWidget(signal_widget)
             self.signal_widgets.append(signal_widget)
 
@@ -70,16 +76,31 @@ class SignalSelectorWidget(qtw.QWidget):
     def setup(self) -> None:
         """Sets up the connections and the default appearance of the SignalSelectorWidget."""
         self.combobox.currentIndexChanged.connect(self.stack.setCurrentIndex)  # noqa
-        self.checkbox.stateChanged.connect(self.stack.setEnabled)  # noqa
-        self.checkbox.stateChanged.connect(self.combobox.setEnabled)  # noqa
-        for signal_widget in self.signal_widgets:
-            self.checkbox.toggled.connect(signal_widget.setEnabled)  # noqa
-        self.checkbox.toggled.emit(False)  # starts the GUI with the checkbox off, disables widgets  # noqa
+        if self.is_treatment():
+            self.top_widget.stateChanged.connect(self.stack.setEnabled)  # noqa
+            self.top_widget.stateChanged.connect(self.combobox.setEnabled)  # noqa
+            for signal_widget in self.signal_widgets:
+                self.top_widget.toggled.connect(signal_widget.setEnabled)  # noqa
+            self.top_widget.toggled.emit(False)  # starts the GUI with checkbox off, disables widgets  # noqa
+
+    def is_treatment(self) -> bool:
+        """Returns whether the widget is meant to be used in a New Treatment window or not."""
+        return isinstance(self.top_widget, qtw.QCheckBox)
 
     def get_current_signal(self) -> CellSignalModel:
         """Returns the CellSignalModel of the currently selected signal."""
         current_index = self.combobox.currentIndex()
         return self.model[current_index]
+
+    def set_current_signal(
+            self,
+            signal_name: str,
+    ) -> None:
+        """Sets the currently selected signal, providing its CellSignalModel's name."""
+        for i, signal_model in enumerate(self.model):
+            if signal_model.name == signal_name:
+                self.combobox.setCurrentIndex(i)
+                return
 
     def get_current_signal_widget(self) -> CellSignalWidget:
         """Returns the CellSignalWidget of the currently selected signal."""
@@ -104,9 +125,11 @@ class SignalSelectorWidget(qtw.QWidget):
     ) -> None:
         """Sets values on the interface from a properly-formatted JSON dictionary."""
         if json_dict is None:
-            self.checkbox.setChecked(False)
+            if self.is_treatment():
+                self.top_widget.setChecked(False)
         else:
-            self.checkbox.setChecked(True)
+            if self.is_treatment():
+                self.top_widget.setChecked(True)
             self.combobox.setCurrentText(json_dict['Type'])
             current_curve_widget = self.get_current_signal_widget()
             current_curve_widget.load_from_json(json_dict=json_dict)

@@ -35,6 +35,7 @@ class CellSignalWidget(qtw.QWidget):
     """Widget holding CellSignal visualization."""
     def __init__(
             self,
+            widget_type: str = 'treatment',
             signal_name: str = None,
             model: CellSignalModel = None,
             parent: qtc.QObject = None,
@@ -50,7 +51,7 @@ class CellSignalWidget(qtw.QWidget):
 
         self.param_widgets = []
         for param_model in self.model:
-            param_widget = SignalParamWidget(model=param_model)
+            param_widget = SignalParamWidget(widget_type=widget_type, model=param_model)
             layout.addWidget(param_widget)
             self.param_widgets.append(param_widget)
 

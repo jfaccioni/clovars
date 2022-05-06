@@ -35,6 +35,7 @@ class SignalParamWidget(qtw.QWidget):
     """Widget holding a SignalParam."""
     def __init__(
             self,
+            widget_type: str = 'treatment',
             model: SignalParamModel = None,
             parent: qtc.QObject = None,
     ) -> None:
@@ -45,8 +46,13 @@ class SignalParamWidget(qtw.QWidget):
         layout = qtw.QHBoxLayout()
         self.setLayout(layout)
 
-        self.checkbox = qtw.QCheckBox(self.model.name)
-        layout.addWidget(self.checkbox)
+        if widget_type == 'colony':  # Format widget to be placed in a New Colony window
+            self.top_widget = qtw.QLabel(self.model.name)
+        elif widget_type == 'treatment':  # Format widget to be placed in a New Treatment window
+            self.top_widget = qtw.QCheckBox(self.model.name)
+        else:
+            raise ValueError('Bad widget_type value (valid values are: "colony", "treatment")')
+        layout.addWidget(self.top_widget)
 
         self.spinbox = qtw.QDoubleSpinBox(**self.model.to_spinbox())
         layout.addWidget(self.spinbox)
@@ -55,9 +61,14 @@ class SignalParamWidget(qtw.QWidget):
 
     def setup(self) -> None:
         """Sets up the connections and the default appearance of the SignalParamWidget."""
-        self.checkbox.toggled.connect(self.on_checkbox_toggled)  # noqa
         self.spinbox.valueChanged.connect(self.on_spinbox_value_changed)  # noqa
-        self.checkbox.toggled.emit(False)  # starts the GUI with the checkbox off, sets model value to None  # noqa
+        if self.is_treatment():
+            self.top_widget.toggled.connect(self.on_checkbox_toggled)  # noqa
+            self.top_widget.toggled.emit(False)  # starts the GUI with checkbox off, sets model value to None  # noqa
+
+    def is_treatment(self) -> bool:
+        """Returns whether the widget is meant to be used in a New Treatment window or not."""
+        return isinstance(self.top_widget, qtw.QCheckBox)
 
     def on_checkbox_toggled(
             self,
@@ -85,9 +96,11 @@ class SignalParamWidget(qtw.QWidget):
         """Sets values on the interface from a properly-formatted JSON dictionary."""
         new_value = json_dict[self.get_name()]
         if new_value is None:
-            self.checkbox.setChecked(False)
+            if self.is_treatment():
+                self.top_widget.setChecked(False)
         else:
-            self.checkbox.setChecked(True)
+            if self.is_treatment():
+                self.top_widget.setChecked(True)
             self.spinbox.setValue(new_value)
 
     def adjust_layout_margins(self) -> None:

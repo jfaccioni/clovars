@@ -34,7 +34,7 @@ def _add_show_model_button(widget: qtw.QWidget) -> None:
         layout.addWidget(debug_button)
 
 
-def _add_show_value_button(widget: qtw.QWidget) -> None:
+def _add_get_value_button(widget: qtw.QWidget) -> None:
     """Adds a button to the widget's layout, which prints the widget's get_value() returned value when clicked."""
     try:
         layout = widget.layout()
@@ -42,7 +42,7 @@ def _add_show_value_button(widget: qtw.QWidget) -> None:
         pass
     else:
         debug_button = qtw.QPushButton('Show Value')
-        debug_button.clicked.connect(widget.display_value)  # noqa
+        debug_button.clicked.connect(lambda: print(widget.get_value()))  # noqa
         layout.addWidget(debug_button)
 
 
