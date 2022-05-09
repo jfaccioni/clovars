@@ -24,6 +24,7 @@ seaborn = "^0.11.2"
 
 [tool.poetry.dev-dependencies]
 scikit-learn = "*"
+umap-learn = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
