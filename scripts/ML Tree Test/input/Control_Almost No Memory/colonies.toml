@@ -1,0 +1,25 @@
+[[colony]]
+copies = 100
+initial_size = 1
+
+  [colony.cells]
+  radius = 20  # im µm
+  max_speed = 0.020351  # in µm/s
+  fitness_memory = 0.2  # between 0 and 1
+    [colony.cells.signal]
+    name = 'Gaussian'
+    initial_value = 0.0  # between -1 and 1
+    std = 0.05
+
+  [[colony.treatment]]
+  name = 'Control'
+  added_on_frame = 0
+    [colony.treatment.division_curve]
+    name = 'Gamma'
+    mean = 16.23
+    std = 2.84
+    a = 3.32  # for Gamma only
+    [colony.treatment.death_curve]
+    name = 'Gaussian'
+    mean = 100.00
+    std = 1.00
