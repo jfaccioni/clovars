@@ -81,7 +81,7 @@ class FileHandler:
             name: str,
             preset_name: str,
     ) -> bool:
-        """Prompts the user to confirm or decline ovewriting an existing file."""
+        """Prompts the user to confirm or decline overwriting an existing file."""
         answer = qtw.QMessageBox.question(  # does not work with keyword arguments!
             self.parent,
             f'Overwrite {preset_name}',

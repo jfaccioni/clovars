@@ -42,7 +42,7 @@ class NewColonyController(qtw.QWidget):
         layout.addWidget(self.cell_parameters_group)
 
         # TREATMENT REGIMEN BOX
-        self.treatment_regimen_
+        # self.treatment_regimen_
         #
         # # FITNESS MEMORY BOX
         # self.fitness_memory_widget = FitnessMemorySelectorWidget(adjust_margins=True)
