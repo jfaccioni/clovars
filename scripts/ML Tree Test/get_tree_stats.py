@@ -153,7 +153,7 @@ def get_tree_stats(
     return pd.DataFrame({
         # LABELS
         'treatment': treatment_label,
-        'memory_label': memory_label,
+        'memory': memory_label,
         # BRANCHES
         'n_branches': n_branches,
         'branch_length_mean': branch_length_mean,
