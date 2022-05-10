@@ -23,7 +23,7 @@ sns.set_context('paper')
 SETTINGS = {
     'input_folder': ROOT_PATH / 'scripts' / 'ML Tree Test' / 'results',
     'output_folder': ROOT_PATH / 'scripts' / 'ML Tree Test' / 'results',
-    'save_figure': True,
+    'save_figure': False,
     'palette': None,
     'pca_params': {
         'n_components': 2,
@@ -83,6 +83,7 @@ def main(
     # Loads the data
     path = str(input_folder / 'tree_stats.csv')
     data = pd.read_csv(path, index_col=0)
+    # data = data.loc[~data['memory'].isin(['Full Memory', 'No Memory'])]  # ignore extreme memory values
     # Preprocesses the data
     labels, values = preprocess_data(data=data)
     # Plots the data
@@ -104,7 +105,8 @@ def main(
     plt.tight_layout()
     # Display the plots
     if save_figure is True:
-        path = str(output_folder / 'results.png')
+        suffix = "" if palette is None else f"_{palette}"
+        path = str(output_folder / f'dim_reduction{suffix}.png')
         plt.savefig(path)
     plt.show()
 
@@ -138,7 +140,7 @@ def get_hue_order(hue: str) -> list[str]:
     elif hue == 'memory':
         return ['No Memory', 'Almost No Memory', 'Half Memory', 'Almost Full Memory', 'Full Memory']
     else:
-        raise ValueError(f'Invalid "hue" value: "{hue}". Valid values are: "treatment", "memory_label".')
+        raise ValueError(f'Invalid "hue" value: "{hue}". Valid values are: "treatment", "memory".')
 
 
 if __name__ == '__main__':
