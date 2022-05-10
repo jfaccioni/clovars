@@ -92,64 +92,35 @@ def get_tree_stats(
     # BRANCHES
     branches = node.get_branches()
     n_branches = len(branches)
-    branch_lengths = [len(branch) for branch in branches]
-    branch_length_mean = np.mean(branch_lengths)
-    branch_length_sd = np.std(branch_lengths)
+    branch_length_mean, branch_length_sd = get_branch_length_mean_sd(branches=branches)
     # LEAVES
     leaves = node.get_leaves()
     n_leaves = len(leaves)
-    leaf_generations = [leaf.generation for leaf in leaves]
-    leaf_generation_mean = np.mean(leaf_generations)
-    leaf_generation_sd = np.std(leaf_generations)
+    leaf_generation_mean, leaf_generation_sd = get_nodes_mean_sd(nodes=leaves, param='generation')
     # PARENTS
     parents = node.get_parents()
     n_parents = len(parents)
-    parent_generations = [parent.generation for parent in parents]
-    if parent_generations:
-        parent_generation_mean = np.mean(parent_generations)
-        parent_generation_sd = np.std(parent_generations)
-    else:
-        parent_generation_mean = np.nan
-        parent_generation_sd = np.nan
-    simulation_seconds_at_division = [parent.simulation_seconds for parent in parents]
-    if simulation_seconds_at_division:
-        simulation_seconds_at_division_mean = np.mean(simulation_seconds_at_division)
-        simulation_seconds_at_division_sd = np.std(simulation_seconds_at_division)
-    else:
-        simulation_seconds_at_division_mean = np.nan
-        simulation_seconds_at_division_sd = np.nan
-    cell_seconds_at_division = [parent.seconds_since_birth for parent in parents]
-    if cell_seconds_at_division:
-        cell_seconds_at_division_mean = np.mean(cell_seconds_at_division)
-        cell_seconds_at_division_sd = np.std(cell_seconds_at_division)
-    else:
-        cell_seconds_at_division_mean = np.nan
-        cell_seconds_at_division_sd = np.nan
+    parent_generation_mean, parent_generation_sd = get_nodes_mean_sd(nodes=parents, param='generation')
+    simulation_seconds_at_division_mean, simulation_seconds_at_division_sd = get_nodes_mean_sd(
+        nodes=parents,
+        param='simulation_seconds',
+    )
+    cell_seconds_at_division_mean, cell_seconds_at_division_sd = get_nodes_mean_sd(
+        nodes=parents,
+        param='seconds_since_birth',
+    )
     # DEAD CELLS
     dead_cells = node.get_dead_nodes()
     n_dead_cells = len(dead_cells)
-    dead_cell_generations = [dead_cell.generation for dead_cell in dead_cells]
-    if dead_cell_generations:
-        dead_cell_generation_mean = np.mean(dead_cell_generations)
-        dead_cell_generation_sd = np.std(dead_cell_generations)
-    else:
-        dead_cell_generation_mean = np.nan
-        dead_cell_generation_sd = np.nan
-    simulation_seconds_at_death = [dead_cell.simulation_seconds for dead_cell in dead_cells]
-    if simulation_seconds_at_death:
-        simulation_seconds_at_death_mean = np.mean(simulation_seconds_at_death)
-        simulation_seconds_at_death_sd = np.std(simulation_seconds_at_death)
-    else:
-        simulation_seconds_at_death_mean = np.nan
-        simulation_seconds_at_death_sd = np.nan
-    cell_seconds_at_death = [dead_cell.seconds_since_birth for dead_cell in dead_cells]
-    if cell_seconds_at_death:
-        cell_seconds_at_death_mean = np.mean(cell_seconds_at_death)
-        cell_seconds_at_death_sd = np.std(cell_seconds_at_death)
-    else:
-        cell_seconds_at_death_mean = np.nan
-        cell_seconds_at_death_sd = np.nan
-
+    dead_cell_generation_mean, dead_cell_generation_sd = get_nodes_mean_sd(nodes=dead_cells, param='generation')
+    simulation_seconds_at_death_mean, simulation_seconds_at_death_sd = get_nodes_mean_sd(
+        nodes=dead_cells,
+        param='simulation_seconds',
+    )
+    cell_seconds_at_death_mean, cell_seconds_at_death_sd = get_nodes_mean_sd(
+        nodes=dead_cells,
+        param='seconds_since_birth',
+    )
     return pd.DataFrame({
         # LABELS
         'treatment': treatment_label,
@@ -179,6 +150,25 @@ def get_tree_stats(
         'cell_seconds_at_death_mean': cell_seconds_at_death_mean,
         'cell_seconds_at_death_sd': cell_seconds_at_death_sd,
     }, index=[index])
+
+
+def get_branch_length_mean_sd(branches: list[list[CellNode]]) -> tuple[float, float]:
+    """returns the mean and sd of branch lengths, evaluated for each branch (CellNode list) in the branches list."""
+    if not branches:
+        return np.nan, np.nan
+    values = [len(branch) for branch in branches]
+    return np.mean(values).item(), np.std(values).item()
+
+
+def get_nodes_mean_sd(
+        nodes: list[CellNode],
+        param: str,
+) -> tuple[float, float]:
+    """Returns the mean and sd of the parameter, evaluated for each CellNode in the nodes list."""
+    if not nodes:  # empty list
+        return np.nan, np.nan
+    values = [getattr(node, param) for node in nodes]
+    return np.mean(values).item(), np.std(values).item()
 
 
 if __name__ == '__main__':
