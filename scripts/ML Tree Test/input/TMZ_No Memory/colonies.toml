@@ -1,6 +1,6 @@
 [[colony]]
-copies = 1
-initial_size = 100
+copies = 1000
+initial_size = 1
 
   [colony.cells]
   radius = 20  # im µm
