@@ -23,7 +23,7 @@ sns.set_context('paper')
 SETTINGS = {
     'input_folder': ROOT_PATH / 'scripts' / 'ML Tree Test' / 'results',
     'output_folder': ROOT_PATH / 'scripts' / 'ML Tree Test' / 'results',
-    'save_figure': False,
+    'save_figure': True,
     'palette': None,
     'pca_params': {
         'n_components': 2,
