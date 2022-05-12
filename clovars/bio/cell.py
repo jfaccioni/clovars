@@ -26,6 +26,7 @@ class Cell:
             x: float = 0.0,
             y: float = 0.0,
             radius: float = 1.0,
+            linked_sister_inheritance: bool = False,
             division_threshold: float | None = None,
             death_threshold: float | None = None,
             fitness_memory: CellMemory | None = None,
@@ -43,6 +44,7 @@ class Cell:
         self.alive = True
         self.senescent = False
         # Fitness-related attributes
+        self.linked_sister_inheritance = linked_sister_inheritance
         self.division_threshold = random.random() if division_threshold is None else division_threshold
         if not 0 <= self.division_threshold <= 1:
             raise SimulationError(f"Division threshold value {self.division_threshold} not in [0, 1] interval.")
@@ -228,8 +230,12 @@ class Cell:
             delta: int
     ) -> tuple[Cell, Cell]:
         """Creates and returns two Cells from a parent Cell."""
-        child_01 = self.get_child_cell(delta=delta, branch_name='1', fitness_source=('mother', self))
-        child_02 = self.get_child_cell(delta=delta, branch_name='2', fitness_source=('sister', child_01))
+        if self.linked_sister_inheritance is True:
+            child_01 = self.get_child_cell(delta=delta, branch_name='1', fitness_source=('mother', self))
+            child_02 = self.get_child_cell(delta=delta, branch_name='2', fitness_source=('sister', child_01))
+        else:
+            child_01 = self.get_child_cell(delta=delta, branch_name='1', fitness_source=('mother', self))
+            child_02 = self.get_child_cell(delta=delta, branch_name='2', fitness_source=('mother', self))
         return child_01, child_02
 
     def get_child_cell(
@@ -248,12 +254,13 @@ class Cell:
         child = self.__class__(
             name=new_name,
             max_speed=self.max_speed,
-            fitness_memory=self.fitness_memory,
             x=new_x,
             y=new_y,
+            radius=self.radius,
+            linked_sister_inheritance=self.linked_sister_inheritance,
             division_threshold=new_division_threshold,
             death_threshold=new_death_threshold,
-            radius=self.radius,
+            fitness_memory=self.fitness_memory,
             signal=new_signal,
             treatment=self.treatment,
         )
