@@ -5,7 +5,8 @@ initial_size = 1
   [colony.cells]
   radius = 20
   max_speed = 0.020351
-  fitness_memory = 0.0
+  mother_fitness_memory = 0.0  # between 0 and 1
+  sister_fitness_memory = 1.0  # between 0 and 1
     [colony.cells.signal]
     name = 'DivisionGaussian'
     initial_value = 0.0
