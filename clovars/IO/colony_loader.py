@@ -13,6 +13,7 @@ class ColonyLoader:
     """Class responsible for validating and creating all starting Colonies in the Simulation."""
     default_cell_radius = 1.0
     default_cell_max_speed = 1.0
+    default_linked_sister_inheritance = False
     default_mother_fitness_memory = 0.5
     default_sister_fitness_memory = 0.5
 
@@ -91,6 +92,10 @@ class ColonyLoader:
         cell_kwargs = {
             'max_speed': cell_data.get('max_speed', self.default_cell_max_speed),
             'radius': cell_data.get('radius', self.default_cell_radius),
+            'linked_sister_inheritance': cell_data.get(
+                'linked_sister_inheritance',
+                self.default_linked_sister_inheritance,
+            ),
             'fitness_memory': CellMemory(
                 mother_memory=cell_data.get('mother_fitness_memory', self.default_mother_fitness_memory),
                 sister_memory=cell_data.get('sister_fitness_memory', self.default_sister_fitness_memory),
