@@ -5,11 +5,11 @@ import random
 from typing import TYPE_CHECKING
 
 from clovars.abstract import Circle
-from clovars.scientific import bounded_brownian_motion
+from clovars.bio import DEFAULT_TREATMENT, DEFAULT_CELL_SIGNAL, DEFAULT_FITNESS_MEMORY
 from clovars.utils import SimulationError
-from clovars.bio import DEFAULT_TREATMENT, DEFAULT_CELL_SIGNAL
 
 if TYPE_CHECKING:
+    from clovars.abstract import CellMemory
     from clovars.scientific import CellSignal
     from clovars.bio import Treatment
 
@@ -23,12 +23,12 @@ class Cell:
             self,
             name: str = '',
             max_speed: float = 1.0,
-            fitness_memory: float = 0.0,
             x: float = 0.0,
             y: float = 0.0,
             radius: float = 1.0,
             division_threshold: float | None = None,
             death_threshold: float | None = None,
+            fitness_memory: CellMemory | None = None,
             signal: CellSignal | None = None,
             treatment: Treatment | None = None,
     ) -> None:
@@ -43,9 +43,6 @@ class Cell:
         self.alive = True
         self.senescent = False
         # Fitness-related attributes
-        if not 0 <= fitness_memory <= 1:
-            raise SimulationError(f"Fitness memory value {fitness_memory} not in [0, 1] interval.")
-        self.fitness_memory = fitness_memory
         self.division_threshold = random.random() if division_threshold is None else division_threshold
         if not 0 <= self.division_threshold <= 1:
             raise SimulationError(f"Division threshold value {self.division_threshold} not in [0, 1] interval.")
@@ -54,6 +51,7 @@ class Cell:
             raise SimulationError(f"Death threshold value {self.death_threshold} not in [0, 1] interval.")
         # Composition
         self.circle = Circle(x=x, y=y, radius=radius)
+        self.fitness_memory = fitness_memory if fitness_memory is not None else DEFAULT_FITNESS_MEMORY
         self.signal = signal if signal is not None else DEFAULT_CELL_SIGNAL
         self.treatment = treatment if treatment is not None else DEFAULT_TREATMENT
 
@@ -230,18 +228,19 @@ class Cell:
             delta: int
     ) -> tuple[Cell, Cell]:
         """Creates and returns two Cells from a parent Cell."""
-        child_01 = self.get_child_cell(delta=delta, branch_name='1')
-        child_02 = self.get_child_cell(delta=delta, branch_name='2')
+        child_01 = self.get_child_cell(delta=delta, branch_name='1', fitness_source=('mother', self))
+        child_02 = self.get_child_cell(delta=delta, branch_name='2', fitness_source=('sister', child_01))
         return child_01, child_02
 
     def get_child_cell(
             self,
             delta: int,
             branch_name: str,
+            fitness_source: tuple[str, Cell],
     ) -> Cell:
         """Returns a new Cell from the current Cell."""
         new_x, new_y = self.get_new_xy_coordinates(delta=delta, event_name='division')
-        new_division_threshold, new_death_threshold = self.get_child_fitness()
+        new_division_threshold, new_death_threshold = self.inherit_fitness(fitness_source=fitness_source)
         new_name = f'{self.name}.{branch_name}'
         new_signal = self.signal.split()
         for _ in range(20):
@@ -274,17 +273,22 @@ class Cell:
             raise ValueError(f"Invalid event name: {event_name}")
         return Circle(x=self.x, y=self.y, radius=search_radius).random_point()
 
-    def get_child_fitness(self) -> tuple[float, float]:
-        """Returns a new death and division threshold using a brownian motion scaled by the Cell's fitness memory."""
-        child_division_threshold = bounded_brownian_motion(
-            current_value=self.division_threshold,
-            scale=self.fitness_memory,
-        )
-        child_death_threshold = bounded_brownian_motion(
-            current_value=self.death_threshold,
-            scale=self.fitness_memory,
-        )
-        return child_division_threshold, child_death_threshold
+    def inherit_fitness(
+            self,
+            fitness_source: tuple[str, Cell],
+    ) -> tuple[float, float]:
+        """Returns a new death and division threshold by inheriting from the fitness source."""
+        inheritance_type, cell_to_inherit = fitness_source
+        try:
+            inheritance_function = {
+                'mother': self.fitness_memory.inherit_from_mother,
+                'sister': self.fitness_memory.inherit_from_sister,
+            }[inheritance_type]
+        except KeyError:
+            raise ValueError(f"Invalid inheritance type: {inheritance_type}")
+        division_threshold = inheritance_function(cell_to_inherit.division_threshold)
+        death_threshold = inheritance_function(cell_to_inherit.death_threshold)
+        return division_threshold, death_threshold
 
     def migrate(
             self,
