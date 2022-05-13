@@ -1,11 +1,13 @@
 [[colony]]
-copies = 5
+copies = 100
 initial_size = 1
 
   [colony.cells]
   radius = 20
   max_speed = 0.020351
-  fitness_memory = 0.0
+  linked_sister_inheritance = true
+  mother_fitness_memory = 1.0
+  sister_fitness_memory = 0.0
     [colony.cells.signal]
     name = 'DivisionGaussian'
     initial_value = 0.0
@@ -25,16 +27,16 @@ initial_size = 1
     mean = 100.00
     std = 1.00
 
-  [[colony.treatment]]
-  name = 'Temozolomide'
-  added_on_frame = 72
-    [colony.treatment.division_curve]
-    name = 'EMGaussian'
-    mean = 12.72
-    std = 8.50
-    k = 2.87
-    [colony.treatment.death_curve]
-    name = 'EMGaussian'
-    mean = 55.09
-    std = 23.75
-    k = 2.93
+#  [[colony.treatment]]
+#  name = 'Temozolomide'
+#  added_on_frame = 72
+#    [colony.treatment.division_curve]
+#    name = 'EMGaussian'
+#    mean = 12.72
+#    std = 8.50
+#    k = 2.87
+#    [colony.treatment.death_curve]
+#    name = 'EMGaussian'
+#    mean = 55.09
+#    std = 23.75
+#    k = 2.93

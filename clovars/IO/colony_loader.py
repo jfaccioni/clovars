@@ -4,6 +4,7 @@ import itertools
 from string import ascii_lowercase
 from typing import Any
 
+from clovars.abstract import CellMemory
 from clovars.bio import Cell, Colony, Treatment
 from clovars.scientific import get_cell_signal, get_curve
 
@@ -12,7 +13,9 @@ class ColonyLoader:
     """Class responsible for validating and creating all starting Colonies in the Simulation."""
     default_cell_radius = 1.0
     default_cell_max_speed = 1.0
-    default_fitness_memory = 1.0
+    default_linked_sister_inheritance = False
+    default_mother_fitness_memory = 0.5
+    default_sister_fitness_memory = 0.5
 
     def __init__(
             self,
@@ -89,7 +92,14 @@ class ColonyLoader:
         cell_kwargs = {
             'max_speed': cell_data.get('max_speed', self.default_cell_max_speed),
             'radius': cell_data.get('radius', self.default_cell_radius),
-            'fitness_memory': cell_data.get('fitness_memory', self.default_fitness_memory),
+            'linked_sister_inheritance': cell_data.get(
+                'linked_sister_inheritance',
+                self.default_linked_sister_inheritance,
+            ),
+            'fitness_memory': CellMemory(
+                mother_memory=cell_data.get('mother_fitness_memory', self.default_mother_fitness_memory),
+                sister_memory=cell_data.get('sister_fitness_memory', self.default_sister_fitness_memory),
+            ),
             'signal': get_cell_signal(**cell_data.get('signal', {})),
         }
         return Cell(x=0, y=0, name=f"{colony_index}{repeat_label}-{cell_index}", **cell_kwargs)
