@@ -13,7 +13,7 @@ SETTINGS = {
     'input_path': str(DATA_SYMLINK_PATH / 'condensed_data.csv'),
     'cache_path': str(DATA_SYMLINK_PATH / 'cliche_cached_data.csv'),
     'log2_colony_size': True,
-    'split_lines': True,
+    'split_lines': False,
     'refresh_cache': False,
 }
 
@@ -42,7 +42,7 @@ def main(
             mother_memory=('mother_memory', 'first'),  # keep this column
             sister_memory=('sister_memory', 'first'),  # keep this column
             colony_size=('Unnamed: 0', 'count'),
-            mean_colony_signal=('signal_value', 'mean'),
+            mean_colony_death_threshold=('death_threshold', 'mean'),
         )
         .reset_index()
     )
@@ -55,7 +55,7 @@ def main(
             sister_memory=('sister_memory', 'first'),  # keep this column
             mean_colony_size=('colony_size', 'mean'),
             log2_mean_colony_size=('colony_size', lambda group: np.log2(group.mean())),
-            CV_mean_colony_signal=('mean_colony_signal', lambda group: group.var() / group.mean()),
+            CV_mean_colony_death_threshold=('mean_colony_death_threshold', lambda group: group.var() / group.mean()),
         )
         .reset_index()
     )
@@ -65,7 +65,7 @@ def main(
             data=data,
             kind='line',
             x='mean_colony_size' if not log2_colony_size else 'log2_mean_colony_size',
-            y='CV_mean_colony_signal',
+            y='CV_mean_colony_death_threshold',
             row='mother_memory',
             col='sister_memory',
         )
@@ -74,7 +74,7 @@ def main(
         sns.lineplot(
             data=data,
             x='mean_colony_size' if not log2_colony_size else 'log2_mean_colony_size',
-            y='CV_mean_colony_signal',
+            y='CV_mean_colony_death_threshold',
             hue='memory_label',
         )
         plt.savefig('plot_merge.png')
