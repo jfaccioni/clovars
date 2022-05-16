@@ -11,9 +11,9 @@ sns.set()
 
 SETTINGS = {
     'input_path': str(DATA_SYMLINK_PATH / 'condensed_data.csv'),
-    'cache_path': str(DATA_SYMLINK_PATH / 'filtered_condensed_data.csv'),
+    'cache_path': str(DATA_SYMLINK_PATH / 'cliche_cached_data.csv'),
     'log2_colony_size': True,
-    'split_lines': False,
+    'split_lines': True,
     'refresh_cache': False,
 }
 
