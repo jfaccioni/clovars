@@ -109,7 +109,7 @@ def preprocess_data(data: pd.DataFrame) -> pd.DataFrame:
     """Performs the necessary preprocessing steps with the data."""
     data = filter_multiple_of(data=data, column_label='simulation_hours', multiple=24.0)
     data['memory_label'] = concatenate_series(left=data['mother_memory'], right=data['sister_memory'], sep=':')
-    data['signal_value'] = scale_series(series=data['signal_value'], new_min=40, new_max=400)
+    data['death_threshold'] = scale_series(series=data['death_threshold'], new_min=40, new_max=400)
     return data
 
 
