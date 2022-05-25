@@ -27,6 +27,7 @@ def main(
     for cell_csv_file in ctor_output_folder.glob(r"cell*.csv"):
         suffix = "_" + cell_csv_file.stem.split('_')[-1]
         params['view_settings']['file_name_2D'] = f"CTOR{suffix}"
+        params['view_settings']['file_name_treatments'] = f"CTOR{suffix}_treatments"
         # INJECT LOADER SETTINGS INTO PARAMS DICT
         params['simulation_loader_settings']['parameters_file_name'] = f'params{suffix}.json'
         params['simulation_loader_settings']['cell_csv_file_name'] = f'cell_output{suffix}.csv'
