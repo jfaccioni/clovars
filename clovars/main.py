@@ -27,6 +27,7 @@ from clovars.simulation import (
 )
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from clovars.IO.parameter_validator import ParameterValidator
 
 
@@ -51,20 +52,7 @@ def main() -> None:
     simulation_function(**params)
 
 
-def get_validator_and_function(mode: str) -> tuple[ParameterValidator, Callable]:
-    """Given the simulation execution mode, returns the corresponding parameter validator and execution function."""
-    try:
-        return {
-            'run': (RunParameterValidator(), run_simulation_function),
-            'view': (ViewParameterValidator(), view_simulation_function),
-            'analyse': (AnalysisParameterValidator(), analyse_simulation_function),
-            'fit': (FitParameterValidator(), fit_experimental_data_function),
-        }[mode]
-    except KeyError:
-        raise ValueError(f'Something went wrong, got invalid mode {mode}. Exiting...')
-
-
-def parse_command_line_arguments() -> tuple[str, str, str]:
+def parse_command_line_arguments() -> tuple[str, Path, Path]:
     parser = ArgumentParser(description='Execute CloVarS')
     parser.add_argument('mode', nargs='?', help='CloVarS execution mode (run/analyse/view)', default='')
     parser.add_argument('settings-path', nargs='?', help='Path to the settings file', default='')
@@ -87,16 +75,34 @@ def get_mode(args_dict: dict[str, Any]) -> str:
 def get_settings_path(
         args_dict: dict[str, Any],
         mode: str,
-) -> str:
+) -> Path:
     """Returns the settings path from the command line args dict."""
     if not (settings_path := args_dict['settings-path']):  # no settings path was given
-        default_settings_path = get_default_settings_path(mode=mode)
-        prompt_use_default_settings(mode=mode, default_settings_path=default_settings_path)
+        default_settings_path = prompt_use_default_settings(mode=mode)
         return default_settings_path
     return settings_path
 
 
-def get_default_settings_path(mode: str) -> str:
+def prompt_use_default_settings(mode: str) -> Path:
+    """Prompts the user whether to use the default settings path or exit the simulation."""
+    default_settings_path = get_default_settings_path(mode=mode)
+    while True:
+        answer = input(
+            f'WARNING: no settings path provided for {mode} mode. Use default settings?\n'
+            f'Default {mode} settings are located at: \n\n{ROOT_PATH / default_settings_path}\n\n'
+            '(y/n): '
+        ).lower()
+        if answer == 'y':
+            print('\n', end='')
+            return default_settings_path
+        elif answer == 'n':
+            print('User chose not to use default settings.')
+            sys.exit(0)
+        else:
+            print('Please answer with "y" or "n" only.')
+
+
+def get_default_settings_path(mode: str) -> Path:
     """Returns the default settings path for the given mode."""
     try:
         return {
@@ -109,50 +115,43 @@ def get_default_settings_path(mode: str) -> str:
         raise ValueError(f'Invalid mode {mode}')
 
 
-def prompt_use_default_settings(
-        mode: str,
-        default_settings_path: str,
-) -> None:
-    """Prompts the user whether to use the default settings path or exit the simulation."""
-    while True:
-        answer = input(
-            f'WARNING: no settings path provided for {mode} mode. Use default settings?\n'
-            f'Default {mode} settings are located at: \n\n{ROOT_PATH / default_settings_path}\n\n'
-            '(y/n): '
-        ).lower()
-        if answer == 'y':
-            print('\n', end='')
-            return
-        elif answer == 'n':
-            print('User chose not to use default settings.')
-            sys.exit(0)
-        else:
-            print('Please answer with "y" or "n" only.')
-
-
-def get_colonies_path(args_dict: dict[str, Any]) -> str:
+def get_colonies_path(args_dict: dict[str, Any]) -> Path:
     if not (colonies_path := args_dict['colonies-path']):  # user wants to run clovars but no colonies path was given
-        prompt_use_default_colonies()
-        return DEFAULT_COLONIES_PATH
+        default_colonies_path = prompt_use_default_colonies()
+        return default_colonies_path
     return colonies_path
 
 
-def prompt_use_default_colonies() -> None:
+def prompt_use_default_colonies() -> Path:
     """Prompts the user whether to use the default colonies path or exit the simulation."""
+    default_colonies_path = DEFAULT_COLONIES_PATH
     while True:
         answer = input(
             'WARNING: no colonies path provided. Use default colonies?\n'
-            f'Default colonies are located at: \n\n{ROOT_PATH / DEFAULT_COLONIES_PATH}\n\n'
+            f'Default colonies are located at: \n\n{ROOT_PATH / default_colonies_path}\n\n'
             '(y/n): '
         ).lower()
         if answer == 'y':
             print('\n', end='')
-            return
+            return default_colonies_path
         elif answer == 'n':
             print('User chose not to use default colonies.')
             sys.exit(0)
         else:
             print('Please answer with "y" or "n" only.')
+
+
+def get_validator_and_function(mode: str) -> tuple[ParameterValidator, Callable]:
+    """Given the simulation execution mode, returns the corresponding parameter validator and execution function."""
+    try:
+        return {
+            'run': (RunParameterValidator(), run_simulation_function),
+            'view': (ViewParameterValidator(), view_simulation_function),
+            'analyse': (AnalysisParameterValidator(), analyse_simulation_function),
+            'fit': (FitParameterValidator(), fit_experimental_data_function),
+        }[mode]
+    except KeyError:
+        raise ValueError(f'Got invalid mode "{mode}". Valid modes are: "run", "view", "analyse", "fit".\nExiting...')
 
 
 if __name__ == '__main__':
