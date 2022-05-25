@@ -43,7 +43,7 @@ def main(
         mother_memory, sister_memory = str(memory_label).split(":")
         output_file_name = str(
             output_path /
-            f'md{mother_memory.replace(".", "_")}:sis{sister_memory.replace(".", "_")}.png'
+            f'correlations_md{mother_memory.replace(".", "_")}:sis{sister_memory.replace(".", "_")}.png'
         )
         dfs = [calculate_division_times(data=colony_group) for _, colony_group in memory_group.groupby('colony_name')]
         correlation_data = pd.concat(dfs, ignore_index=True)
@@ -194,13 +194,15 @@ def add_linear_regression(
     data = correlation_data.loc[correlation_data['pair'] == pair_label]
     linear_regression = scipy.stats.linregress(data['value01'], data['value02'])
     slope, intercept, r = linear_regression.slope, linear_regression.intercept, linear_regression.rvalue
+    spearman, p_value = scipy.stats.spearmanr(data['value01'], data['value02'])
     x = data['value01'].sort_values()
     ax.plot(x, intercept + (slope * x), color='#e24320', linestyle='--', linewidth=3)
     sign_text = "+" if slope >= 0 else "-"
     slope_text = f"{slope:.2f}" if slope >= 0 else f"{slope:.2f}"[1:]
     text = (
         f'$y = {intercept:.2f} {sign_text} {slope_text}x$\n'
-        f'$r :{r:.2f}$, $r^2 :{r * r:.2f}$'
+        f'$r :{r:.2f}$, $r^2 :{r * r:.2f}$\n'
+        rf'$\rho :{spearman:.2f}$ ($p = {p_value:.4f}$)'
     )
     ax.set_title(ax.get_title() + '\n' + text)
 
