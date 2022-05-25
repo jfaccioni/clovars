@@ -31,10 +31,10 @@ class ParameterValidator:
 
     def parse_toml(
             self,
-            toml_path: str,
+            toml_path: Path,
     ) -> None:
         """Loads the data from the TOML file into the self.params."""
-        for key, value in toml.load(toml_path).items():
+        for key, value in toml.load(toml_path).items():  # noqa
             self.load_toml_data(key=key, value=value)
 
     def load_toml_data(
@@ -423,7 +423,6 @@ class FitParameterValidator(ParameterValidator):
 
 class ColonyDataFormatter:
     """Class representing a formatter of the simulation's colony data (does not perform actual validation)."""
-
     def __init__(self) -> None:
         """Initializes a ColonyDataFormatter instance."""
         self.data = []
@@ -434,19 +433,23 @@ class ColonyDataFormatter:
 
     def parse_toml(
             self,
-            toml_path: str,
+            toml_path: Path,
     ) -> None:
         """Parses the data from the TOML file and sets it to the self.data attribute."""
-        for colony_data in toml.load(toml_path).get('colony', {}):
-            parsed_treatment_data = {}
+        for colony_data in toml.load(toml_path).get('colony', {}):  # noqa
+            treatment_regimen = {}
             for treatment_data in colony_data.get('treatment', {}):
                 try:
                     start_treatment_frame = treatment_data.pop('added_on_frame')
                 except KeyError:  # ignore this treatment since we don't know when to add it
+                    print(
+                        f'Skipping treatment {treatment_data.get("name", "<no treatment name>")} '
+                        'because no "added_on_frame" attribute was found...'
+                    )
                     continue
-                parsed_treatment_data[start_treatment_frame] = treatment_data
+                treatment_regimen[start_treatment_frame] = treatment_data
             self.data.append({
-                'treatment_data': parsed_treatment_data,
+                'treatment_data': treatment_regimen,
                 'copies': colony_data.get('copies', 1),
                 'initial_size': colony_data.get('initial_size', 1),
                 'cells': colony_data.get('cells', {}),
