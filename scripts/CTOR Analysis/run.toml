@@ -12,6 +12,6 @@ colony_csv_file_name = 'colony_output.csv'
 confirm_overwrite = false
 
 [stop_conditions]
-stop_at_frame = 144
+# stop_at_frame = 144
 # stop_at_single_colony_size = 50
-# stop_at_all_colonies_size = 8
+stop_at_all_colonies_size = 256

@@ -8,7 +8,7 @@ from clovars.simulation import view_simulation_function
 
 SETTINGS = {
     'settings_path': Path('./view.toml'),
-    'ctor_output_folder': ROOT_PATH / 'data' / 'ctor_analysis',
+    'ctor_output_folder': ROOT_PATH / 'data' / 'ctor_analysis' / '2022-05-26 Gaussian Curves',
 }
 
 
@@ -25,9 +25,9 @@ def main(
     params['output_folder'] = str(ctor_output_folder / 'figures')
     params['simulation_loader_settings']['simulation_input_folder'] = str(ctor_output_folder)
     for cell_csv_file in ctor_output_folder.glob(r"cell*.csv"):
-        suffix = "_" + cell_csv_file.stem.split('_')[-1]
+        suffix = "_" + "_".join(cell_csv_file.stem.split('_')[-2:])
         params['view_settings']['file_name_2D'] = f"CTOR{suffix}"
-        params['view_settings']['file_name_treatments'] = f"CTOR{suffix}_treatments"
+        params['view_settings']['file_name_treatments'] = f"CTOR_treatments{suffix}"
         # INJECT LOADER SETTINGS INTO PARAMS DICT
         params['simulation_loader_settings']['parameters_file_name'] = f'params{suffix}.json'
         params['simulation_loader_settings']['cell_csv_file_name'] = f'cell_output{suffix}.csv'
