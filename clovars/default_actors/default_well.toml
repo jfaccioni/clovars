@@ -1,0 +1,5 @@
+radius = 13351.624  # in µm
+
+[treatment_regimen]
+0 = 'default_control'
+72 = 'default_temozolomide'

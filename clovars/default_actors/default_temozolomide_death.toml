@@ -1,0 +1,6 @@
+type = 'EMGaussian'
+
+[params]
+mean = 55.09
+std = 23.75
+k = 2.93

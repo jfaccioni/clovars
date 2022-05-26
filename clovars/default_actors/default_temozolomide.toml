@@ -1,0 +1,3 @@
+name = 'Temozolomide'
+division_curve = 'default_temozolomide_division'
+death_curve = 'default_temozolomide_death'

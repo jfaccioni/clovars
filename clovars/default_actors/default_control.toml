@@ -1,0 +1,3 @@
+name = 'Control'
+division_curve = 'default_control_division'
+death_curve = 'default_control_death'

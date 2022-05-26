@@ -1,0 +1,6 @@
+type = 'Gamma'
+
+[params]
+mean = 16.23
+std = 2.84
+a = 3.32

@@ -1,0 +1,5 @@
+type = 'Gaussian'
+
+[params]
+mean = 100.00
+std = 1.00
