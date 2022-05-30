@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>{% block title %} List of Current Treatments {% endblock %}</h1>
+  {% for treatment in treatments %}
+    <a href="#">
+      <h2>{{ treatment.name }}</h2>
+      <p>{{ treatment.division_curve }}</p>
+      <p>{{ treatment.death_curve }}</p>
+    </a>
+    <span class="badge badge-primary">{{ treatment.id }}</span>
+    <hr>
+  {% endfor %}
+{% endblock %}
