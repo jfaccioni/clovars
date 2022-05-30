@@ -59,45 +59,67 @@ class TomlLoader:
                 validator = self.validation_dict[key]
                 validator.validate(name=key, value=value)
 
-    def load_structure(self) -> None:
-        """Loads the child TomlLoader instances, as indicated by the loading dict."""
-        for key, value in self.loading_dict.items():
-            data = self.data[key]
-            if isinstance(data, dict):
-                for k, v in data.items():
-                    self.load_value(key=k, value=v)
-            elif isinstance(data, str):
-                toml_file_name = f"{data}.toml"
-                loader_path = self.toml_folder / toml_file_name
-                loader = value(toml_path=loader_path)
-                replaced_data = loader.data
-            else:
-                raise TypeError(f'Unexpected type: {type(data)}')
-            self.data[key] = replaced_data
-
-    def load_value(
+    def load_structure(
             self,
-            key: str,
-            value: Any,
-    ) -> Any:
-        """Docstring."""
-        if isinstance(value, dict):
-            d = {}
-            for k, v in value.items():
-                d[k] = self.load_value(key=k, value=v)
-            return d
-        else:
+            d: dict | None = None,
+    ) -> None:
+        """Loads the child TomlLoader instances, as indicated by the loading dict."""
+        d = d or self.data
+        for key, value in d.items():
+            if self.is_toml_path(value=value):  # Load structure from another toml file
+                toml_path = self.toml_folder / value
+                d[key] = self.loading_dict[key](toml_path=toml_path).data
+            elif self.is_dict(value=value):  # Recursively get structure from dict
+                self.load_structure(d=value)
+            else:  # Take the value as it is
+                d[key] = value
 
-            loader_path = self.toml_folder / toml_file_name
-            loader = value(toml_path=loader_path)
-            d = loader.data
-        return d
+    @staticmethod
+    def is_dict(value: Any) -> bool:
+        """Returns True if the given value is a dictionary."""
+        return isinstance(value, dict)
+
+    def is_toml_path(
+            self,
+            value: Any,
+    ) -> bool:
+        """Returns True if the given value corresponds to an existing toml file in the filesystem."""
+        try:
+            path = self.toml_folder / value
+        except TypeError:  # Value cannot be converted to Path
+            return False
+        if path.is_file() and path.exists() and path.suffix.lower() == '.toml':
+            return True
+        return False
+
+
+class ConstantDict(dict):
+    def __init__(
+            self,
+            constant: Any,
+            *args,
+            **kwargs,
+    ) -> None:
+        """Initializes a ConstantDict."""
+        self._constant = constant
+        super().__init__(*args, **kwargs)
+
+    def __missing__(
+            self,
+            key: Any,
+    ) -> Any:
+        """Returns the constant value whenever a missing key is accessed, and sets the key's value to the constant."""
+        self[key] = self._constant
+        return self._constant
+
 
 @dataclass
 class TreatmentRegimenTomlLoader(TomlLoader):
     """Class representing the treatment_regimen.toml loader."""
-    loading_dict: ClassVar[dict] = {
-    }
+    loading_dict: ClassVar[ConstantDict] = None
+
+
+TreatmentRegimenTomlLoader.loading_dict = ConstantDict(TreatmentRegimenTomlLoader)
 
 
 @dataclass
@@ -130,7 +152,6 @@ def main(
     """Main function of this script."""
     run_file_path = actors_path / run_file_name
     loader = RunTomlLoader(toml_path=run_file_path)
-    print(loader)
     print(loader.data)
 
 

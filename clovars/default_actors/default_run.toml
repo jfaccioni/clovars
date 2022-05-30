@@ -1,6 +1,6 @@
 verbose = true
 delta = 3600.0  # time between two simulation frames (in seconds)
-well = 'default_well'
+well = 'default_well.toml'
 
 [output]
 output_folder = 'output'
