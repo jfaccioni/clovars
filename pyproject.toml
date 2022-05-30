@@ -24,6 +24,10 @@ seaborn = "^0.11.2"
 
 [tool.poetry.dev-dependencies]
 SQLAlchemy = "*"
+Flask = "*"
+Flask-SQLAlchemy = "*"
+Flask-WTF = "*"
+Flask-Bootstrap4 = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
