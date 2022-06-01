@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>{% block title %}Treatments{% endblock %}</h1>
+  {% for treatment in treatments %}
+    {% include 'treatment.html' %}
+  {% endfor %}
+  <a class="btn btn-primary" href={{ url_for('treatment_bp.new_treatment') }}>Add new Treatment...</a>
+{% endblock %}

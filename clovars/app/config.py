@@ -13,6 +13,7 @@ APP_PATH = ROOT_PATH / 'clovars' / 'app'
 class Config:
     """Base class for setting Flask configuration."""
     FLASK_APP = os.environ.get('FLASK_APP')
+    FLASK_ENV = os.environ.get('FLASK_ENV')
     SECRET_KEY = os.environ.get('SECRET_KEY')
     SESSION_COOKIE_NAME = os.environ.get('SESSION_COOKIE_NAME')
     STATIC_FOLDER = APP_PATH / 'static'
@@ -22,17 +23,17 @@ class Config:
 
 class DevConfig(Config):
     """Class for setting Flask development configuration."""
-    FLASK_ENV = 'development'
     DEBUG = True
     TESTING = True
+    TEMPLATES_AUTO_RELOAD = True
     SQLALCHEMY_DATABASE_URI = f'sqlite:///{APP_PATH / "test.db"}'
     SQLALCHEMY_ECHO = True
 
 
 class ProdConfig(Config):
     """Class for setting Flask production configuration."""
-    FLASK_ENV = 'production'
     DEBUG = False
     TESTING = False
+    TEMPLATES_AUTO_RELOAD = False
     SQLALCHEMY_DATABASE_URI = f'sqlite:///{APP_PATH / "app.db"}'
     SQLALCHEMY_ECHO = False

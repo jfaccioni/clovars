@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-from flask import Blueprint
+from typing import TYPE_CHECKING
 
 from clovars.app import db
+
+if TYPE_CHECKING:
+    from flask_sqlalchemy import SQLAlchemy
 
 
 class TreatmentRegimen(db.Model):
@@ -88,3 +91,48 @@ class Curve(db.Model):
     def __repr__(self) -> str:
         """Returns a programmatic representation of the Curve."""
         return str(self)
+
+
+def place_initial_data(database: SQLAlchemy) -> None:
+    """Sets up the initial data on the database."""
+    regimen = TreatmentRegimen(
+        name='MyTreatmentRegimen',
+        schedules=[
+            Schedule(
+                frame=0,
+                treatment=Treatment(
+                    name='Control',
+                    division_curve=Curve(
+                        name='Control_div',
+                        type='Gaussian',
+                        mean=24.0,
+                        std=3.0,
+                    ),
+                    death_curve=Curve(
+                        name='Control_dth',
+                        type='Gaussian',
+                        mean=34.0,
+                        std=3.0,
+                    ),
+                ),
+            ),
+            Schedule(
+                frame=72,
+                treatment=Treatment(
+                    name='TMZ',
+                    division_curve=Curve(
+                        name='TMZ_div',
+                        mean=24.0,
+                        std=3.0,
+                    ),
+                    death_curve=Curve(
+                        name='TMZ_dth',
+                        mean=25.0,
+                        std=3.0,
+                    ),
+                ),
+            ),
+        ]
+    )
+    database.session.add(regimen)
+    database.session.commit()
