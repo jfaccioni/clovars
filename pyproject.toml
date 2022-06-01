@@ -29,6 +29,7 @@ Flask-SQLAlchemy = "*"
 Flask-WTF = "*"
 Flask-Bootstrap4 = "*"
 python-dotenv = "*"
+plotly = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
