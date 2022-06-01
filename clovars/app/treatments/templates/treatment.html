@@ -1,6 +1,25 @@
 {% block content %}
-  <span class="badge badge-primary">{{ treatment.id }}</span>
-  <h2>{{ treatment.name }}</h2>
-  <p>Division Curve: {{ treatment.division_curve }}</p>
-  <p>Death Curve: {{ treatment.death_curve }}</p>
+  <div class="treatment-container border border-primary rounded">
+    <span class="badge badge-primary">{{ treatment.id }}</span>
+    <h2 class ="treatment-name">{{ treatment.name }}</h2>
+    <div class="container">
+      <div id="{{ treatment.name + '_chart' }}" class="chart"></div>
+      <div class="row">
+        {% for curve, label in treatment.get_curves_labels() %}
+          <div class="col-md curve-params">
+            {%  with curve=curve, label=label %}
+              {% include 'curve.html' %}
+            {%  endwith %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+  <script type='text/javascript'>
+      var graphs = {{treatment.get_graph_json() | safe}};
+      Plotly.plot({{ treatment.name + '_chart' }}, graphs, {});
+  </script>
+
 {% endblock %}
