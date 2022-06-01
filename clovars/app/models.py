@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from flask_sqlalchemy import SQLAlchemy
+from flask import Blueprint
 
-db = SQLAlchemy()
+from clovars.app import db
 
 
 class TreatmentRegimen(db.Model):
