@@ -8,18 +8,19 @@ from clovars.app.models import Treatment, db
 treatment_bp = Blueprint(
     'treatment_bp',
     __name__,
+    url_prefix='/treatments',
     template_folder='templates',
     static_folder='static',
 )
 
 
-@treatment_bp.route("/treatments/view")
+@treatment_bp.route("/view")
 def view_treatments() -> str:
     treatments = Treatment.query.all()
     return render_template('view_treatments.html', treatments=treatments)
 
 
-@treatment_bp.route("/treatments/new", methods=['GET', 'POST'])
+@treatment_bp.route("/new", methods=['GET', 'POST'])
 def new_treatment() -> str | Response:
     treatment_form = NewTreatmentForm()
     if request.method == 'GET':

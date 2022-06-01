@@ -5,6 +5,7 @@ from flask import render_template, Blueprint
 home_bp = Blueprint(
     'home_bp',
     __name__,
+    url_prefix='/',
     template_folder='templates',
     static_folder='static',
 )
