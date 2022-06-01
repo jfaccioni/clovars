@@ -1,0 +1,8 @@
+{% block content %}
+  <h3 class={{ label.lower() }}>{{ label + ' Curve' }}</h3>
+  <p class={{ label.lower() }}>Type: {{ curve.type }}</p>
+  <p class={{ label.lower() }}>Parameters:</p>
+  {% for name, value in curve.params() %}
+    <p class={{ label.lower() }}>{{ name.capitalize() }}: {{ value }}</p>
+  {% endfor %}
+{% endblock %}
