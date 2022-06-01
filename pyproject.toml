@@ -28,6 +28,7 @@ Flask = "*"
 Flask-SQLAlchemy = "*"
 Flask-WTF = "*"
 Flask-Bootstrap4 = "*"
+python-dotenv = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
