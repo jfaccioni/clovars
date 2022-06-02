@@ -18,6 +18,14 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
+name = "cssmin"
+version = "0.2.0"
+description = "A Python port of the YUI CSS compression algorithm."
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "cycler"
 version = "0.11.0"
 description = "Composable style cycles"
@@ -59,6 +67,18 @@ Werkzeug = ">=2.0"
 [package.extras]
 async = ["asgiref (>=3.2)"]
 dotenv = ["python-dotenv"]
+
+[[package]]
+name = "flask-assets"
+version = "2.0"
+description = "Asset management for Flask, to compress and merge CSS and Javascript files."
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+Flask = ">=0.8"
+webassets = ">=2.0"
 
 [[package]]
 name = "flask-bootstrap4"
@@ -173,12 +193,32 @@ MarkupSafe = ">=2.0"
 i18n = ["Babel (>=2.7)"]
 
 [[package]]
+name = "jsmin"
+version = "3.0.1"
+description = "JavaScript minifier."
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "kiwisolver"
 version = "1.4.2"
 description = "A fast implementation of the Cassowary constraint solver"
 category = "main"
 optional = false
 python-versions = ">=3.7"
+
+[[package]]
+name = "lesscpy"
+version = "0.15.0"
+description = "Python LESS compiler"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+ply = "*"
+six = "*"
 
 [[package]]
 name = "markupsafe"
@@ -269,6 +309,14 @@ python-versions = ">=3.6"
 
 [package.dependencies]
 tenacity = ">=6.2.0"
+
+[[package]]
+name = "ply"
+version = "3.11"
+description = "Python Lex & Yacc"
+category = "dev"
+optional = false
+python-versions = "*"
 
 [[package]]
 name = "pyparsing"
@@ -428,6 +476,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "webassets"
+version = "2.0"
+description = "Media asset management for Python, with glue code for various web frameworks"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "werkzeug"
 version = "2.1.2"
 description = "The comprehensive WSGI web application library."
@@ -467,7 +523,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "a0d2bdc9c66455e74c3111868bf90beea825a82ec51d979c3d0364f07f8f1a59"
+content-hash = "74a81c657c3cfb2a411fa9306025abfdc0470c0a5d61d32b32487dc001d426f8"
 
 [metadata.files]
 click = [
@@ -477,6 +533,9 @@ click = [
 colorama = [
     {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
     {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
+]
+cssmin = [
+    {file = "cssmin-0.2.0.tar.gz", hash = "sha256:e012f0cc8401efcf2620332339011564738ae32be8c84b2e43ce8beaec1067b6"},
 ]
 cycler = [
     {file = "cycler-0.11.0-py3-none-any.whl", hash = "sha256:3a27e95f763a428a739d2add979fa7494c912a32c17c4c38c4d5f082cad165a3"},
@@ -492,6 +551,10 @@ ete3 = [
 flask = [
     {file = "Flask-2.1.2-py3-none-any.whl", hash = "sha256:fad5b446feb0d6db6aec0c3184d16a8c1f6c3e464b511649c8918a9be100b4fe"},
     {file = "Flask-2.1.2.tar.gz", hash = "sha256:315ded2ddf8a6281567edb27393010fe3406188bafbfe65a3339d5787d89e477"},
+]
+flask-assets = [
+    {file = "Flask-Assets-2.0.tar.gz", hash = "sha256:1dfdea35e40744d46aada72831f7613d67bf38e8b20ccaaa9e91fdc37aa3b8c2"},
+    {file = "Flask_Assets-2.0-py3-none-any.whl", hash = "sha256:2845bd3b479be9db8556801e7ebc2746ce2d9edb4e7b64a1c786ecbfc1e5867b"},
 ]
 flask-bootstrap4 = [
     {file = "Flask-Bootstrap4-4.0.2.tar.gz", hash = "sha256:fcd52206a844573692b86ee79522f970363eb1df29f57c2eb52bd2cbc6ffb9ee"},
@@ -578,6 +641,9 @@ jinja2 = [
     {file = "Jinja2-3.1.2-py3-none-any.whl", hash = "sha256:6088930bfe239f0e6710546ab9c19c9ef35e29792895fed6e6e31a023a182a61"},
     {file = "Jinja2-3.1.2.tar.gz", hash = "sha256:31351a702a408a9e7595a8fc6150fc3f43bb6bf7e319770cbc0db9df9437e852"},
 ]
+jsmin = [
+    {file = "jsmin-3.0.1.tar.gz", hash = "sha256:c0959a121ef94542e807a674142606f7e90214a2b3d1eb17300244bbb5cc2bfc"},
+]
 kiwisolver = [
     {file = "kiwisolver-1.4.2-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:6e395ece147f0692ca7cdb05a028d31b83b72c369f7b4a2c1798f4b96af1e3d8"},
     {file = "kiwisolver-1.4.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:0b7f50a1a25361da3440f07c58cd1d79957c2244209e4f166990e770256b6b0b"},
@@ -622,6 +688,10 @@ kiwisolver = [
     {file = "kiwisolver-1.4.2-pp37-pypy37_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0e8afdf533b613122e4bbaf3c1e42c2a5e9e2d1dd3a0a017749a7658757cb377"},
     {file = "kiwisolver-1.4.2-pp37-pypy37_pp73-win_amd64.whl", hash = "sha256:42f6ef9b640deb6f7d438e0a371aedd8bef6ddfde30683491b2e6f568b4e884e"},
     {file = "kiwisolver-1.4.2.tar.gz", hash = "sha256:7f606d91b8a8816be476513a77fd30abe66227039bd6f8b406c348cb0247dcc9"},
+]
+lesscpy = [
+    {file = "lesscpy-0.15.0-py2.py3-none-any.whl", hash = "sha256:7f7437df153ca9221beb5425c189d1523f95f864d1400f311598527ff03248d7"},
+    {file = "lesscpy-0.15.0.tar.gz", hash = "sha256:ef058fb3fca077f0136222c415bc6d20fe256e92648ccbf4b3de874ba03b9b9d"},
 ]
 markupsafe = [
     {file = "MarkupSafe-2.1.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:86b1f75c4e7c2ac2ccdaec2b9022845dbb81880ca318bb7a0a01fbf7813e3812"},
@@ -797,6 +867,10 @@ plotly = [
     {file = "plotly-5.8.0-py2.py3-none-any.whl", hash = "sha256:0e6e2382aafe2b2978d2c1b10ea93e73ad1ec80fa9a195ff6eea62af7905dfdc"},
     {file = "plotly-5.8.0.tar.gz", hash = "sha256:58cef3292f5994d82154d51fbc7338c48009fc47ea32ffe052ad29aaa15e0df9"},
 ]
+ply = [
+    {file = "ply-3.11-py2.py3-none-any.whl", hash = "sha256:096f9b8350b65ebd2fd1346b12452efe5b9607f7482813ffca50c22722a807ce"},
+    {file = "ply-3.11.tar.gz", hash = "sha256:00c7c1aaa88358b9c765b6d3000c6eec0ba42abca5351b095321aef446081da3"},
+]
 pyparsing = [
     {file = "pyparsing-3.0.9-py3-none-any.whl", hash = "sha256:5026bae9a10eeaefb61dab2f09052b9f4307d44aee4eda64b309723d8d206bbc"},
     {file = "pyparsing-3.0.9.tar.gz", hash = "sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb"},
@@ -901,6 +975,10 @@ tomli = [
 ]
 visitor = [
     {file = "visitor-0.1.3.tar.gz", hash = "sha256:2c737903b2b6864ebc6167eef7cf3b997126f1aa94bdf590f90f1436d23e480a"},
+]
+webassets = [
+    {file = "webassets-2.0-py3-none-any.whl", hash = "sha256:a31a55147752ba1b3dc07dee0ad8c8efff274464e08bbdb88c1fd59ffd552724"},
+    {file = "webassets-2.0.tar.gz", hash = "sha256:167132337677c8cedc9705090f6d48da3fb262c8e0b2773b29f3352f050181cd"},
 ]
 werkzeug = [
     {file = "Werkzeug-2.1.2-py3-none-any.whl", hash = "sha256:72a4b735692dd3135217911cbeaa1be5fa3f62bffb8745c5215420a03dc55255"},
