@@ -19,3 +19,7 @@ output/
 __pycache__/
 # environment variables file
 .env
+# webassets cache
+.webassets-cache/
+# minified files
+*.min.*
