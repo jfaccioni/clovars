@@ -1,9 +1,9 @@
 {% block content %}
-  <div class="border rounded treatment-container">
+  <div class="border border-primary rounded treatment-container">
     <h2 class ="treatment-name">{{ treatment.name }}</h2>
     <div id="{{ treatment.name + '_chart' }}" class="chart"></div>
     {% for curve, label in treatment.get_curves_labels() %}
-      <div class="col-s">
+      <div class="col-md">
         {%  with curve=curve, label=label %}
           {% include 'curve.html' %}
         {%  endwith %}

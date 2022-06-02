@@ -26,8 +26,9 @@ class DevConfig(Config):
     DEBUG = True
     TESTING = True
     TEMPLATES_AUTO_RELOAD = True
+    ASSETS_DEBUG = True
     SQLALCHEMY_DATABASE_URI = f'sqlite:///{APP_PATH / "test.db"}'
-    SQLALCHEMY_ECHO = True
+    SQLALCHEMY_ECHO = False
 
 
 class ProdConfig(Config):
@@ -35,5 +36,6 @@ class ProdConfig(Config):
     DEBUG = False
     TESTING = False
     TEMPLATES_AUTO_RELOAD = False
+    ASSETS_DEBUG = False
     SQLALCHEMY_DATABASE_URI = f'sqlite:///{APP_PATH / "app.db"}'
     SQLALCHEMY_ECHO = False

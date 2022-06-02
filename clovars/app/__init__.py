@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 from flask import Flask
+from flask_assets import Environment
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 
+from clovars.app.assets import compile_static_assets
 from clovars.app.config import DevConfig, ProdConfig
 
 db = SQLAlchemy()
+assets = Environment()
 
 
 def init_app():
@@ -28,6 +31,10 @@ def init_app():
         app.register_blueprint(home_routes.home_bp)
         from clovars.app.treatments import routes as treatment_routes
         app.register_blueprint(treatment_routes.treatment_bp)
+
+    # COMPILE ASSETS
+    with app.app_context():
+        compile_static_assets(assets=assets, env=env)
 
     # INIT DATABASE
     with app.app_context():
