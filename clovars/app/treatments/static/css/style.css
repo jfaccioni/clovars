@@ -1,21 +1,28 @@
-.curve-params h3, p {
-    text-align: center;
-}
-.curve-params h3.division, p.division {
-    color: #50993e;
-}
-.curve-params h3.death, p.death {
-    color: #993e50;
-}
-
 .treatment-name {
     text-align: center;
+    padding: 0;
+    margin: 0;
+}
+
+.text-division, .text-death {
+    text-align: center;
+    padding: 0;
+    margin: 0;
+}
+
+.text-division {
+    color: #029e73;
+}
+
+.text-death {
+    color: #de8f05;
 }
 
 .treatment-container {
-    margin: 20px auto;
-    padding: 20px;
+    margin: 5px auto;
+    padding: 5px;
 }
+
 .new-tt-btn {
     text-align: center;
     font-size: larger;

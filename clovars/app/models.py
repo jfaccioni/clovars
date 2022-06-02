@@ -104,8 +104,8 @@ class Treatment(db.Model):
             y='y',
             color='name',
             color_discrete_map={
-                "Division": "#50993E",
-                "Death": "#993E50",
+                "Division": "#029E73",
+                "Death": '#DE8F05',
             }
         )
         return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
