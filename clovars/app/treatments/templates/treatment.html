@@ -1,19 +1,14 @@
 {% block content %}
-  <div class="treatment-container border border-primary rounded">
-    <span class="badge badge-primary">{{ treatment.id }}</span>
+  <div class="border rounded treatment-container">
     <h2 class ="treatment-name">{{ treatment.name }}</h2>
-    <div class="container">
-      <div id="{{ treatment.name + '_chart' }}" class="chart"></div>
-      <div class="row">
-        {% for curve, label in treatment.get_curves_labels() %}
-          <div class="col-md curve-params">
-            {%  with curve=curve, label=label %}
-              {% include 'curve.html' %}
-            {%  endwith %}
-          </div>
-        {% endfor %}
+    <div id="{{ treatment.name + '_chart' }}" class="chart"></div>
+    {% for curve, label in treatment.get_curves_labels() %}
+      <div class="col-s">
+        {%  with curve=curve, label=label %}
+          {% include 'curve.html' %}
+        {%  endwith %}
       </div>
-    </div>
+    {% endfor %}
   </div>
 
   <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>

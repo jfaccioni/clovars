@@ -2,15 +2,6 @@
 
 {% import "bootstrap/wtf.html" as wtf %}
 
-{% block styles %}
-  {{ super() }}
-  <style>body { background: #e8f1f9; }</style>
-{% endblock %}
+{% block title %}Add New Treatment{% endblock %}
 
-{% block title %}
-  Add New Treatment
-{% endblock %}
-
-{% block content %}
-  {{ wtf.quick_form(form) }}
-{% endblock %}
+{% block content %}{{ wtf.quick_form(form) }}{% endblock %}

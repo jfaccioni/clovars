@@ -8,7 +8,7 @@ from clovars.app.models import Treatment, db
 treatment_bp = Blueprint(
     'treatment_bp',
     __name__,
-    url_prefix='/treatments',
+    url_prefix='/treatment',
     template_folder='templates',
     static_folder='static',
 )
