@@ -47,6 +47,7 @@ def compile_static_assets(
     assets.register('treatment_styles', treatment_style_bundle)
     assets.register('treatment_js', treatment_js_bundle)
     if env == 'development':
+        home_style_bundle.build()
         try:
             home_style_bundle.build()
             print('Built CSS for home blueprint')
