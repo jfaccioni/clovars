@@ -34,6 +34,8 @@ flask-assets = "*"
 lesscpy = "*"
 cssmin = "*"
 jsmin = "*"
+dash = "*"
+dash-bootstrap-components = "*"
 
 
 [build-system]
