@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 import dash
 import dash_bootstrap_components as dbc
-from dash import html, Output, Input, dcc
+from dash import html, Output, Input, dcc, callback, State
 
 
 @dataclass
