@@ -10,20 +10,6 @@ from components import NumericInputGroup
 
 def get_globals_tab() -> html.Div:
     """Returns a html div representing the globals tab."""
-    globals_card = dbc.Card([
-        html.Div([dbc.Label('Simulation time', size='lg')]),
-        html.Br(),
-        get_time_controls(),
-        html.Br(),
-        html.Div([dbc.Label('Early stopping', size='lg')]),
-        html.Br(),
-        get_early_stopping_controls(),
-    ])
-    return html.Div([globals_card, dcc.Store(id='globals-store', data={})])
-
-
-def get_time_controls() -> html.Div:
-    """Returns a html div with the simulation time parameters (delta/frames)."""
     delta_params = {
         'value': 3600,
         'min_': 0,
@@ -36,6 +22,37 @@ def get_time_controls() -> html.Div:
         'max_': 10_000,
         'step': 1,
     }
+    colony_one_params = {
+        'value': 100,
+        'min_': 0,
+        'max_': 10_000,
+        'step': 1,
+    }
+    colony_all_params = {
+        'value': 50,
+        'min_': 0,
+        'max_': 10_000,
+        'step': 1,
+    }
+    globals_card = dbc.Card([
+        html.Div([dbc.Label('Simulation time', size='lg')]),
+        html.Br(),
+        get_time_controls(delta_params=delta_params, frame_params=frame_params),
+        html.Br(),
+        html.Div([dbc.Label('Early stopping', size='lg')]),
+        html.Br(),
+        get_early_stopping_controls(colony_one_params=colony_one_params, colony_all_params=colony_all_params),
+    ])
+    return html.Div([globals_card, dcc.Store(id='globals-store', data={})])
+
+
+def get_time_controls(
+        delta_params: dict | None = None,
+        frame_params: dict | None = None,
+) -> html.Div:
+    """Returns a html div with the simulation time parameters (delta/frames)."""
+    delta_params = delta_params or {}
+    frame_params = frame_params or {}
     return html.Div([
         NumericInputGroup(
             name='delta',
@@ -54,20 +71,13 @@ def get_time_controls() -> html.Div:
     ])
 
 
-def get_early_stopping_controls() -> html.Div:
+def get_early_stopping_controls(
+        colony_one_params: dict | None = None,
+        colony_all_params: dict | None = None,
+) -> html.Div:
     """Returns a html div with the simulation early stopping parameters (one colony / all colonies)."""
-    colony_one_params = {
-        'value': 100,
-        'min_': 0,
-        'max_': 10_000,
-        'step': 1,
-    }
-    colony_all_params = {
-        'value': 50,
-        'min_': 0,
-        'max_': 10_000,
-        'step': 1,
-    }
+    colony_one_params = colony_one_params or {}
+    colony_all_params = colony_all_params or {}
     return html.Div([
         NumericInputGroup(
             name='colony-one',
