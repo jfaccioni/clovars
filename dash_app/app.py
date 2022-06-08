@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pprint
+
 import dash_bootstrap_components as dbc
 from dash import Dash, html, Output, State, Input, callback
 
@@ -52,12 +54,16 @@ def init_app(theme: str) -> Dash:
 def display_parameters(
         global_data: dict,
         colonies_data: dict,
-        _: int,  # n_clicks
+        n_clicks: int,
 ) -> None:
     """Displays the current parameters on the console."""
-    data = global_data.copy()
-    data.update(colonies_data)
-    print("Total data:\n", data)
+    if n_clicks is not None:
+        data = {
+            'global': global_data,
+            'colonies': colonies_data,
+        }
+        print("Total data:\n")
+        pprint.pprint(data, sort_dicts=False)
     return None
 
 
