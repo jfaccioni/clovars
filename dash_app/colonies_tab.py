@@ -4,77 +4,107 @@ from dataclasses import dataclass
 from typing import Any
 
 import dash_bootstrap_components as dbc
-from dash import html, dcc, callback, Output, Input, State
+from dash import html, dcc, callback, Output, Input, State, MATCH, ALL
 
-from components import NumericInputGroup
+from components import NumericInputGroup, CollapsableDiv, DivSelectorDropdown
+from dash_app.utils import get_dropdown_label_from_index
 
 
 def get_colonies_tab() -> html.Div:
     """Returns a html div representing the colonies tab."""
+    radius_params = {
+        'value': 20.0,
+        'min_': 0.0,
+        'max_': 1_000,
+        'step': 0.5,
+    }
+    max_speed_params = {
+        'value': 0.02,
+        'min_': 0.0,
+        'max_': 10.0,
+        'step': 0.01,
+    }
+    memory_params = {
+        'value': 0.2,
+        'min_': 0.0,
+        'max_': 1.0,
+        'step': 0.05,
+    }
     colonies_card = dbc.Card([
         dbc.Label('Cell Parameters', size='lg'),
         html.Br(),
-        html.Div([
-            dbc.Label('Radius', size='md'),
-            NumericInputGroup(name='radius', suffix='µm', value=20.0, min_=0.0, max_=1_000, step=0.5),
-        ]),
-        html.Div([
-            dbc.Label('Max Speed', size='md'),
-            NumericInputGroup(name='max-speed', suffix='µm/s', value=0.02, min_=0.0, max_=10.0, step=0.01),
-        ]),
+        html.Div([NumericInputGroup(name='radius', prefix='Radius:', suffix='µm', **radius_params)]),
+        html.Br(),
+        html.Div([NumericInputGroup(name='max-speed', prefix='Max Speed:', suffix='µm/s', **max_speed_params)]),
         html.Br(),
         dbc.Label('Cell Memory', size='lg'),
-        # html.Br(),
-        # html.Div([
-        #     checkbox := dbc.Checkbox(label='Linked inheritance'),
-        #     dbc.Row([
-        #         dbc.Col([
-        #             md_collapse := dbc.Collapse([
-        #                 dbc.Label('mother-daughter'),
-        #                 dbc.Input(type="number", placeholder='...', value=0.5, min=0.0, max=1.0, step=0.05),
-        #             ], is_open=False),
-        #         ]),
-        #         dbc.Col([
-        #             ss_collapse := dbc.Collapse([
-        #                 dbc.Label('sister-sister'),
-        #                 dbc.Input(type="number", placeholder='...', value=0.5, min=0.0, max=1.0, step=0.05),
-        #             ], is_open=False),
-        #         ]),
-        #     ]),
-        # ]),
-        # html.Br(),
-        # dbc.Label('Cell Signal', size='lg'),
-        # html.Br(),
+        html.Br(),
+        CollapsableDiv([
+                NumericInputGroup(name='mother-daughter-memory', prefix='Mother/Daughter memory:', **memory_params),
+                html.Br(),
+                NumericInputGroup(name='sister-sister-memory', prefix='Sister/Sister memory:', **memory_params),
+        ], name='memory', label='Link inheritance', checked=False),
+        html.Br(),
+        dbc.Label('Cell Signal', size='lg'),
+        html.Br(),
         # get_signal_controller(),
+        DivSelectorDropdown({
+            'Stochastic': html.Div('Stochastic Data'),
+            'Sinusoidal': html.Div('Sinusoidal Data'),
+            'Stochastic-Sinusoidal': html.Div('Stochastic-Sinusoidal Data'),
+            'Gaussian': html.Div('Gaussian Data'),
+            'EM Gaussian': html.Div('EM Gaussian Data'),
+        }, name='signal'),
     ], body=True)
-
-    # TODO: replace html.Br with actual CSS and classes for each html element
-
-    # @dash.callback(
-    #     Output(md_collapse, 'is_open'),
-    #     Output(ss_collapse, 'is_open'),
-    #     Input(checkbox, 'value'),
-    # )
-    # def open_collapsable_boxes(checkbox_is_checked: bool) -> tuple[bool, bool]:
-    #     return checkbox_is_checked, checkbox_is_checked
-
     return html.Div([colonies_card, dcc.Store(id='colonies-store', data={})])
+
+
+# ### CALLBACKS
+
+@callback(
+    Output({'type': 'collapsable-div-collapse', 'name': MATCH}, 'is_open'),
+    Input({'type': 'collapsable-div-checkbox', 'name': MATCH}, 'value'),
+)
+def toggle_collapsable_div(checkbox_checked: bool) -> bool:
+    """Opens the collapsable div whenever its checkbox is checked."""
+    return checkbox_checked
 
 
 @callback(
     Output('colonies-store', 'data'),
     Input({'type': 'numeric-input-inputbox', 'name': 'radius'}, 'value'),  # radius input
     Input({'type': 'numeric-input-inputbox', 'name': 'max-speed'}, 'value'),  # max_speed input
+    Input({'type': 'collapsable-div-checkbox', 'name': 'memory'}, 'value'),  # memory checkbox
+    Input({'type': 'numeric-input-inputbox', 'name': 'mother-daughter-memory'}, 'value'),  # mother-daughter mem. input
+    Input({'type': 'numeric-input-inputbox', 'name': 'sister-sister-memory'}, 'value'),  # sister-sister mem. input
+    Input({'type': 'div-selector-dropdown', 'name': 'signal'}, 'value'),  # Signal index in dropdown
+    Input({'type': 'div-selector-child', 'parent-label': ALL, 'name': 'signal'}, 'children'),  # All signal data
+    State({'type': 'div-selector-dropdown', 'name': 'signal'}, 'options'),  # Signal options in dropdown
     State('colonies-store', 'data'),
 )
-def update_globals_store_parameters(
+def update_colonies_store_parameters(
         radius_value: float,
         max_speed_value: float,
+        memory_checked: bool,
+        mother_daughter_memory: float,
+        sister_sister_memory: float,
+        signal_index: int | None,
+        signal_data: list[str],
+        signal_options: list[dict[str, str | int | None]],
         store_data: dict[str, Any],
 ) -> dict[str, Any]:
-    """Updates the parameters in the globals store's storage."""
+    """Updates the parameters in the colonies store's storage."""
     store_data['radius'] = radius_value
     store_data['max_speed'] = max_speed_value
+    store_data['mother_daughter_memory'] = mother_daughter_memory if memory_checked is True else None
+    store_data['sister_sister_memory'] = sister_sister_memory if memory_checked is True else None
+    if signal_index is not None:
+        signal_name = get_dropdown_label_from_index(dropdown_index=signal_index, dropdown_options=signal_options)
+        store_data['signal'] = signal_name
+        store_data['signal_data'] = signal_data[signal_index]
+    else:
+        store_data['signal'] = None
+        store_data['signal_data'] = None
     return store_data
 
 
