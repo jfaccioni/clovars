@@ -5,45 +5,66 @@ import pprint
 import dash_bootstrap_components as dbc
 from dash import Dash, html, Output, State, Input, callback
 
-from dash_app.globals_tab import get_globals_tab
 from dash_app.colonies_tab import get_colonies_tab
+from dash_app.globals_tab import get_globals_tab
 
 
 class Config:
     DEBUG = True
     THREADED = True
-    THEME = 'SIMPLEX'
+    THEME = 'BOOTSTRAP'
 
 
 def init_app(theme: str) -> Dash:
     """Initializes and returns the Dash app."""
+    # INIT APP
     app = Dash(
         __name__,
         external_stylesheets=[getattr(dbc.themes, theme)],
     )
-    app.layout = dbc.Container([
-        html.H1("CloVarS App"),
-        html.Hr(),
-        dbc.Row([
-            dbc.Col([
-                dbc.Tabs([
-                    dbc.Tab(get_globals_tab(), label='Globals'),
-                    dbc.Tab(get_colonies_tab(), label='Colonies'),
+    # LEFT COLUMN
+    left_col = dbc.Col(
+        md=8,
+        children=[
+            dbc.Tabs(
+                children=[
+                    dbc.Tab(get_globals_tab(), label='Globals', className='clovars-tab globals-tab'),
+                    dbc.Tab(get_colonies_tab(), label='Colonies', className='clovars-tab colonies-tab'),
                     # dbc.Tab(get_treatment_regimen_controls(), label='Treatment Regimen'),
-                    ]),
-            ], md=4),
-            dbc.Col([
-                dbc.Button('Run CloVarS!', id='run-clovars-button', size='lg'),
-            ], md=8),
-        ], align='center'),
-        html.Div(id='dummy-div-main', style={'display': 'none'}),
-    ], fluid=True)
+                ],
+            ),
+        ],
+    )
+    # RIGHT_COLUMN
+    right_col = dbc.Col(
+        md=4,
+        align='start',
+        children=[
+            dbc.Button('Run CloVarS!', id='run-clovars-button', size='lg'),
+        ],
+    )
+    # MAIN APP LAYOUT
+    app.layout = dbc.Container(
+        fluid=True,
+        children=[
+            html.H1("CloVarS App", className='text-dark'),
+            html.Hr(),
+            dbc.Row(
+                align='center',
+                children=[
+                    left_col,
+                    right_col,
+                ],
+            ),
+            html.Div(id='dummy-div-main', className='dummy-div'),
+        ],
+    )
     padding = [html.Br()] * 10
     app.layout.children += padding  # TODO: use actual CSS here
     return app
 
 
-# ### CALLBACKS
+# ### GLOBAL APP CALLBACKS
 
 @callback(
     Output('dummy-div-main', 'children'),
