@@ -4,10 +4,10 @@ from dataclasses import dataclass
 from typing import Any
 
 import dash_bootstrap_components as dbc
-from dash import html, dcc, callback, Output, Input, State, MATCH, ALL
+from dash import html, dcc, callback, Output, Input, State, ALL
 
-from components import NumericInputGroup, CollapsableDiv, DivSelectorDropdown
-from dash_app.utils import get_dropdown_label_from_index
+from dash_app.components import NumericInputGroup, CollapsableDiv, DivSelectorDropdown
+from dash_app.utils import get_dropdown_index
 
 
 def get_colonies_tab() -> html.Div:
@@ -62,35 +62,31 @@ def get_colonies_tab() -> html.Div:
 # ### CALLBACKS
 
 @callback(
-    Output({'type': 'collapsable-div-collapse', 'name': MATCH}, 'is_open'),
-    Input({'type': 'collapsable-div-checkbox', 'name': MATCH}, 'value'),
-)
-def toggle_collapsable_div(checkbox_checked: bool) -> bool:
-    """Opens the collapsable div whenever its checkbox is checked."""
-    return checkbox_checked
-
-
-@callback(
     Output('colonies-store', 'data'),
+    # RADIUS
     Input({'type': 'numeric-input-inputbox', 'name': 'radius'}, 'value'),  # radius input
+    # MAX SPEED
     Input({'type': 'numeric-input-inputbox', 'name': 'max-speed'}, 'value'),  # max_speed input
+    # MEMORY
     Input({'type': 'collapsable-div-checkbox', 'name': 'memory'}, 'value'),  # memory checkbox
     Input({'type': 'numeric-input-inputbox', 'name': 'mother-daughter-memory'}, 'value'),  # mother-daughter mem. input
     Input({'type': 'numeric-input-inputbox', 'name': 'sister-sister-memory'}, 'value'),  # sister-sister mem. input
-    Input({'type': 'div-selector-dropdown', 'name': 'signal'}, 'value'),  # Signal index in dropdown
+    # SIGNAL
+    Input({'type': 'div-selector-dropdown', 'name': 'signal'}, 'value'),  # Signal name in dropdown
     Input({'type': 'div-selector-child', 'parent-label': ALL, 'name': 'signal'}, 'children'),  # All signal data
     State({'type': 'div-selector-dropdown', 'name': 'signal'}, 'options'),  # Signal options in dropdown
+    # STORE
     State('colonies-store', 'data'),
 )
 def update_colonies_store_parameters(
-        radius_value: float,
-        max_speed_value: float,
+        radius_value: float | None,
+        max_speed_value: float | None,
         memory_checked: bool,
-        mother_daughter_memory: float,
-        sister_sister_memory: float,
-        signal_index: int | None,
+        mother_daughter_memory: float | None,
+        sister_sister_memory: float | None,
+        signal_label: str | None,
         signal_data: list[str],
-        signal_options: list[dict[str, str | int | None]],
+        signal_options: list[str],
         store_data: dict[str, Any],
 ) -> dict[str, Any]:
     """Updates the parameters in the colonies store's storage."""
@@ -98,13 +94,11 @@ def update_colonies_store_parameters(
     store_data['max_speed'] = max_speed_value
     store_data['mother_daughter_memory'] = mother_daughter_memory if memory_checked is True else None
     store_data['sister_sister_memory'] = sister_sister_memory if memory_checked is True else None
-    if signal_index is not None:
-        signal_name = get_dropdown_label_from_index(dropdown_index=signal_index, dropdown_options=signal_options)
-        store_data['signal'] = signal_name
+    store_data['signal'] = signal_label
+    store_data['signal_data'] = None
+    if signal_label is not None:
+        signal_index = get_dropdown_index(dropdown_label=signal_label, dropdown_options=signal_options)
         store_data['signal_data'] = signal_data[signal_index]
-    else:
-        store_data['signal'] = None
-        store_data['signal_data'] = None
     return store_data
 
 

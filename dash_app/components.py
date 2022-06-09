@@ -3,9 +3,10 @@ from __future__ import annotations
 import uuid
 from typing import TYPE_CHECKING
 
-import dash
 import dash_bootstrap_components as dbc
-from dash import html, dcc, callback, Output, ALL, MATCH, Input
+from dash import html, dcc, callback, Output, Input, MATCH, ALL, callback_context, State
+
+from utils import get_dropdown_index
 
 if TYPE_CHECKING:
     from dash.development.base_component import Component
@@ -70,6 +71,15 @@ def CollapsableDiv(
     ])
 
 
+@callback(
+    Output({'type': 'collapsable-div-collapse', 'name': MATCH}, 'is_open'),
+    Input({'type': 'collapsable-div-checkbox', 'name': MATCH}, 'value'),
+)
+def toggle_collapsable_div(checkbox_checked: bool) -> bool:
+    """Opens the collapsable div whenever its checkbox is checked."""
+    return checkbox_checked
+
+
 def DivSelectorDropdown(
         children: dict[str, Component] | None = None,
         name: str = "",
@@ -80,34 +90,27 @@ def DivSelectorDropdown(
     name = name or str(uuid.uuid4())
     choices = []
     elements = []
-    dropdown_id = {'type': 'div-selector-dropdown', 'name': name}
     for index, (key, value) in enumerate(children.items()):
         choices.append(key)
-        child_id = {'type': 'div-selector-child', 'label': key, 'index': index, 'name': name}
-        value.id = child_id
+        value.id = {'type': 'div-selector-child', 'parent-label': key, 'name': name}
         elements.append(value)
-    options = [
-        {'label': choice, 'value': index}
-        for index, choice in enumerate(choices)
-    ]
-    return html.Div([dcc.Dropdown(id=dropdown_id, options=options), *elements])
+    dropdown_id = {'type': 'div-selector-dropdown', 'name': name}
+    dropdown = dcc.Dropdown(id=dropdown_id, options=choices)
+    return html.Div([dropdown, *elements])
 
 
 @callback(
     Output({'type': 'div-selector-child', 'parent-label': ALL, 'name': MATCH}, 'style'),
     Input({'type': 'div-selector-dropdown', 'name': MATCH}, 'value'),
+    State({'type': 'div-selector-dropdown', 'name': MATCH}, 'options'),
 )
-def change_display_widget(dropdown_index: int | None) -> list[dict[str, str]]:
-    values = [{'display': 'none'}] * len(dash.callback_context.outputs_list)
-    if dropdown_index is not None:
+def change_display_widget(
+        dropdown_label: str | None,
+        dropdown_options: list[dict[str, str]],
+) -> list[dict[str, str]]:
+    values = [{'display': 'none'}] * len(callback_context.outputs_list)
+    if dropdown_label:
+        dropdown_index = get_dropdown_index(dropdown_label=dropdown_label, dropdown_options=dropdown_options)
         values[dropdown_index] = {'display': 'inline'}
     return values
-    # outputs = dash.callback_context.outputs_list
-    # if not dropdown_value:
-    #     return [{'display': 'none'}] * len(outputs)
-    # return [
-    #     {'display': 'inline'}
-    #     if output['id']['parent'] == dropdown_value
-    #     else {'display': 'none'}
-    #     for output in dash.callback_context.outputs_list
-    # ]
+
