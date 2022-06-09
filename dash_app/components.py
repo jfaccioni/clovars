@@ -55,6 +55,19 @@ def NumericInputGroup(
     return dbc.InputGroup([prefix, inputbox, suffix])
 
 
+# ### COMPONENT-SPECIFIC CALLBACKS
+@callback(
+    Output({'type': 'numeric-input-inputbox', 'name': MATCH}, 'disabled'),
+    Input({'type': 'numeric-input-checkbox', 'name': MATCH}, 'value'),
+)
+def set_inputbox_disabled(checkbox_enabled: bool) -> bool:
+    """Disables the numeric inputbox whenever the checkbox is unchecked."""
+    return not checkbox_enabled
+
+
+#####
+
+
 def CollapsableDiv(
         children: list[Component] | None = None,
         name: str = "",
@@ -71,6 +84,7 @@ def CollapsableDiv(
     ])
 
 
+# ### COMPONENT-SPECIFIC CALLBACKS
 @callback(
     Output({'type': 'collapsable-div-collapse', 'name': MATCH}, 'is_open'),
     Input({'type': 'collapsable-div-checkbox', 'name': MATCH}, 'value'),
@@ -78,6 +92,9 @@ def CollapsableDiv(
 def toggle_collapsable_div(checkbox_checked: bool) -> bool:
     """Opens the collapsable div whenever its checkbox is checked."""
     return checkbox_checked
+
+
+#####
 
 
 def DivSelectorDropdown(
@@ -99,12 +116,14 @@ def DivSelectorDropdown(
     return html.Div([dropdown, *elements])
 
 
+# ### COMPONENT-SPECIFIC CALLBACKS
+
 @callback(
     Output({'type': 'div-selector-child', 'parent-label': ALL, 'name': MATCH}, 'style'),
     Input({'type': 'div-selector-dropdown', 'name': MATCH}, 'value'),
     State({'type': 'div-selector-dropdown', 'name': MATCH}, 'options'),
 )
-def change_display_widget(
+def change_div_selector_display(
         dropdown_label: str | None,
         dropdown_options: list[dict[str, str]],
 ) -> list[dict[str, str]]:
@@ -113,4 +132,3 @@ def change_display_widget(
         dropdown_index = get_dropdown_index(dropdown_label=dropdown_label, dropdown_options=dropdown_options)
         values[dropdown_index] = {'display': 'inline'}
     return values
-

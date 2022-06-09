@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 import dash_bootstrap_components as dbc
-from dash import callback, html, Input, Output, dcc, State, MATCH
+from dash import callback, html, Input, Output, dcc, State
 
 from components import NumericInputGroup
 
@@ -97,8 +97,7 @@ def get_early_stopping_controls(
     ])
 
 
-# ### CALLBACKS
-
+# ### PAGE-SPECIFIC CALLBACKS
 @callback(
     Output('time-label', 'children'),
     Input({'type': 'numeric-input-inputbox', 'name': 'delta'}, 'value'),
@@ -116,15 +115,6 @@ def set_total_runtime_label(
         total_hours = total_seconds / (60 * 60)
         total_days = total_hours / 24
         return f"Simulation will run for {round(total_hours, 2)} hours ({round(total_days, 2)} days)"
-
-
-@callback(
-    Output({'type': 'numeric-input-inputbox', 'name': MATCH}, 'disabled'),
-    Input({'type': 'numeric-input-checkbox', 'name': MATCH}, 'value'),
-)
-def set_inputbox_disabled(checkbox_enabled: bool) -> bool:
-    """Disables the numeric inputbox whenever the checkbox is unchecked."""
-    return not checkbox_enabled
 
 
 @callback(
