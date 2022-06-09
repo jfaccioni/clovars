@@ -70,11 +70,13 @@ def init_app(theme: str) -> Dash:
     Output('dummy-div-main', 'children'),
     State('globals-store', 'data'),
     State('colonies-store', 'data'),
+    State({'component': 'SignalSelector', 'subcomponent': 'store', 'aio_id': 'colonies-signal-selector'}, 'data'),
     Input('run-clovars-button', 'n_clicks'),
 )
 def display_parameters(
         global_data: dict,
         colonies_data: dict,
+        cell_signal_data: dict,
         n_clicks: int,
 ) -> None:
     """Displays the current parameters on the console."""
@@ -82,6 +84,7 @@ def display_parameters(
         data = {
             'global': global_data,
             'colonies': colonies_data,
+            'cell_signal': cell_signal_data,
         }
         print("Total data:\n")
         pprint.pprint(data, sort_dicts=False)
@@ -89,5 +92,5 @@ def display_parameters(
 
 
 if __name__ == '__main__':
-    app = init_app(theme=Config.THEME)
-    app.run_server(debug=Config.DEBUG, threaded=Config.THREADED)
+    dash_app = init_app(theme=Config.THEME)
+    dash_app.run_server(debug=Config.DEBUG, threaded=Config.THREADED)
