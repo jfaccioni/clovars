@@ -20,8 +20,9 @@ hr {
     padding: 0;
 }
 
-.time-label {
+.note {
     font-style: italic;
+    text-align: right;
 }
 
 .dummy-div {

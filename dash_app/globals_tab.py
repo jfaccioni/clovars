@@ -63,7 +63,7 @@ def get_time_controls(
             suffix='frames',
             **frame_params,
         ),
-        dbc.Label(id='time-label', children="", className='time-label secondary text-secondary'),
+        dbc.Label(id='time-label', children="", className='time-label note secondary text-secondary'),
     ])
 
 

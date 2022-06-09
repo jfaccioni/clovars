@@ -253,8 +253,6 @@ class SignalSelector(dbc.Container):
                 dropdown_index=dropdown_index,
             )
             fig = draw_signal(signal_params=signal_params)
-        fig.update_xaxes(range=[0, 100], fixedrange=True)
-        fig.update_yaxes(range=[-1, 1], fixedrange=True)
         return fig
 
     @staticmethod
@@ -264,9 +262,9 @@ class SignalSelector(dbc.Container):
             dropdown_index: int,
     ) -> dict[str, str | float]:
         """Returns the parameters of the selected signal."""
-        signal_params = {'type': dropdown_value}
+        signal_params = {'name': dropdown_value.replace(' ', '').replace('-', '')}
         signal_params.update({
-            param['id']['param_name'].lower(): param['value']
+            param['id']['param_name'].lower().replace(' ', '_').replace('-', ''): param['value']
             for param in params
             if param['id']['signal_index'] == dropdown_index
         })

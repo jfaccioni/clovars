@@ -6,7 +6,8 @@ from typing import TYPE_CHECKING
 import numpy as np
 import pandas as pd
 import plotly.express as px
-from scipy.stats import norm, exponnorm
+
+from clovars.scientific import get_cell_signal
 
 if TYPE_CHECKING:
     import plotly.graph_objs as go
@@ -61,23 +62,31 @@ def get_signals() -> list[Signal]:
     ]
 
 
-def draw_signal(signal_params: dict[str, float]) -> go.Figure:
+def draw_signal(signal_params: dict[str, str | float]) -> go.Figure:
     size = 100
     repeats = 5
+    delta = 1800  # seconds
     xs = np.arange(size)
     dfs = []
     for r in range(repeats):
-        if (signal_type := signal_params['type']) == 'Gaussian':
-            ys = norm(loc=signal_params['mean'], scale=signal_params['std']).rvs(size).cumsum()
-        elif signal_params['type'] == 'EM Gaussian':
-            ys = exponnorm(loc=signal_params['mean'], scale=signal_params['std'], K=signal_params['k']).rvs(size).cumsum()
-        else:
-            raise ValueError(f"Bad curve type: {signal_type}")
+        signal = get_cell_signal(**signal_params)
+        values = []
+        for i in range(size):
+            values.append(signal.value)
+            signal.oscillate(current_seconds=i*delta)
         dfs.append(pd.DataFrame({
             'iteration': xs,
-            'signal': ys,
-            'repeat': r,
+            'signal': values,
+            'sample': r+1,
         }))
     data = pd.concat(dfs, ignore_index=True)
     data['signal'] = data['signal'].clip(lower=-1.0, upper=1.0)
-    return px.line(data_frame=data, x='iteration', y='signal', color='repeat')
+    return px.line(
+        data_frame=data,
+        x='iteration',
+        y='signal',
+        color='sample',
+        title=f'Sample signals<br><sup>Δt between iterations: {round(delta/60, 2)} min</sup>',
+        range_x=[0, size],
+        range_y=[-1, 1],
+    )
