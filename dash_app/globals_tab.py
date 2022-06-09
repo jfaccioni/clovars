@@ -3,13 +3,13 @@ from __future__ import annotations
 from typing import Any
 
 import dash_bootstrap_components as dbc
-from dash import callback, html, Input, Output, dcc, State
+from dash import callback, Input, Output, dcc, State
 
-from components import NumericInputGroup
+from dash_app.components import NumericInputGroup
 
 
-def get_globals_tab() -> html.Div:
-    """Returns a html div representing the globals tab."""
+def get_globals_tab() -> dbc.Container:
+    """Returns a Container representing the globals tab."""
     delta_params = {
         'value': 3600,
         'min_': 0,
@@ -34,51 +34,47 @@ def get_globals_tab() -> html.Div:
         'max_': 10_000,
         'step': 1,
     }
-    globals_card = dbc.Card([
-        html.Div([dbc.Label('Simulation time', size='lg')]),
-        html.Br(),
+    return dbc.Container([
+        dbc.Label('Simulation time', size='lg'),
         get_time_controls(delta_params=delta_params, frame_params=frame_params),
-        html.Br(),
-        html.Div([dbc.Label('Early stopping', size='lg')]),
-        html.Br(),
+        dbc.Label('Early stopping', size='lg'),
         get_early_stopping_controls(colony_one_params=colony_one_params, colony_all_params=colony_all_params),
+        dcc.Store(id='globals-store', data={})
     ])
-    return html.Div([globals_card, dcc.Store(id='globals-store', data={})])
 
 
 def get_time_controls(
         delta_params: dict | None = None,
         frame_params: dict | None = None,
-) -> html.Div:
-    """Returns a html div with the simulation time parameters (delta/frames)."""
+) -> dbc.Container:
+    """Returns a Container with the simulation time parameters (delta/frames)."""
     delta_params = delta_params or {}
     frame_params = frame_params or {}
-    return html.Div([
+    return dbc.Container([
         NumericInputGroup(
             name='delta',
             prefix='Delta between frames:',
             suffix='seconds',
             **delta_params,
         ),
-        html.Br(),
         NumericInputGroup(
             name='frame',
             prefix='Run for:',
             suffix='frames',
             **frame_params,
         ),
-        dbc.Label(id='time-label', children=""),
+        dbc.Label(id='time-label', children="", className='time-label secondary text-secondary'),
     ])
 
 
 def get_early_stopping_controls(
         colony_one_params: dict | None = None,
         colony_all_params: dict | None = None,
-) -> html.Div:
-    """Returns a html div with the simulation early stopping parameters (one colony / all colonies)."""
+) -> dbc.Container:
+    """Returns a Container with the simulation early stopping parameters (one colony / all colonies)."""
     colony_one_params = colony_one_params or {}
     colony_all_params = colony_all_params or {}
-    return html.Div([
+    return dbc.Container([
         NumericInputGroup(
             name='colony-one',
             prefix='Stop when a colony reaches:',
@@ -86,7 +82,6 @@ def get_early_stopping_controls(
             with_checkbox=True,
             **colony_one_params,
         ),
-        html.Br(),
         NumericInputGroup(
             name='colony-all',
             prefix='Stop when all colonies reach:',

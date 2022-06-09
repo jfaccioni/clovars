@@ -1,17 +1,16 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import Any
 
 import dash_bootstrap_components as dbc
-from dash import html, dcc, callback, Output, Input, State, ALL
+from dash import dcc, callback, Output, Input, State, ALL
 
-from dash_app.components import NumericInputGroup, CollapsableDiv, DivSelectorDropdown
+from dash_app.components import CollapsableContainer, DivSelectorDropdown, NumericInputGroup
 from dash_app.utils import get_dropdown_index
 
 
-def get_colonies_tab() -> html.Div:
-    """Returns a html div representing the colonies tab."""
+def get_colonies_tab() -> dbc.Container:
+    """Returns a Container representing the colonies tab."""
     radius_params = {
         'value': 20.0,
         'min_': 0.0,
@@ -30,37 +29,69 @@ def get_colonies_tab() -> html.Div:
         'max_': 1.0,
         'step': 0.05,
     }
-    colonies_card = dbc.Card([
+    signal_param_types = {
+        'Noise': lambda name: NumericInputGroup(name=name, prefix='Noise', value=0.2, min_=0.0, max_=1.0, step=0.05),
+        'Period': lambda name: NumericInputGroup(name=name, prefix='Period', value=3600, min_=0.0, max_=1_000_000.0, step=100),
+        'Stochastic Weight': lambda name: NumericInputGroup(name=name, prefix='Stochastic weight', value=0.2, min_=0.0, max_=1.0, step=0.05),
+        'Mean': lambda name: NumericInputGroup(name=name, prefix='Mean', value=0.0, min_=-1_000.0, max_=1_000.0, step=0.5),
+        'Standard Dev.': lambda name: NumericInputGroup(name=name, prefix='Standard deviation', value=0.05, min_=0.0, max_=1_000.0, step=0.05),
+        'K': lambda name: NumericInputGroup(name=name, prefix='K', value=1.0, min_=0.0, max_=1_000.0, step=0.05),
+    }
+    signal_selector_components = {
+        'Stochastic': dbc.Container(
+            className='signal-param-container',
+            children=[
+                signal_param_types['Noise']('stoch-noise'),
+            ],
+        ),
+        'Sinusoidal': dbc.Container(
+            className='signal-param-container',
+            children=[
+                signal_param_types['Period']('sin-period'),
+            ],
+        ),
+        'Stochastic-Sinusoidal': dbc.Container(
+            className='signal-param-container',
+            children=[
+                signal_param_types['Noise']('stochsin-noise'),
+                signal_param_types['Period']('stochsin-period'),
+                signal_param_types['Stochastic Weight']('stochsin-stochweight'),
+            ],
+        ),
+        'Gaussian': dbc.Container(
+            className='signal-param-container',
+            children=[
+                signal_param_types['Mean']('gaussian-mean'),
+                signal_param_types['Standard Dev.']('gaussian-std'),
+            ],
+        ),
+        'E.M. Gaussian': dbc.Container(
+            className='signal-param-container',
+            children=[
+                signal_param_types['Mean']('emgaussian-mean'),
+                signal_param_types['Standard Dev.']('emgaussian-std'),
+                signal_param_types['K']('emgaussian-k'),
+            ],
+        ),
+    }
+    return dbc.Container([
         dbc.Label('Cell Parameters', size='lg'),
-        html.Br(),
-        html.Div([NumericInputGroup(name='radius', prefix='Radius:', suffix='µm', **radius_params)]),
-        html.Br(),
-        html.Div([NumericInputGroup(name='max-speed', prefix='Max Speed:', suffix='µm/s', **max_speed_params)]),
-        html.Br(),
+        dbc.Container([
+            NumericInputGroup(name='radius', prefix='Radius:', suffix='µm', **radius_params),
+            NumericInputGroup(name='max-speed', prefix='Max Speed:', suffix='µm/s', **max_speed_params),
+        ]),
         dbc.Label('Cell Memory', size='lg'),
-        html.Br(),
-        CollapsableDiv([
+        CollapsableContainer([
                 NumericInputGroup(name='mother-daughter-memory', prefix='Mother/Daughter memory:', **memory_params),
-                html.Br(),
                 NumericInputGroup(name='sister-sister-memory', prefix='Sister/Sister memory:', **memory_params),
         ], name='memory', label='Link inheritance', checked=False),
-        html.Br(),
         dbc.Label('Cell Signal', size='lg'),
-        html.Br(),
-        # get_signal_controller(),
-        DivSelectorDropdown({
-            'Stochastic': html.Div('Stochastic Data'),
-            'Sinusoidal': html.Div('Sinusoidal Data'),
-            'Stochastic-Sinusoidal': html.Div('Stochastic-Sinusoidal Data'),
-            'Gaussian': html.Div('Gaussian Data'),
-            'EM Gaussian': html.Div('EM Gaussian Data'),
-        }, name='signal'),
-    ], body=True)
-    return html.Div([colonies_card, dcc.Store(id='colonies-store', data={})])
+        DivSelectorDropdown(name='signal', children=signal_selector_components),
+        dcc.Store(id='colonies-store', data={})
+    ])
 
 
-# ### CALLBACKS
-
+# ### PAGE-SPECIFIC CALLBACKS
 @callback(
     Output('colonies-store', 'data'),
     # RADIUS
@@ -84,8 +115,8 @@ def update_colonies_store_parameters(
         memory_checked: bool,
         mother_daughter_memory: float | None,
         sister_sister_memory: float | None,
-        signal_label: str | None,
-        signal_data: list[str],
+        signal_name: str | None,
+        signal_data: dict,
         signal_options: list[str],
         store_data: dict[str, Any],
 ) -> dict[str, Any]:

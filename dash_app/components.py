@@ -4,9 +4,9 @@ import uuid
 from typing import TYPE_CHECKING
 
 import dash_bootstrap_components as dbc
-from dash import html, dcc, callback, Output, Input, MATCH, ALL, callback_context, State
+from dash import dcc, callback, Output, Input, MATCH, ALL, callback_context, State
 
-from utils import get_dropdown_index
+from dash_app.utils import get_dropdown_index
 
 if TYPE_CHECKING:
     from dash.development.base_component import Component
@@ -44,15 +44,21 @@ def NumericInputGroup(
         'max': max_ or 10,
         'step': step or 1,
     }
-    input_id = {'type': 'numeric-input-inputbox', 'name': name}
-    inputbox = dbc.Input(type="number", id=input_id, **numeric_input_params)
-    suffix = dbc.InputGroupText(children=suffix) if suffix else None
+    components = []
+    # PREFIX
     if with_checkbox is True:
         checkbox_id = {'type': 'numeric-input-checkbox', 'name': name}
-        prefix = dbc.InputGroupText(dbc.Checkbox(id=checkbox_id, label=prefix or None, value=checked))
-    else:
-        prefix = dbc.InputGroupText(children=prefix) if prefix else None
-    return dbc.InputGroup([prefix, inputbox, suffix])
+        components.append(dbc.InputGroupText(dbc.Checkbox(id=checkbox_id, label=prefix or None, value=checked)))
+    elif prefix:
+        components.append(dbc.InputGroupText(children=prefix))
+    # INPUTBOX
+    input_id = {'type': 'numeric-input-inputbox', 'name': name}
+    inputbox = dbc.Input(type="number", id=input_id, **numeric_input_params)
+    components.append(inputbox)
+    # SUFFIX
+    if suffix:
+        components.append(dbc.InputGroupText(children=suffix))
+    return dbc.InputGroup(components, className="numeric-input-group flex-nowrap")
 
 
 # ### COMPONENT-SPECIFIC CALLBACKS
@@ -68,17 +74,17 @@ def set_inputbox_disabled(checkbox_enabled: bool) -> bool:
 #####
 
 
-def CollapsableDiv(
+def CollapsableContainer(
         children: list[Component] | None = None,
         name: str = "",
         label: str = "",
         checked: bool = False,
-) -> html.Div:
-    """Returns a html div containing a checkbox that opens/closes a collapsable component."""
+) -> dbc.Container:
+    """Returns a Container containing a checkbox that opens/closes a collapsable component."""
     name = name or str(uuid.uuid4())
     checkbox_id = {'type': 'collapsable-div-checkbox', 'name': name}
     collapse_id = {'type': 'collapsable-div-collapse', 'name': name}
-    return html.Div([
+    return dbc.Container([
         dbc.Checkbox(id=checkbox_id, label=label or None, value=checked),
         dbc.Collapse(id=collapse_id, children=children or [], is_open=checked)
     ])
@@ -100,20 +106,22 @@ def toggle_collapsable_div(checkbox_checked: bool) -> bool:
 def DivSelectorDropdown(
         children: dict[str, Component] | None = None,
         name: str = "",
-) -> html.Div:
-    """Returns a html div containing a selector that displays a given div in the children dictionary."""
+) -> dbc.Container:
+    """Returns a Container containing a selector that displays a given div in the children dictionary."""
     if children is None:
-        return html.Div([])
+        return dbc.Container([])
     name = name or str(uuid.uuid4())
-    choices = []
-    elements = []
+    elements = [dcc.Dropdown(
+        id={'type': 'div-selector-dropdown', 'name': name},
+        options=list(children),
+        className='div-selector-dropdown',
+    )]
     for index, (key, value) in enumerate(children.items()):
-        choices.append(key)
         value.id = {'type': 'div-selector-child', 'parent-label': key, 'name': name}
         elements.append(value)
-    dropdown_id = {'type': 'div-selector-dropdown', 'name': name}
-    dropdown = dcc.Dropdown(id=dropdown_id, options=choices)
-    return html.Div([dropdown, *elements])
+        # if (index + 1) < len(children):  # add breaks between elements
+        #     elements.append(html.Br())
+    return dbc.Container(elements)
 
 
 # ### COMPONENT-SPECIFIC CALLBACKS
@@ -124,11 +132,11 @@ def DivSelectorDropdown(
     State({'type': 'div-selector-dropdown', 'name': MATCH}, 'options'),
 )
 def change_div_selector_display(
-        dropdown_label: str | None,
+        dropdown_value: str | None,
         dropdown_options: list[dict[str, str]],
 ) -> list[dict[str, str]]:
     values = [{'display': 'none'}] * len(callback_context.outputs_list)
-    if dropdown_label:
-        dropdown_index = get_dropdown_index(dropdown_label=dropdown_label, dropdown_options=dropdown_options)
+    if dropdown_value:
+        dropdown_index = get_dropdown_index(dropdown_value=dropdown_value, dropdown_options=dropdown_options)
         values[dropdown_index] = {'display': 'inline'}
     return values
