@@ -10,17 +10,17 @@ from dash_app.components import NumericInputGroup
 
 def get_globals_tab() -> dbc.Container:
     """Returns a Container representing the globals tab."""
-    delta_params = {
-        'value': 3600,
-        'min_': 0,
-        'max_': 10_000,
-        'step': 100,
-    }
     frame_params = {
         'value': 144,
         'min_': 0,
         'max_': 10_000,
         'step': 1,
+    }
+    delta_params = {
+        'value': 3600,
+        'min_': 0,
+        'max_': 10_000,
+        'step': 60,
     }
     colony_one_params = {
         'value': 100,
@@ -36,7 +36,7 @@ def get_globals_tab() -> dbc.Container:
     }
     return dbc.Container([
         dbc.Label('Simulation time', size='lg'),
-        get_time_controls(delta_params=delta_params, frame_params=frame_params),
+        get_time_controls(frame_params=frame_params, delta_params=delta_params),
         dbc.Label('Early stopping', size='lg'),
         get_early_stopping_controls(colony_one_params=colony_one_params, colony_all_params=colony_all_params),
         dcc.Store(id='globals-store', data={})
@@ -44,24 +44,24 @@ def get_globals_tab() -> dbc.Container:
 
 
 def get_time_controls(
-        delta_params: dict | None = None,
         frame_params: dict | None = None,
+        delta_params: dict | None = None,
 ) -> dbc.Container:
     """Returns a Container with the simulation time parameters (delta/frames)."""
-    delta_params = delta_params or {}
     frame_params = frame_params or {}
+    delta_params = delta_params or {}
     return dbc.Container([
-        NumericInputGroup(
-            name='delta',
-            prefix='Delta between frames:',
-            suffix='seconds',
-            **delta_params,
-        ),
         NumericInputGroup(
             name='frame',
             prefix='Run for:',
             suffix='frames',
             **frame_params,
+        ),
+        NumericInputGroup(
+            name='delta',
+            prefix='Delta between frames:',
+            suffix='seconds',
+            **delta_params,
         ),
         dbc.Label(id='time-label', children="", className='time-label note secondary text-secondary'),
     ])
