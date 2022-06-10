@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -8,32 +7,10 @@ import pandas as pd
 import plotly.express as px
 
 from clovars.scientific import get_cell_signal
+from dash_app.classes import Param, Signal
 
 if TYPE_CHECKING:
     import plotly.graph_objs as go
-
-
-@dataclass
-class Param:
-    name: str
-    value: float
-    min_: float
-    max_: float
-    step: float
-
-    def to_dict(self) -> dict:
-        return {
-            'value': self.value,
-            'min': self.min_,
-            'max': self.max_,
-            'step': self.step,
-        }
-
-
-@dataclass
-class Signal:
-    name: str
-    params: list[Param]
 
 
 def get_signals() -> list[Signal]:
