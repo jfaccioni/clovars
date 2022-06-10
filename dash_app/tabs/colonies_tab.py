@@ -5,40 +5,34 @@ from typing import Any
 import dash_bootstrap_components as dbc
 from dash import dcc, State, Input, Output, callback
 
-from dash_app.cell_signals import get_signals
+from dash_app.utils import get_signals
+from dash_app.classes import Param
 from dash_app.components import CollapsableContainer, NumericInputGroup, SignalSelector
 
 
 def get_colonies_tab() -> dbc.Container:
     """Returns a Container representing the colonies tab."""
-    radius_params = {
-        'value': 20.0,
-        'min_': 0.0,
-        'max_': 1_000,
-        'step': 0.5,
-    }
-    max_speed_params = {
-        'value': 0.02,
-        'min_': 0.0,
-        'max_': 10.0,
-        'step': 0.01,
-    }
-    memory_params = {
-        'value': 0.2,
-        'min_': 0.0,
-        'max_': 1.0,
-        'step': 0.05,
-    }
+    radius = Param(name='radius', value=20, min_=0, max_=1_000, step=0.5)
+    max_speed = Param(name='Max Speed', value=0.02, min_=0, max_=10, step=0.01)
+    memory = Param(name='Memory', value=0.2, min_=0, max_=1, step=0.05)
     return dbc.Container([
         dbc.Label('Cell Parameters', size='lg'),
         dbc.Container([
-            NumericInputGroup(name='radius', prefix='Radius:', suffix='µm', **radius_params),
-            NumericInputGroup(name='max-speed', prefix='Max Speed:', suffix='µm/s', **max_speed_params),
+            NumericInputGroup(name='radius', prefix='Radius:', suffix='µm', input_kwargs=radius.to_dict()),
+            NumericInputGroup(name='max-speed', prefix='Max Speed:', suffix='µm/s', input_kwargs=max_speed.to_dict()),
         ]),
         dbc.Label('Cell Memory', size='lg'),
         CollapsableContainer([
-                NumericInputGroup(name='mother-daughter-memory', prefix='Mother/Daughter memory:', **memory_params),
-                NumericInputGroup(name='sister-sister-memory', prefix='Sister/Sister memory:', **memory_params),
+                NumericInputGroup(
+                    name='mother-daughter-memory',
+                    prefix='Mother/Daughter memory:',
+                    input_kwargs=memory.to_dict(),
+                ),
+                NumericInputGroup(
+                    name='sister-sister-memory',
+                    prefix='Sister/Sister memory:',
+                    input_kwargs=memory.to_dict(),
+                ),
         ], name='memory', label='Link inheritance', checked=False),
         dbc.Label('Cell Signal', size='lg'),
         SignalSelector(signals=get_signals(), aio_id='colonies-signal-selector'),
@@ -49,16 +43,11 @@ def get_colonies_tab() -> dbc.Container:
 # ### PAGE-SPECIFIC CALLBACKS
 @callback(
     Output('colonies-store', 'data'),
-    # RADIUS
     Input({'type': 'numeric-input-inputbox', 'name': 'radius'}, 'value'),  # radius input
-    # MAX SPEED
     Input({'type': 'numeric-input-inputbox', 'name': 'max-speed'}, 'value'),  # max_speed input
-    # MEMORY
     Input({'type': 'collapsable-div-checkbox', 'name': 'memory'}, 'value'),  # memory checkbox
-    Input(
-        {'type': 'numeric-input-inputbox', 'name': 'mother-daughter-memory'}, 'value'),  # mother-daughter mem. input
-    Input({'type': 'numeric-input-inputbox', 'name': 'sister-sister-memory'}, 'value'),  # sister-sister mem. input
-    # STATES
+    Input({'type': 'numeric-input-inputbox', 'name': 'mother-daughter-memory'}, 'value'),  # md-dd memory input
+    Input({'type': 'numeric-input-inputbox', 'name': 'sister-sister-memory'}, 'value'),  # sis-sis memory input
     State('colonies-store', 'data'),
 )
 def update_colonies_store_parameters(
