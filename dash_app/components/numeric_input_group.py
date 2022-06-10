@@ -12,10 +12,7 @@ def NumericInputGroup(
         suffix: str = "",
         with_checkbox: bool = False,
         checked: bool = False,
-        value: int | float | None = None,
-        min_: int | float | None = None,
-        max_: int | float | None = None,
-        step: int | float | None = None,
+        input_kwargs: dict = None,
 ) -> dbc.InputGroup:
     """
     Convenience function that returns an InputGroup with a numeric input box, along with some formatting options.
@@ -36,12 +33,7 @@ def NumericInputGroup(
         name = {'name': str(uuid.uuid4())}
     elif isinstance(name, str):
         name = {'name': name}
-    numeric_input_params = {
-        'value': value or 5,
-        'min': min_ or 0,
-        'max': max_ or 10,
-        'step': step or 1,
-    }
+    input_kwargs = input_kwargs or {}
     components = []
     # PREFIX
     if with_checkbox is True:
@@ -53,7 +45,7 @@ def NumericInputGroup(
     # INPUTBOX
     input_id = {'type': 'numeric-input-inputbox'}
     input_id.update(name)
-    inputbox = dbc.Input(id=input_id, type="number", autofocus=True, **numeric_input_params)
+    inputbox = dbc.Input(id=input_id, type="number", autofocus=True, **input_kwargs)
     components.append(inputbox)
     # SUFFIX
     if suffix:
@@ -61,7 +53,6 @@ def NumericInputGroup(
     return dbc.InputGroup(components, class_name="numeric-input-group flex-nowrap")
 
 
-# ### COMPONENT-SPECIFIC CALLBACKS
 @callback(
     Output({'type': 'numeric-input-inputbox', 'name': MATCH}, 'disabled'),
     Input({'type': 'numeric-input-checkbox', 'name': MATCH}, 'value'),

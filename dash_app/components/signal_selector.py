@@ -7,12 +7,12 @@ import dash_bootstrap_components as dbc
 import plotly.express as px
 from dash import dcc, callback, Output, Input, MATCH, ALL, callback_context, State
 
-from dash_app.cell_signals import draw_signal
+from dash_app.utils.cell_signals import draw_signal
 from dash_app.utils import get_dropdown_index
 
 if TYPE_CHECKING:
     import plotly.graph_objs as go
-    from dash_app.cell_signals import Signal
+    from utils.cell_signals import Signal
 
 
 class SignalSelector(dbc.Container):

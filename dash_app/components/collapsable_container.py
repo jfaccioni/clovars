@@ -28,7 +28,6 @@ def CollapsableContainer(
     )
 
 
-# ### COMPONENT-SPECIFIC CALLBACKS
 @callback(
     Output({'type': 'collapsable-div-collapse', 'name': MATCH}, 'is_open'),
     Input({'type': 'collapsable-div-checkbox', 'name': MATCH}, 'value'),

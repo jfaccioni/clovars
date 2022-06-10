@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-import pprint
-
 import dash_bootstrap_components as dbc
 from dash import Dash, html, Output, State, Input, callback
 
-from dash_app.colonies_tab import get_colonies_tab
-from dash_app.globals_tab import get_globals_tab
+from dash_app.tabs import get_clovars_tabs
 
 
 class Config:
@@ -23,18 +20,7 @@ def init_app(theme: str) -> Dash:
         external_stylesheets=[getattr(dbc.themes, theme)],
     )
     # LEFT COLUMN
-    left_col = dbc.Col(
-        md=8,
-        children=[
-            dbc.Tabs(
-                children=[
-                    dbc.Tab(get_globals_tab(), label='Globals', className='clovars-tab globals-tab'),
-                    dbc.Tab(get_colonies_tab(), label='Colonies', className='clovars-tab colonies-tab'),
-                    # dbc.Tab(get_treatment_regimen_controls(), label='Treatment Regimen'),
-                ],
-            ),
-        ],
-    )
+    left_col = dbc.Col(get_clovars_tabs(), md=8)
     # RIGHT_COLUMN
     right_col = dbc.Col(
         md=4,
@@ -87,6 +73,7 @@ def display_parameters(
             'cell_signal': cell_signal_data,
         }
         print("Total data:\n")
+        import pprint
         pprint.pprint(data, sort_dicts=False)
     return None
 
