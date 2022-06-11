@@ -26,16 +26,6 @@ class Param:
             raise ValueError(f'Value {self.value} cannot be higher than maximal value ({self.max_})')
 
 
-@dataclass
-class Curve:
-    type: str
-    params: list[Param]
-
-
-@dataclass
-class Treatment:
-    division_curve: Curve
-    death_curve: Curve
 
 
 _PARAMS = [
