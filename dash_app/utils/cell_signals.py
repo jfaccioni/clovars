@@ -40,6 +40,7 @@ def get_signals() -> list[Signal]:
 
 
 def draw_signal(signal_params: dict[str, str | float]) -> go.Figure:
+    """Draws the Signal onto a plotly plot using CloVarS Signal objects."""
     size = 100
     repeats = 5
     delta = 1800  # seconds

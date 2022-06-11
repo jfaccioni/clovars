@@ -24,3 +24,15 @@ class Param:
 class Signal:
     name: str
     params: list[Param]
+
+
+@dataclass
+class Curve:
+    name: str
+    params: list[Param]
+
+
+@dataclass
+class Treatment:
+    division_curve: Curve
+    death_curve: Curve
