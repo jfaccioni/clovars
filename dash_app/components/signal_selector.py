@@ -4,15 +4,14 @@ import uuid
 from typing import TYPE_CHECKING
 
 import dash_bootstrap_components as dbc
-import plotly.express as px
+import plotly.graph_objs as go
 from dash import dcc, callback, Output, Input, MATCH, ALL, callback_context, State
 
-from dash_app.utils.cell_signals import draw_signal
 from dash_app.utils import get_dropdown_index
+from dash_app.utils.cell_signals import draw_signal
 
 if TYPE_CHECKING:
-    import plotly.graph_objs as go
-    from utils.cell_signals import Signal
+    from dash_app.classes import Signal
 
 
 class SignalSelector(dbc.Container):
@@ -144,7 +143,7 @@ class SignalSelector(dbc.Container):
             dropdown_options: list[str],
     ) -> go.Figure:
         if not dropdown_value:
-            fig = px.line()
+            fig = go.Figure()
         else:
             dropdown_index = get_dropdown_index(dropdown_value=dropdown_value, dropdown_options=dropdown_options)
             signal_params = SignalSelector.get_signal_params(
