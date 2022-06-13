@@ -15,7 +15,7 @@ def get_treatments_tab() -> dbc.Container:
         dbc.Row(align='end', children=[
             dbc.Button("Add treatment", id='add-treatment-button', class_name='button button-primary', size='lg'),
         ]),
-        dcc.Store(id='treatment-regimen-store', data={}),
+        dcc.Store(id='treatment-regimen-store'),
     ])
 
 
@@ -51,17 +51,16 @@ def modify_treatment_selectors(
 
 @callback(
     Output('treatment-regimen-store', 'data'),
-    Input({'component': 'TreatmentSelector', 'subcomponent': 'division-store', 'aio_id': ALL}, 'data'),
-    Input({'component': 'TreatmentSelector', 'subcomponent': 'death-store', 'aio_id': ALL}, 'data'),
-    State('treatment-regimen-store', 'data')
+    Input({'component': 'TreatmentSelector', 'subcomponent': 'store', 'aio_id': ALL}, 'data'),
 )
 def update_treatment_regimen(
-        division_treatments_data: list[dict],
-        death_treatments_data: list[dict],
-        treatment_regimen_data: dict,
-) -> dict:
+        treatment_data: list[dict[str, dict | int]] = None,
+) -> dict[int, dict]:
     """Updates the treatment regimen Store whenever a division/death treatment store is modified."""
-    print("DIVISION TREATMENTS:", division_treatments_data)
-    print("DEATH TREATMENTS:", death_treatments_data)
-    print("TREATMENT REGIMEN:", treatment_regimen_data)
+    treatment_regimen_data = {}
+    for treatment in treatment_data:
+        if (frame := treatment.get('added_on_frame')) is not None:
+            treatment_params = treatment.copy()
+            treatment_params.pop('added_on_frame')
+            treatment_regimen_data.update({frame: treatment_params})
     return treatment_regimen_data

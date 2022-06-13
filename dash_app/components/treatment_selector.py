@@ -78,14 +78,9 @@ class TreatmentSelector(dbc.Container):
             'subcomponent': 'death-plot',
             'aio_id': aio_id,
         }
-        division_store = lambda aio_id : {  # noqa
+        store = lambda aio_id : {  # noqa
             'component': 'TreatmentSelector',
-            'subcomponent': 'division-store',
-            'aio_id': aio_id,
-        }
-        death_store = lambda aio_id : {  # noqa
-            'component': 'TreatmentSelector',
-            'subcomponent': 'death-store',
+            'subcomponent': 'store',
             'aio_id': aio_id,
         }
 
@@ -150,6 +145,17 @@ class TreatmentSelector(dbc.Container):
             )
             for curve_index, curve in enumerate(curves)
         ]
+        initial_data = {
+            'division_curve': {
+                'name': 'Gaussian',
+                'params': {param.name: param.value for param in curves[0].params},
+            },
+            'death_curve': {
+                'name': 'EM Gaussian',
+                'params': {param.name: param.value for param in curves[1].params},
+            },
+            'added_on_frame': 0,
+        }
         # ### GLOBAL
         children = [
             dbc.Row([
@@ -177,20 +183,27 @@ class TreatmentSelector(dbc.Container):
                 dbc.Row([
                     dbc.Col([
                         dbc.Label('Division Curve'),
-                        dcc.Dropdown(id=self.ids.division_dropdown(aio_id=aio_id), options=curve_names, value='Gaussian'),
+                        dcc.Dropdown(
+                            id=self.ids.division_dropdown(aio_id=aio_id),
+                            options=curve_names,
+                            value='Gaussian',
+                        ),
                         *division_collapses,
                         dcc.Graph(id=self.ids.division_plot(aio_id=aio_id)),
                     ], align='stretch'),
                     dbc.Col([
                         dbc.Label('Death Curve'),
-                        dcc.Dropdown(id=self.ids.death_dropdown(aio_id=aio_id), options=curve_names, value='EM Gaussian'),
+                        dcc.Dropdown(
+                            id=self.ids.death_dropdown(aio_id=aio_id),
+                            options=curve_names,
+                            value='EM Gaussian',
+                        ),
                         *death_collapses,
                         dcc.Graph(id=self.ids.death_plot(aio_id=aio_id)),
                     ]),
                 ]),
             ]),
-            dcc.Store(id=self.ids.division_store(aio_id=aio_id)),
-            dcc.Store(id=self.ids.death_store(aio_id=aio_id)),
+            dcc.Store(id=self.ids.store(aio_id=aio_id), data=initial_data),
         ]
         # INIT CALL
         super().__init__(id=aio_id, children=children, class_name='border border-primary border-round')
@@ -224,37 +237,47 @@ class TreatmentSelector(dbc.Container):
 
     @staticmethod
     @callback(
-        Output(ids.division_store(MATCH), 'data'),
+        Output(ids.store(MATCH), 'data'),
         Input(ids.division_inputbox(MATCH, ALL, ALL, ALL), 'value'),
-        Input(ids.division_dropdown(MATCH), 'value'),
-        State(ids.division_dropdown(MATCH), 'options'),
-        State(ids.division_store(MATCH), 'data'),
-    )
-    def update_division_params(
-            _: list[float | None],  # we want these to trigger the callback, but we do not care about the values
-            dropdown_value: str | None,
-            dropdown_options: list[str],
-            __: dict[str, str | float] | None,  # doesn't really matter since we will overwrite the dictionary
-    ) -> dict[str, str | float] | None:
-        inputs = callback_context.inputs_list
-        return update_params(dropdown_value=dropdown_value, dropdown_options=dropdown_options, inputs=inputs)
-
-    @staticmethod
-    @callback(
-        Output(ids.death_store(MATCH), 'data'),
         Input(ids.death_inputbox(MATCH, ALL, ALL, ALL), 'value'),
+        Input(ids.division_dropdown(MATCH), 'value'),
         Input(ids.death_dropdown(MATCH), 'value'),
+        Input(ids.frame_input(MATCH), 'value'),
+        State(ids.division_dropdown(MATCH), 'options'),
         State(ids.death_dropdown(MATCH), 'options'),
-        State(ids.death_store(MATCH), 'data'),
+        State(ids.store(MATCH), 'data'),
     )
-    def update_death_params(
-            _: list[float | None],  # we want these to trigger the callback, but we do not care about the values
-            dropdown_value: str | None,
-            dropdown_options: list[str],
-            __: dict[str, str | float] | None,  # doesn't really matter since we will overwrite the dictionary
+    def update_params_store(
+            _: list[float | None],  # we want the division inputs to trigger the callback, but the values don't matter
+            __: list[float | None],  # we want the death inputs to trigger the callback, but the values don't matter
+            division_dropdown_value: str | None,
+            death_dropdown_value: str | None,
+            frame_number: int | None,
+            division_dropdown_options: list[str],
+            death_dropdown_options: list[str],
+            treatment_data: dict[str, int | dict[str, str | float]] | None,
     ) -> dict[str, str | float] | None:
-        inputs = callback_context.inputs_list
-        return update_params(dropdown_value=dropdown_value, dropdown_options=dropdown_options, inputs=inputs)
+        if not (triggered_id := callback_context.triggered_id):
+            return treatment_data
+        if triggered_id['subcomponent'].startswith('frame'):  # triggered by a change in the frame number
+            treatment_data['added_on_frame'] = frame_number
+            return treatment_data
+        if triggered_id['subcomponent'].startswith('division'):  # triggered by a change in a division parameter
+            dropdown_value = division_dropdown_value
+            dropdown_options = division_dropdown_options
+            param_list = callback_context.inputs_list[0]
+            curve_name = 'division_curve'
+        elif triggered_id['subcomponent'].startswith('death'):  # triggered by a change in a division parameter
+            dropdown_value = death_dropdown_value
+            dropdown_options = death_dropdown_options
+            param_list = callback_context.inputs_list[1]
+            curve_name = 'death_curve'
+        else:
+            raise ValueError(f"Got unknown ID: {triggered_id}.")
+        dropdown_index = get_dropdown_index(dropdown_value=dropdown_value, dropdown_options=dropdown_options)
+        params = get_curve_params(param_list=param_list, dropdown_value=dropdown_value, dropdown_index=dropdown_index)
+        treatment_data[curve_name] = params
+        return treatment_data
 
     @staticmethod
     @callback(
@@ -313,21 +336,6 @@ def change_curve_params(
     ]
 
 
-def update_params(
-        dropdown_value: str | None,
-        dropdown_options: list[str],
-        inputs: list[list[dict]],
-) -> dict[str, str | float] | None:
-    if not dropdown_value:
-        return None
-    dropdown_index = get_dropdown_index(dropdown_value=dropdown_value, dropdown_options=dropdown_options)
-    return get_curve_params(
-        params=inputs[0],
-        dropdown_value=dropdown_value,
-        dropdown_index=dropdown_index,
-    )
-
-
 def draw_curve(
         dropdown_value: str | None,
         dropdown_options: list[str],
@@ -339,7 +347,7 @@ def draw_curve(
     else:
         dropdown_index = get_dropdown_index(dropdown_value=dropdown_value, dropdown_options=dropdown_options)
         curve_params = get_curve_params(
-            params=inputs[0],
+            param_list=inputs[0],
             dropdown_value=dropdown_value,
             dropdown_index=dropdown_index,
         )
@@ -348,7 +356,7 @@ def draw_curve(
 
 
 def get_curve_params(
-        params: list[dict],
+        param_list: list[dict],
         dropdown_value: str,
         dropdown_index: int,
 ) -> dict[str, str | float]:
@@ -357,7 +365,7 @@ def get_curve_params(
     curve_params.update(
         {
             param['id']['param_name'].lower().replace(' ', '_').replace('-', ''): param['value']
-            for param in params
+            for param in param_list
             if param['id']['curve_index'] == dropdown_index
         }
     )
