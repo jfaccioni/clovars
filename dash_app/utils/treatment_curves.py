@@ -41,7 +41,11 @@ def draw_treatment_curve(
         "division": "#029E73",
         "death": '#DE8F05',
     }[curve_type.lower()]
-    xlim = 100
+    fillcolor = {
+        "division": "#52EEC3",
+        "death": '#FFDF55',
+    }[curve_type.lower()]
+    xlim = 200
     curve = get_curve(**curve_params)
     x = np.linspace(0, xlim, 1_000)
     y = curve.pdf(x)
@@ -50,7 +54,9 @@ def draw_treatment_curve(
             x=x,
             y=y,
             mode='lines',
-            fillcolor=color,
+            line={'color': color, 'width': 5},
+            fill='tozeroy',
+            fillcolor=fillcolor,
             name=f'{curve_type.capitalize()} curve',
         ),
         layout={

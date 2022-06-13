@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import dash_bootstrap_components as dbc
-from dash import Dash, html, Output, State, Input, callback, ALL
+from dash import Dash, html, Output, State, Input, callback
 
 from dash_app.tabs import get_clovars_tabs
 
@@ -57,14 +57,14 @@ def init_app(theme: str) -> Dash:
     State('globals-store', 'data'),
     State('colonies-store', 'data'),
     State({'component': 'SignalSelector', 'subcomponent': 'store', 'aio_id': 'colonies-signal-selector'}, 'data'),
-    State({'component': 'TreatmentCurveSelector', 'subcomponent': 'store', 'aio_id': 'treatment-curve-selector', 'treatment_index': ALL, 'curve_type': ALL}, 'data'),
+    State('treatment-regimen-store', 'data'),
     Input('run-clovars-button', 'n_clicks'),
 )
 def display_parameters(
         global_data: dict,
         colonies_data: dict,
         signal_data: dict,
-        treatment_data: dict,
+        treatment_regimen_data: dict,
         n_clicks: int,
 ) -> None:
     """Displays the current parameters on the console."""
@@ -73,7 +73,7 @@ def display_parameters(
             'global': global_data,
             'colonies': colonies_data,
             'cell_signal': signal_data,
-            'treatment_data': treatment_data,
+            'treatment_regimen_data': treatment_regimen_data,
         }
         print("Total data:\n")
         import pprint
