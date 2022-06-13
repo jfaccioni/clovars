@@ -11,23 +11,23 @@ def get_treatment_curves() -> list[Curve]:
     """Returns a list of Curve instances used when defining possible Treatment Curves."""
     return [
         Curve(name='Gaussian', params=[
-            Param('Mean', value=24,   min_=0, max_=200, step=0.5),
-            Param('Std',  value=0.05, min_=0, max_=200, step=0.01),
+            Param('Mean', value=36, min_=0, max_=200, step=0.25),
+            Param('Std',  value=12, min_=0, max_=200, step=0.01),
         ]),
         Curve(name='EM Gaussian', params=[
-            Param('Mean', value=24,   min_=0, max_=200, step=0.5),
-            Param('Std',  value=0.05, min_=0, max_=200, step=0.01),
-            Param('K',    value=0.1,  min_=0, max_=10,  step=0.01),
+            Param('Mean', value=12.75, min_=0, max_=200, step=0.25),
+            Param('Std',  value=8.50, min_=0, max_=200, step=0.01),
+            Param('K',    value=2.87, min_=0, max_=10,  step=0.01),
         ]),
         Curve(name='Gamma', params=[
-            Param('Mean', value=24,   min_=0, max_=200, step=0.5),
-            Param('Std',  value=0.05, min_=0, max_=200, step=0.01),
-            Param('a',    value=0.1,  min_=0, max_=10,  step=0.01),
+            Param('Mean', value=16.25, min_=0, max_=200, step=0.25),
+            Param('Std',  value=2.84,  min_=0, max_=200, step=0.01),
+            Param('a',    value=3.82,  min_=0, max_=10,  step=0.01),
         ]),
         Curve(name='Lognormal', params=[
-            Param('Mean', value=24,   min_=0, max_=200, step=0.05),
-            Param('Std',  value=0.05, min_=0, max_=200, step=0.01),
-            Param('s',    value=0.1,  min_=0, max_=10,  step=0.01),
+            Param('Mean', value=21,  min_=0, max_=200, step=0.25),
+            Param('Std',  value=5.5, min_=0, max_=200, step=0.01),
+            Param('s',    value=1,   min_=0, max_=10,  step=0.01),
         ]),
     ]
 
