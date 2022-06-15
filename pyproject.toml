@@ -36,6 +36,7 @@ cssmin = "*"
 jsmin = "*"
 dash = "*"
 dash-bootstrap-components = "*"
+pyqt5 = "*"
 
 
 [build-system]
