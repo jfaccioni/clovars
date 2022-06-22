@@ -3,12 +3,55 @@ from __future__ import annotations
 import copy
 import random
 from functools import partial
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 import numpy as np
 from scipy.stats import norm, exponnorm
 
-from clovars.scientific import reflect_around_interval
+from clovars.scientific import get_oscillator, reflect_around_interval
+
+if TYPE_CHECKING:
+    from clovars.scientific import Oscillator
+
+
+class CellSignal:
+    """Class representing an abstract cell signal that fluctuates over time."""
+    def __init__(
+        self,
+        initial_value: float = 0.0,
+        oscillator: Oscillator = None,
+        oscillator_name: str = '',
+        *oscillator_args,
+        **oscillator_kwargs,
+    ) -> None:
+        """Initializes a CellSignal instance."""
+        self.value = initial_value
+        self.oscillator = oscillator if oscillator is not None else get_oscillator(
+            oscillator_name=oscillator_name,
+            oscillator_args=oscillator_args,
+            oscillator_kwargs=oscillator_kwargs,
+        )
+
+    def oscillate(self) -> None:
+        """Oscillates the CellSignal value based on its distribution."""
+        self.value += self.oscillator.oscillate()
+
+    def split(self) -> CellSignal:
+        """Returns a new CellSignal instance with the same parameters as the current instance."""
+        return CellSignal(initial_value=self.value, oscillator=self.oscillator.split())
+
+    def mutate(
+            self,
+            oscillator_name: str = '',
+            *oscillator_args,
+            **oscillator_kwargs,
+    ) -> None:
+        """Modifies the current Distribution of the CellSignal."""
+        self.oscillator = get_oscillator(
+            oscillator_name=oscillator_name,
+            oscillator_args=oscillator_args,
+            oscillator_kwargs=oscillator_kwargs,
+        )
 
 
 class CellSignal:

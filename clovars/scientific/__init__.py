@@ -12,3 +12,4 @@ from clovars.scientific.cell_signal import (
 )
 from clovars.scientific.curves import AbstractCurve, EMGaussian, Gamma, Gaussian, Lognormal, get_curve
 from clovars.scientific.sctypes import Curve, Numeric
+from clovars.scientific.distribution import Distribution, get_distribution
