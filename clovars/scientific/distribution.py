@@ -4,7 +4,6 @@ from __future__ import annotations
 import abc
 
 import numpy as np
-from matplotlib import pyplot as plt
 from scipy.stats import exponnorm, gamma, lognorm, norm
 
 from clovars.scientific import Numeric
@@ -35,14 +34,6 @@ class Oscillator:
         """
         Abstract method that must be implemented by Oscillator subclasses.
         Returns a new Oscillator instance, initially identical to the current Oscillator instance.
-        """
-        pass
-
-    @abc.abstractmethod
-    def plot(self) -> None:
-        """
-        Abstract method that must be implemented by Oscillator subclasses.
-        Plots the Oscillator behavior into a matplotlib plot.
         """
         pass
 
@@ -102,21 +93,6 @@ class Distribution(Oscillator):
     ) -> Numeric:
         """Returns the Distribution's probability density function evaluated at x."""
         return self._scipy_dist.pdf(x)
-
-    def plot(
-            self,
-            x_min: float = -10.0,
-            x_max: float = +10.0,
-            x_step: int = 10_000,
-            y_ignore: float = 10e-5,
-    ) -> None:
-        """Plots the distribution visually."""
-        fig, ax = plt.subplots()
-        xs = np.linspace(x_min, x_max, x_step)
-        ys = self.pdf(xs)
-        ys[ys < y_ignore] = np.nan  # Ignore small Y values when plotting
-        ax.plot(xs, ys)
-        plt.show()
 
 
 def GaussianDistribution(
@@ -220,17 +196,6 @@ class Wave(Oscillator):
         """Returns a uniform value between inside the Wave's amplitude."""
         return np.random.uniform(low=-self.amplitude*3, high=self.amplitude*3)
 
-    def plot(
-            self,
-            n_iters: int = 100,
-    ) -> None:
-        """Plots the distribution visually."""
-        fig, ax = plt.subplots()
-        xs = np.arange(n_iters)
-        ys = np.array([self.oscillate() for _ in xs])
-        ax.plot(xs, ys)
-        plt.show()
-
 
 def StochasticWave(
         *args,
@@ -261,6 +226,11 @@ def StochasticSinusoidalWave(
 
 # get Oscillator / Distribution / Wave functions -------------------------------
 
+_VALID_DIST_NAMES = ['gaussian', 'emgaussian', 'gamma', 'lognormal']
+_VALID_WAVE_NAMES = ['sinusoidal', 'stochastic', ['stochasticsinusoidal', 'stochsin', 'stochastic-sinusoidal'], 'wave']
+_VALID_NAMES = _VALID_DIST_NAMES + _VALID_WAVE_NAMES
+
+
 def get_oscillator(
         name: str,
         *args,
@@ -273,7 +243,7 @@ def get_oscillator(
         try:
             return get_wave(name=name, *args, **kwargs)
         except ValueError as e:
-            raise ValueError(f'Invalid Oscillator name: {name}') from e
+            raise ValueError(f'Invalid Oscillator name: {name}. Valid names are:\n  {_VALID_NAMES}') from e
 
 
 def get_distribution(
@@ -292,7 +262,7 @@ def get_distribution(
         case 'lognormal':
             return LognormalDistribution(*args, **kwargs)
         case _:
-            raise ValueError(f"Invalid distribution name: {name}")
+            raise ValueError(f"Invalid distribution name: {name}. Valid names are: {_VALID_DIST_NAMES}")
 
 
 def get_wave(
@@ -311,11 +281,4 @@ def get_wave(
         case 'wave':
             return Wave(*args, **kwargs)
         case _:
-            raise ValueError(f"Invalid wave name: {name}")
-
-
-if __name__ == '__main__':
-    _DIST_NAME = 'gaussian'
-    get_oscillator(name=_DIST_NAME, mean=0.0, std=2).plot()
-    _WAVE_NAME = 'stochsin'
-    get_oscillator(name=_WAVE_NAME).plot()
+            raise ValueError(f"Invalid wave name: {name}. Valid names are: {_VALID_WAVE_NAMES}")
