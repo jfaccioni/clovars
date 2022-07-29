@@ -1,6 +1,6 @@
 from clovars.abstract import CellMemory
 from clovars.bio.treatment import Treatment, get_treatment
-from clovars.scientific import ConstantCellSignal, Gaussian
+from clovars.scientific import CellSignal, Gaussian
 
 DEFAULT_TREATMENT = Treatment(
         name="Control",
@@ -15,7 +15,7 @@ DEFAULT_TREATMENT = Treatment(
     )
 
 DEFAULT_FITNESS_MEMORY = CellMemory()
-DEFAULT_CELL_SIGNAL = ConstantCellSignal()
+DEFAULT_CELL_SIGNAL = CellSignal('gaussian')
 
 from clovars.bio.well import Well
 from clovars.bio.cell import Cell
