@@ -250,7 +250,7 @@ class Cell:
         new_name = f'{self.name}.{branch_name}'
         new_signal = self.signal.split()
         for _ in range(20):
-            new_signal.oscillate(seconds=delta)
+            new_signal.oscillate()
         child = self.__class__(
             name=new_name,
             max_speed=self.max_speed,
@@ -312,4 +312,4 @@ class Cell:
             **kwargs,
     ) -> None:
         """Fluctuates the CellSignal."""
-        self.signal.oscillate(*args, **kwargs)
+        self.signal.oscillate()
