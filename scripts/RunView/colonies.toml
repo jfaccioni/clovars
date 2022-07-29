@@ -9,10 +9,10 @@ initial_size = 1
   mother_fitness_memory = 1.0  # between 0 and 1
   sister_fitness_memory = 0.0  # between 0 and 1
     [colony.cells.signal]
-    name = 'DivisionGaussian'
+    name = 'Gaussian'
     initial_value = 0.0
     std = 0.01
-    std_division_scaling = 50.0
+#    std_division_scaling = 50.0
 
   [[colony.treatment]]
   name = 'Control'
