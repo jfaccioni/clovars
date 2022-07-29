@@ -1,14 +1,11 @@
 from __future__ import annotations
 
-import copy
-import random
-from functools import partial
 from typing import Optional, TYPE_CHECKING
 
 import numpy as np
-from scipy.stats import norm, exponnorm
+from matplotlib import pyplot as plt
 
-from clovars.scientific import get_oscillator, reflect_around_interval
+from clovars.scientific import get_oscillator
 
 if TYPE_CHECKING:
     from clovars.scientific import Oscillator
@@ -18,8 +15,8 @@ class CellSignal:
     """Class representing an abstract cell signal that fluctuates over time."""
     def __init__(
         self,
-        initial_value: float = 0.0,
         oscillator_name: str = '',
+        initial_value: float = 0.0,
         oscillator: Oscillator = None,
         *oscillator_args,
         **oscillator_kwargs,
@@ -31,8 +28,20 @@ class CellSignal:
             self.oscillator = get_oscillator(name=oscillator_name, *oscillator_args, **oscillator_kwargs)
 
     def oscillate(self) -> None:
-        """Oscillates the CellSignal value based on its distribution."""
+        """Oscillates the CellSignal value based on its Oscillator."""
         self.value += self.oscillator.oscillate()
+
+    def oscillate_and_get(self) -> float:
+        """Oscillates the CellSignal and returns its value afterwards."""
+        self.oscillate()
+        return self.value
+
+    def oscillate_for(
+            self,
+            n: int = 100,
+    ) -> list[float]:
+        """Oscillates the CellSignal n times, returning a list of the values after each oscillation."""
+        return [self.oscillate_and_get() for _ in range(n)]
 
     def split(self) -> CellSignal:
         """Returns a new CellSignal instance with the same parameters as the current instance."""
@@ -40,16 +49,12 @@ class CellSignal:
 
     def mutate(
             self,
-            oscillator_name: str = '',
+            oscillator_name: str = 'gaussian',
             *oscillator_args,
             **oscillator_kwargs,
     ) -> None:
         """Modifies the current Distribution of the CellSignal."""
-        self.oscillator = get_oscillator(
-            oscillator_name=oscillator_name,
-            oscillator_args=oscillator_args,
-            oscillator_kwargs=oscillator_kwargs,
-        )
+        self.oscillator = get_oscillator(name=oscillator_name, *oscillator_args, **oscillator_kwargs)
 
 
 # class CellSignal:
@@ -260,7 +265,7 @@ class CellSignal:
 #         return self.em_normal()
 #
 #     def em_normal(self) -> float:
-#         """Returns an exponentially-modified Gaussian value floating around the EMGaussianCellSignal's current value."""
+#         """Returns an exponentially-modified Gaussian value floating around the EMGCellSignal's current value."""
 #         if (new_value := self.value + exponnorm.rvs(loc=self.mean, scale=self.std, K=self.k)) > 1.0:
 #             return 1.0
 #         elif new_value < -1.0:
@@ -284,50 +289,70 @@ class CellSignal:
 #         return self.value
 
 
+def plot_cell_signal(
+        signal: CellSignal,
+        n_iters: int = 100,
+) -> None:
+    """Plots the distribution visually."""
+    fig, ax = plt.subplots()
+    xs = np.arange(n_iters)
+    ys = signal.oscillate_for(n=n_iters)
+    ax.plot(xs, ys)
+    plt.show()
+
+
 def get_cell_signal(
         name: str = '',
         initial_value: Optional[float] = None,
-        period: Optional[float] = None,
-        noise: Optional[float] = None,
-        stochastic_weight: Optional[float] = None,
-        mean: Optional[float] = None,
-        std: Optional[float] = None,
-        std_division_scaling: Optional[float] = None,
-        k: Optional[float] = None,
+        *args,
+        **kwargs,
+        # period: Optional[float] = None,
+        # noise: Optional[float] = None,
+        # stochastic_weight: Optional[float] = None,
+        # mean: Optional[float] = None,
+        # std: Optional[float] = None,
+        # std_division_scaling: Optional[float] = None,
+        # k: Optional[float] = None,
 ) -> CellSignal:
     """Returns a CellSignal instance, according to the input parameters."""
-    name = name or "Gaussian"
-    initial_value = initial_value if initial_value is not None else 0.0
-    period = period if period is not None else 3600
-    noise = noise if noise is not None else 0.2
-    stochastic_weight = stochastic_weight if stochastic_weight is not None else 0.5
-    mean = mean if mean is not None else 0.0
-    std = std if std is not None else 1.0
-    std_division_scaling = std_division_scaling if std_division_scaling is not None else 1.0
-    k = k if k is not None else 1.0
-    signals = {
-        'Stochastic': partial(StochasticCellSignal, initial_value=initial_value, noise=noise),
-        'Sinusoidal': partial(SinusoidalCellSignal, initial_value=initial_value, period=period),
-        'StochasticSinusoidal': partial(
-            StochasticSinusoidalCellSignal,
-            initial_value=initial_value,
-            period=period,
-            noise=noise,
-            stochastic_weight=stochastic_weight
-        ),
-        'Gaussian': partial(GaussianCellSignal, initial_value=initial_value, mean=mean, std=std),
-        'DivisionGaussian': partial(
-            DivisionGaussianCellSignal,
-            initial_value=initial_value,
-            mean=mean,
-            std=std,
-            std_division_scaling=std_division_scaling,
-        ),
-        'EMGaussian': partial(EMGaussianCellSignal, initial_value=initial_value, mean=mean, std=std, k=k),
-        'Constant': partial(ConstantCellSignal, initial_value=initial_value),
-    }
-    if name == 'Random':
-        name = random.choice(list(signals.keys()))
-    if (signal := signals.get(name)) is None:
-        raise ValueError(f"Invalid signal type: {name}")
-    return signal()
+    return CellSignal(oscillator_name=name, initial_value=initial_value, *args, **kwargs)
+    # name = name or "Gaussian"
+    # initial_value = initial_value if initial_value is not None else 0.0
+    # period = period if period is not None else 3600
+    # noise = noise if noise is not None else 0.2
+    # stochastic_weight = stochastic_weight if stochastic_weight is not None else 0.5
+    # mean = mean if mean is not None else 0.0
+    # std = std if std is not None else 1.0
+    # std_division_scaling = std_division_scaling if std_division_scaling is not None else 1.0
+    # k = k if k is not None else 1.0
+    # signals = {
+    #     'Stochastic': partial(StochasticCellSignal, initial_value=initial_value, noise=noise),
+    #     'Sinusoidal': partial(SinusoidalCellSignal, initial_value=initial_value, period=period),
+    #     'StochasticSinusoidal': partial(
+    #         StochasticSinusoidalCellSignal,
+    #         initial_value=initial_value,
+    #         period=period,
+    #         noise=noise,
+    #         stochastic_weight=stochastic_weight
+    #     ),
+    #     'Gaussian': partial(GaussianCellSignal, initial_value=initial_value, mean=mean, std=std),
+    #     'DivisionGaussian': partial(
+    #         DivisionGaussianCellSignal,
+    #         initial_value=initial_value,
+    #         mean=mean,
+    #         std=std,
+    #         std_division_scaling=std_division_scaling,
+    #     ),
+    #     'EMGaussian': partial(EMGaussianCellSignal, initial_value=initial_value, mean=mean, std=std, k=k),
+    #     'Constant': partial(ConstantCellSignal, initial_value=initial_value),
+    # }
+    # if name == 'Random':
+    #     name = random.choice(list(signals.keys()))
+    # if (signal := signals.get(name)) is None:
+    #     raise ValueError(f"Invalid signal type: {name}")
+    # return signal()
+
+
+if __name__ == '__main__':
+    SIGNAL = CellSignal(oscillator_name='gaussian')
+    plot_cell_signal(signal=SIGNAL, n_iters=100)
