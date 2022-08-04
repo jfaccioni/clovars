@@ -204,7 +204,6 @@ class Cell:
     def pass_time(
             self,
             delta: int,
-            current_seconds: int,
     ) -> Cell | tuple[Cell, Cell] | None:
         """Simulates the Cell for a given number of seconds (delta)."""
         if self.fate == 'death':
@@ -212,11 +211,8 @@ class Cell:
             return None
         elif self.fate == 'division':
             result = self.divide(delta=delta)
-            for child_cell in result:
-                child_cell.fluctuate_signal(current_seconds=current_seconds, has_divided=True)
         elif self.fate == 'migration':
             result = self.migrate(delta=delta)
-            result.fluctuate_signal(current_seconds=current_seconds)
         else:
             raise ValueError(f'Bad Cell fate: {self.fate}')
         return result
@@ -230,12 +226,14 @@ class Cell:
             delta: int
     ) -> tuple[Cell, Cell]:
         """Creates and returns two Cells from a parent Cell."""
+        child_01 = self.get_child_cell(delta=delta, branch_name='1', fitness_source=('mother', self))
         if self.linked_sister_inheritance is True:
-            child_01 = self.get_child_cell(delta=delta, branch_name='1', fitness_source=('mother', self))
             child_02 = self.get_child_cell(delta=delta, branch_name='2', fitness_source=('sister', child_01))
         else:
-            child_01 = self.get_child_cell(delta=delta, branch_name='1', fitness_source=('mother', self))
             child_02 = self.get_child_cell(delta=delta, branch_name='2', fitness_source=('mother', self))
+        signal_01, signal_02 = self.bifurcate_signal()
+        child_01.signal = signal_01
+        child_02.signal = signal_02
         return child_01, child_02
 
     def get_child_cell(
@@ -248,9 +246,6 @@ class Cell:
         new_x, new_y = self.get_new_xy_coordinates(delta=delta, event_name='division')
         new_division_threshold, new_death_threshold = self.inherit_fitness(fitness_source=fitness_source)
         new_name = f'{self.name}.{branch_name}'
-        new_signal = self.signal.split()
-        for _ in range(20):
-            new_signal.oscillate()
         child = self.__class__(
             name=new_name,
             max_speed=self.max_speed,
@@ -261,7 +256,7 @@ class Cell:
             division_threshold=new_division_threshold,
             death_threshold=new_death_threshold,
             fitness_memory=self.fitness_memory,
-            signal=new_signal,
+            signal=self.signal,
             treatment=self.treatment,
         )
         return child
@@ -304,12 +299,22 @@ class Cell:
         """Modifies the Cell in-place for simulating Cell migration."""
         self.x, self.y = self.get_new_xy_coordinates(delta=delta, event_name='migration')
         self.seconds_since_birth += delta
+        self.fluctuate_signal()
         return self
 
-    def fluctuate_signal(
+    def bifurcate_signal(
             self,
-            *args,
-            **kwargs,
-    ) -> None:
+    ) -> tuple[CellSignal, CellSignal]:
+        """Bifurcates the CellSignal."""
+        return self.signal.bifurcate(
+            # left_corr=self.mother_d1_corr,
+            # right_corr=self.mother_d2_corr,
+            # between_corr=self.sister_corr,
+            left_corr=1.0,
+            right_corr=0.0,
+            between_corr=0.0,
+        )
+
+    def fluctuate_signal(self) -> None:
         """Fluctuates the CellSignal."""
         self.signal.oscillate()
