@@ -6,12 +6,12 @@ initial_size = 1
   radius = 20
   max_speed = 0.020351
   linked_sister_inheritance = true  # if true, the second child cell inherits from the first upon division
-  mother_fitness_memory = 1.0  # between 0 and 1
-  sister_fitness_memory = 0.0  # between 0 and 1
+  mother_fitness_memory = 0.5  # between 0 and 1
+  sister_fitness_memory = 0.5  # between 0 and 1
     [colony.cells.signal]
     name = 'Gaussian'
-    initial_value = 0.0
-    std = 0.01
+    initial_value = 10.0
+    std = 5.0
 #    std_division_scaling = 50.0
 
   [[colony.treatment]]
