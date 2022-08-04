@@ -63,6 +63,22 @@ class Distribution(Oscillator):
         self._validate()
         self._scipy_dist = self._dist_types[self._dist_type](*args, **kwargs)  # Should not raise KeyError
 
+    @property
+    def mean(self) -> float:
+        """
+        Returns the mean of the underlying scipy dist.
+        Relies on the fact that the "loc" argument is passed as a keyword in the Distribution functions below!
+        """
+        return self._kwargs['loc']
+
+    @property
+    def std(self) -> float:
+        """
+        Returns the standard deviation of the underlying scipy dist.
+        Relies on the fact that the "scale" argument is passed as a keyword in the Distribution functions below!
+        """
+        return self._kwargs['scale']
+
     def _validate(self) -> None:
         """Raises a ValueError if the type of the Distribution is invalid (i.e. not in the _dist_types dictionary)."""
         if not self._dist_type:
