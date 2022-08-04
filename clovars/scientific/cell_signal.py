@@ -6,6 +6,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from clovars.scientific import get_oscillator
+from scientific import get_correlated_values, Distribution
 
 if TYPE_CHECKING:
     from clovars.scientific import Oscillator
@@ -46,6 +47,33 @@ class CellSignal:
     def split(self) -> CellSignal:
         """Returns a new CellSignal instance with the same parameters as the current instance."""
         return CellSignal(initial_value=self.value, oscillator=self.oscillator.split())
+
+    def bifurcate(
+            self,
+            left_corr: float,
+            right_corr: float,
+            between_corr: float,
+    ) -> tuple[CellSignal, CellSignal]:
+        """Returns two new CellSignals, based on the desired correlation values between them."""
+        if not isinstance(self.oscillator, Distribution):
+            return self.split(), self.split()
+        mean, std = self.oscillator.mean, self.oscillator.std
+        left_value, right_value = get_correlated_values(
+            x=self.value,
+            x_mean=mean,
+            x_std=std,
+            y_mean=mean,
+            y_std=std,
+            z_mean=mean,
+            z_std=std,
+            x_y_corr=left_corr,
+            x_z_corr=right_corr,
+            y_z_corr=between_corr,
+        )
+        return (
+            CellSignal(initial_value=left_value, oscillator=self.oscillator.split()),
+            CellSignal(initial_value=right_value, oscillator=self.oscillator.split()),
+        )
 
     def mutate(
             self,
