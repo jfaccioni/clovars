@@ -1,15 +1,11 @@
 from __future__ import annotations
 
-from typing import Optional, TYPE_CHECKING
+from typing import Optional
 
 import numpy as np
 from matplotlib import pyplot as plt
 
-from clovars.scientific import get_oscillator
-from scientific import get_correlated_values, Distribution
-
-if TYPE_CHECKING:
-    from clovars.scientific import Oscillator
+from clovars.scientific import get_oscillator, Distribution, Wave, Oscillator
 
 
 class CellSignal:
@@ -48,32 +44,20 @@ class CellSignal:
         """Returns a new CellSignal instance with the same parameters as the current instance."""
         return CellSignal(initial_value=self.value, oscillator=self.oscillator.split())
 
-    def bifurcate(
-            self,
-            left_corr: float,
-            right_corr: float,
-            between_corr: float,
-    ) -> tuple[CellSignal, CellSignal]:
+    def bifurcate(self) -> tuple[CellSignal, CellSignal]:
         """Returns two new CellSignals, based on the desired correlation values between them."""
-        if not isinstance(self.oscillator, Distribution):
+        if isinstance(self.oscillator, Wave):
             return self.split(), self.split()
-        mean, std = self.oscillator.mean, self.oscillator.std
-        left_value, right_value = get_correlated_values(
-            x=self.value,
-            x_mean=mean,
-            x_std=std,
-            y_mean=mean,
-            y_std=std,
-            z_mean=mean,
-            z_std=std,
-            x_y_corr=left_corr,
-            x_z_corr=right_corr,
-            y_z_corr=between_corr,
-        )
-        return (
-            CellSignal(initial_value=left_value, oscillator=self.oscillator.split()),
-            CellSignal(initial_value=right_value, oscillator=self.oscillator.split()),
-        )
+        elif isinstance(self.oscillator, Distribution):
+            return self.split(), self.split()
+        elif isinstance(self.oscillator, Oscillator):  # MultivariateGaussianDistribution
+            left_value, right_value = self.oscillator.bifurcate()
+            return (
+                CellSignal(initial_value=left_value, oscillator=self.oscillator.split()),
+                CellSignal(initial_value=right_value, oscillator=self.oscillator.split()),
+            )
+        else:  # MultivariateGaussian
+            raise ValueError('Bad dist type!')
 
     def mutate(
             self,

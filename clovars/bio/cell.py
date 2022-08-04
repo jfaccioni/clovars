@@ -306,14 +306,7 @@ class Cell:
             self,
     ) -> tuple[CellSignal, CellSignal]:
         """Bifurcates the CellSignal."""
-        return self.signal.bifurcate(
-            # left_corr=self.mother_d1_corr,
-            # right_corr=self.mother_d2_corr,
-            # between_corr=self.sister_corr,
-            left_corr=1.0,
-            right_corr=0.0,
-            between_corr=0.0,
-        )
+        return self.signal.bifurcate()
 
     def fluctuate_signal(self) -> None:
         """Fluctuates the CellSignal."""
