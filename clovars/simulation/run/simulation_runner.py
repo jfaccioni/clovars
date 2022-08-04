@@ -50,8 +50,7 @@ class SimulationRunner(QuietPrinterMixin):
                 print('---*---*---')  # Proper format to end of simulation message
                 break
             # Simulate Cells for one frame
-            well.pass_time(delta=delta, current_seconds=simulation_seconds)
-
+            well.pass_time(delta=delta)
         else:  # no stop condition was met -> self.default_max_iters reached
             print('---*---*---')  # Proper format to end of simulation message
             self.quiet_print(f"No stop condition met, program ran for {self.max_iteration} iterations.")

@@ -97,12 +97,11 @@ class Well(Circle):
     def pass_time(
             self,
             delta: int,
-            current_seconds: int,
     ) -> None:
         """Simulates the Cells in the Well for a given number of seconds."""
         dead_colonies = []
         for colony in self.colonies:
-            colony.pass_time(delta=delta, current_seconds=current_seconds)
+            colony.pass_time(delta=delta)
             if colony.is_dead():
                 dead_colonies.append(colony)
         self.colonies = [

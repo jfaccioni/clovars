@@ -105,13 +105,12 @@ class Colony:
     def pass_time(
             self,
             delta: int,
-            current_seconds: int,
     ) -> None:
         """Simulates the Colony for a given number of seconds (delta)."""
         cells_to_add = []
         cells_to_drop = []
         for cell in self:
-            outcome = cell.pass_time(delta=delta, current_seconds=current_seconds)
+            outcome = cell.pass_time(delta=delta)
             if outcome is None:  # Cell has died in the prior iteration, outcome is a None value
                 cells_to_drop.append(cell)
             elif isinstance(outcome, tuple):  # Cell has divided, outcome is a tuple of child Cells
