@@ -4,7 +4,7 @@ from __future__ import annotations
 import abc
 
 import numpy as np
-from scipy.stats import exponnorm, gamma, lognorm, norm
+from scipy.stats import exponnorm, gamma, lognorm, norm, multivariate_normal
 
 from clovars.scientific import Numeric
 
@@ -146,6 +146,88 @@ def LognormalDistribution(
     return Distribution(dist_type='lognormal', loc=mean, scale=std, s=s)
 
 
+class _MultiVariateGaussianDistribution(Oscillator):
+    """Class representing a multivariate distribution (gaussian, ...) that is able to oscillate."""
+    def __init__(
+            self,
+            mean: float = 0.0,
+            std: float = 1.0,
+            x_y_corr: float = 0.5,
+            x_z_corr: float = 0.5,
+            y_z_corr: float = 0.5,
+    ) -> None:
+        """Initializes a MultivariateGaussianDistribution instance."""
+        self.mean = mean
+        self.std = std
+        x_y_covar = x_y_corr * (std ** 2)
+        x_z_covar = x_z_corr * (std ** 2)
+        y_z_covar = y_z_corr * (std ** 2)
+        m1 = np.array([
+            [std ** 2, y_z_covar],
+            [y_z_covar, std ** 2]
+        ])
+        m2 = np.array([
+            [x_y_covar ** 2, x_y_covar * x_z_covar],
+            [x_z_covar * x_y_covar, x_z_covar ** 2]
+        ]) / (std ** 2)
+        self._covar = m1 - m2
+        v1 = np.array([
+            [mean],
+            [mean],
+        ])
+        v2 = np.array([
+            [x_y_covar],
+            [x_z_covar],
+        ])
+        self._unscaled_mean_vector = v1 + v2
+        self._scipy_dist = multivariate_normal
+
+    def _validate(self) -> None:
+        """Mock validation method."""
+        pass
+
+    def oscillate(self) -> float:
+        """Returns a gaussian value."""
+        return norm(self.mean, self.std).rvs()
+
+    def bifurcate(
+            self,
+            x: float = 0.0,
+    ) -> float:
+        """Implements the oscillate method by returning a random value drawn from the distribution."""
+        return self._scipy_dist(mean=self.get_mean_vector(x=x), cov=self._covar)
+
+    def get_mean_vector(
+            self,
+            x: float,
+    ) -> np.array:
+        """Returns the mean vector of the distribution, given one of its values."""
+        return self._unscaled_mean_vector * (x - self.mean) / (self.std**2)
+
+    def split(self) -> MultivariateGaussianDistribution():
+        """Implements the split method by returning an identical, independent Distribution."""
+        # we can return the same instance, since it does not depend on any internal state
+        # (no problem if 2 or more cells share the reference to the same oscillator)
+        return self
+
+
+def MultivariateGaussianDistribution(
+        mean: float = 0.0,
+        std: float = 1.0,
+        mother_d1_corr: float = 0.5,
+        mother_d2_corr: float = 0.5,
+        d1_d2_corr: float = 0.5,
+) -> _MultiVariateGaussianDistribution:
+    """Returns a multivariate gaussian distribution."""
+    return _MultiVariateGaussianDistribution(
+        mean=mean,
+        std=std,
+        x_y_corr=mother_d1_corr,
+        x_z_corr=mother_d2_corr,
+        y_z_corr=d1_d2_corr,
+    )
+
+
 # Wave -------------------------------------------------------------------------
 
 class Wave(Oscillator):
@@ -243,6 +325,7 @@ def StochasticSinusoidalWave(
 # get Oscillator / Distribution / Wave functions -------------------------------
 
 _VALID_DIST_NAMES = ['gaussian', 'emgaussian', 'gamma', 'lognormal']
+_VALID_MULTIVAR_DIST_NAMES = ['multivariategaussian']
 _VALID_WAVE_NAMES = ['sinusoidal', 'stochastic', ['stochasticsinusoidal', 'stochsin', 'stochastic-sinusoidal'], 'wave']
 _VALID_NAMES = _VALID_DIST_NAMES + _VALID_WAVE_NAMES
 
@@ -277,6 +360,8 @@ def get_distribution(
             return GammaDistribution(*args, **kwargs)
         case 'lognormal':
             return LognormalDistribution(*args, **kwargs)
+        case 'multivariategaussian':
+            return MultivariateGaussianDistribution(*args, **kwargs)
         case _:
             raise ValueError(f"Invalid distribution name: {name}. Valid names are: {_VALID_DIST_NAMES}")
 
