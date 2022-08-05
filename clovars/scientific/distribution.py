@@ -158,38 +158,73 @@ class MultivariateDistribution(Oscillator):
             dist_type: str = '',
             mean: float = 0.0,
             std: float = 1.0,
+            autocorr: float = 0.9,
             x_y_corr: float = 0.5,
             x_z_corr: float = 0.5,
             y_z_corr: float = 0.5,
     ) -> None:
         """Initializes a MultivariateGaussianDistribution instance."""
+        # SOURCE: https://stats.stackexchange.com/a/437682/325570
         self._dist_type = dist_type
         self._validate()
 
         self.mean = mean
         self.std = std
+        self.autocorr = autocorr
         self.var = self.std ** 2
-        x_y_covar = x_y_corr * self.var
-        x_z_covar = x_z_corr * self.var
-        y_z_covar = y_z_corr * self.var
-        m1 = np.array([
-            [self.var,  y_z_covar],
-            [y_z_covar,  self.var]
+
+        u_a = np.array([
+            [self.mean],
         ])
-        m2 = np.array([
-            [x_y_covar ** 2, x_y_covar * x_z_covar],
-            [x_z_covar * x_y_covar, x_z_covar ** 2]
-        ]) / self.var
-        self._covar = m1 - m2
-        v1 = np.array([
+        u_b = np.array([
             [self.mean],
             [self.mean],
         ])
-        v2 = np.array([
-            [x_y_covar],
-            [x_z_covar],
+
+        c_aa = np.array([
+            [self.var]
         ])
-        self._unscaled_mean_vector = v1 + v2
+        c_ab = np.array([
+            [x_y_corr * self.std, x_z_corr * self.std],
+        ])
+        c_ba = np.array([
+            [x_y_corr * self.std],
+            [x_z_corr * self.std],
+        ])
+        c_bb = np.array([
+            [self.var, y_z_corr * self.std],
+            [y_z_corr * self.std, self.var],
+        ])
+        c_aa_inv = np.linalg.inv(c_aa)
+
+        self._covar = c_bb - (c_ba @ c_aa_inv @ c_ab)
+
+        self._u_a = u_a
+        self._u_b = u_b
+        self._c_ba = c_ba
+        self._c_aa_inv = c_aa_inv
+
+        # x_y_covar = x_y_corr * self.var
+        # x_z_covar = x_z_corr * self.var
+        # y_z_covar = y_z_corr * self.var
+        # m1 = np.array([
+        #     [self.var,  y_z_covar],
+        #     [y_z_covar,  self.var]
+        # ])
+        # m2 = np.array([
+        #     [x_y_covar ** 2, x_y_covar * x_z_covar],
+        #     [x_z_covar * x_y_covar, x_z_covar ** 2]
+        # ]) / self.var
+        # self._covar = m1 - m2
+        # v1 = np.array([
+        #     [self.mean],
+        #     [self.mean],
+        # ])
+        # v2 = np.array([
+        #     [x_y_covar],
+        #     [x_z_covar],
+        # ])
+        # self._unscaled_mean_vector = v1 + v2
 
     def _validate(self) -> None:
         """
@@ -204,9 +239,14 @@ class MultivariateDistribution(Oscillator):
                 f"Valid names are: {self._valid_types}."
             )
 
-    def oscillate(self) -> float:
+    def oscillate(
+            self,
+            x: float = 0.0,
+    ) -> float:
         """Returns a gaussian value."""
-        return norm(self.mean, self.std).rvs()
+        mean = self.mean + (self.autocorr / self.std) * (x - self.mean)
+        covar = self.var - (self.autocorr ** 2)
+        return multivariate_normal.rvs(mean=mean, cov=covar)
 
     def bifurcate(
             self,
@@ -221,9 +261,12 @@ class MultivariateDistribution(Oscillator):
             x: float,
     ) -> np.array:
         """Returns the mean vector of the distribution, given one of its values."""
-        return self._unscaled_mean_vector * (x - self.mean) / self.var
+        x_a = np.array([
+            [x],
+        ])
+        return self._u_b + (self._c_ba @ self._c_aa_inv @ (x_a - self._u_a))
 
-    def split(self) -> MultivariateGaussianDistribution():
+    def split(self) -> MultivariateGaussianDistribution:
         """Implements the split method by returning an identical, independent Distribution."""
         # we can return the same instance, since it does not depend on any internal state
         # (no problem if 2 or more cells share the reference to the same oscillator)
@@ -233,6 +276,7 @@ class MultivariateDistribution(Oscillator):
 def MultivariateGaussianDistribution(
         mean: float = 0.0,
         std: float = 1.0,
+        autocorr: float = 0.5,
         mother_d1_corr: float = 0.5,
         mother_d2_corr: float = 0.5,
         d1_d2_corr: float = 0.5,
@@ -242,6 +286,7 @@ def MultivariateGaussianDistribution(
         dist_type='gaussian',
         mean=mean,
         std=std,
+        autocorr=autocorr,
         x_y_corr=mother_d1_corr,
         x_z_corr=mother_d2_corr,
         y_z_corr=d1_d2_corr,
