@@ -256,7 +256,7 @@ class Cell:
             division_threshold=new_division_threshold,
             death_threshold=new_death_threshold,
             fitness_memory=self.fitness_memory,
-            signal=self.signal,
+            signal=None,
             treatment=self.treatment,
         )
         return child
