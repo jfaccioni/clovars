@@ -7,7 +7,7 @@ import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
-from scipy.stats import norm
+from scipy.stats import norm, linregress, spearmanr
 
 from clovars.utils import PathCreatorMixin, QuietPrinterMixin
 
@@ -39,7 +39,7 @@ class SimulationAnalyzer(QuietPrinterMixin, PathCreatorMixin):
             verbose: bool = False,
             output_folder: str = default_output_folder,
     ) -> None:
-        """Initializes a SimulationViewer instance."""
+        """Initializes a SimulationAnalyzer instance."""
         self.cell_data = cell_data
         self.colony_data = colony_data
         self.delta = delta
@@ -533,11 +533,105 @@ class SimulationAnalyzer(QuietPrinterMixin, PathCreatorMixin):
         ax3.set_title('Hours since birth (CV)')
         plt.show()
 
-
     def show_mother_daughter_signal_deltas(self) -> None:
         """Displays the mother-daughter deltas of the CellSignal value."""
-        print("RUN")
-        pass
+        dfs = [
+            self.calculate_division_times(data=colony_group)
+            for _, colony_group in self.cell_data.groupby('colony_name')
+        ]
+        correlation_data = pd.concat(dfs, ignore_index=True)
+        g = sns.relplot(
+            data=correlation_data,
+            kind='scatter',
+            x='value01',
+            y='value02',
+            col='pair',
+            color='black',
+            alpha=0.5,
+            facet_kws={'sharey': False}
+        )
+        # for row in g.axes:
+        #     mother_sister01_ax, mother_sister02_ax, sister01_sister02_ax = row
+        #     # LEFT AX (Mother vs. Sister01)
+        #     mother_sister01_ax.set_xlabel('Mother time to mitosis (h)')
+        #     mother_sister01_ax.set_ylabel('Sister01 time to mitosis (h)')
+        #     self.add_linear_regression(
+        #         ax=mother_sister01_ax,
+        #         correlation_data=correlation_data,
+        #         pair_label='Mother-Sister01',
+        #     )
+        #     # MIDDLE AX (Mother vs. Sister02)
+        #     mother_sister02_ax.set_xlabel('Mother time to mitosis (h)')
+        #     mother_sister02_ax.set_ylabel('Sister02 time to mitosis (h)')
+        #     self.add_linear_regression(
+        #         ax=mother_sister02_ax,
+        #         correlation_data=correlation_data,
+        #         pair_label='Mother-Sister02',
+        #     )
+        #     # BOTTOM AX (Sister01 vs. Sister02)
+        #     sister01_sister02_ax.set_xlabel('Sister01 time to mitosis (h)')
+        #     sister01_sister02_ax.set_ylabel('Sister02 time to mitosis (h)')
+        #     self.add_linear_regression(
+        #         ax=sister01_sister02_ax,
+        #         correlation_data=correlation_data,
+        #         pair_label='Sister01-Sister02',
+        #     )
+        #     for ax in row:
+        #         ax.set_xlim(0, 100)
+        #         ax.set_ylim(0, 100)
+        # plt.tight_layout()
+        plt.show()
+
+    @staticmethod
+    def add_linear_regression(
+            ax: plt.Axes,
+            correlation_data: pd.DataFrame,
+            pair_label: str,
+    ) -> None:
+        """Adds a linear regression to the given Axes and data."""
+        data = correlation_data.loc[correlation_data['pair'] == pair_label]
+        print(data)
+        linear_regression = linregress(data['value01'], data['value02'])
+        slope, intercept, r = linear_regression.slope, linear_regression.intercept, linear_regression.rvalue
+        spearman, p_value = spearmanr(data['value01'], data['value02'])
+        x = data['value01'].sort_values()
+        ax.plot(x, intercept + (slope * x), color='#e24320', linestyle='--', linewidth=3)
+        sign_text = "+" if slope >= 0 else "-"
+        slope_text = f"{slope:.2f}" if slope >= 0 else f"{slope:.2f}"[1:]
+        text = (
+            f'$y = {intercept:.2f} {sign_text} {slope_text}x$\n'
+            f'$r :{r:.2f}$, $r^2 :{r * r:.2f}$\n'
+            rf'$\rho :{spearman:.2f}$ ($p = {p_value:.4f}$)'
+        )
+        ax.set_title(ax.get_title() + '\n' + text)
+
+    @staticmethod
+    def calculate_division_times(
+            data: pd.DataFrame,
+    ) -> pd.DataFrame | None:
+        """Populates the division_times_dict with the division times of daughter, mother and sister cells."""
+        dfs = []
+        last_frame = data['simulation_frames'].max()
+        for mother_name in data['name'].unique():
+            child_cells = data.loc[
+                (data['name'].isin([mother_name + '.1', mother_name + '.2'])) &  # Find Daughters by name
+                (data['simulation_frames'] < last_frame)  # Skip end leaves
+                ]
+            if len(child_cells) > 1:  # Only analyse if two child cells with division time were found
+                mother_value = data.loc[data['name'] == mother_name].iloc[0, :].seconds_since_birth / (60 * 60)
+                sister_01_value = child_cells.iloc[0, :].seconds_since_birth / (60 * 60)
+                sister_02_value = child_cells.iloc[1, :].seconds_since_birth / (60 * 60)
+                df = pd.DataFrame(
+                    {
+                        'value01': [mother_value, mother_value, sister_01_value],
+                        'value02': [sister_01_value, sister_02_value, sister_02_value],
+                        'pair': ['Mother-Sister01', 'Mother-Sister02', 'Sister01-Sister02'],
+                    }
+                )
+                dfs.append(df)
+        if dfs:
+            return pd.concat(dfs, ignore_index=True)
+        return None
 
     @staticmethod
     def filter_invalid(df: pd.DataFrame) -> pd.DataFrame:
