@@ -569,27 +569,30 @@ class SimulationAnalyzer(QuietPrinterMixin, PathCreatorMixin):
     ) -> pd.DataFrame | None:
         """Returns a DataFrame of the mother/daughters signal deltas."""
         dfs = []
-        for mother_name, mother_data in data.sort_values(by='simulation_frames').groupby('name'):
+        data = data.sort_values(by='simulation_frames')
+        for mother_name, mother_data in data.groupby('name'):
             mother_value = mother_data.iloc[-1, :].signal_value
             try:
                 prev_mother_value = mother_data.iloc[-2, :].signal_value
                 mother_delta = mother_value - prev_mother_value
+                print(f'MOTHER DELTA: {mother_delta}')
             except IndexError:  # Mother only exists for 1 frame (dies / simulation ends afterwards)
                 continue
             try:
                 sister_01_value = data.loc[data['name'] == f'{mother_name}.1'].iloc[-1, :].signal_value
-                sister_01_delta = sister_01_value - mother_value
                 sister_02_value = data.loc[data['name'] == f'{mother_name}.2'].iloc[-1, :].signal_value
+                sister_01_delta = sister_01_value - mother_value
+                print(f'SISTER 1 DELTA: {sister_01_delta}')
                 sister_02_delta = sister_02_value - mother_value
-            except IndexError:  # one of the sisters was not found (mother died / simulation ended)
+                print(f'SISTER 2 DELTA: {sister_02_delta}')
+            except IndexError:  # One of the sisters was not found (mother died / simulation ended)
                 continue
-            else:
-                df = pd.DataFrame({
-                    'delta 01': [mother_delta,    mother_delta,    sister_01_delta],
-                    'delta 02': [sister_01_delta, sister_02_delta, sister_02_delta],
-                    'label': pair_labels,
-                })
-                dfs.append(df)
+            df = pd.DataFrame({
+                'delta 01': [mother_delta,    mother_delta,    sister_01_delta],
+                'delta 02': [sister_01_delta, sister_02_delta, sister_02_delta],
+                'label': pair_labels,
+            })
+            dfs.append(df)
         if dfs:
             return pd.concat(dfs, ignore_index=True)
         return None
