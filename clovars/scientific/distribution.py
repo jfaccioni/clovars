@@ -146,10 +146,16 @@ def LognormalDistribution(
     return Distribution(dist_type='lognormal', loc=mean, scale=std, s=s)
 
 
-class _MultiVariateGaussianDistribution(Oscillator):
+class MultivariateDistribution(Oscillator):
     """Class representing a multivariate distribution (gaussian, ...) that is able to oscillate."""
+    _dist_types = {
+        'gaussian': multivariate_normal,
+    }
+    _valid_types = list(_dist_types)
+
     def __init__(
             self,
+            dist_type: str = '',
             mean: float = 0.0,
             std: float = 1.0,
             x_y_corr: float = 0.5,
@@ -157,34 +163,46 @@ class _MultiVariateGaussianDistribution(Oscillator):
             y_z_corr: float = 0.5,
     ) -> None:
         """Initializes a MultivariateGaussianDistribution instance."""
+        self._dist_type = dist_type
+        self._validate()
+
         self.mean = mean
         self.std = std
-        x_y_covar = x_y_corr * (std ** 2)
-        x_z_covar = x_z_corr * (std ** 2)
-        y_z_covar = y_z_corr * (std ** 2)
+        self.var = self.std ** 2
+        x_y_covar = x_y_corr * self.var
+        x_z_covar = x_z_corr * self.var
+        y_z_covar = y_z_corr * self.var
         m1 = np.array([
-            [std ** 2, y_z_covar],
-            [y_z_covar, std ** 2]
+            [self.var,  y_z_covar],
+            [y_z_covar,  self.var]
         ])
         m2 = np.array([
             [x_y_covar ** 2, x_y_covar * x_z_covar],
             [x_z_covar * x_y_covar, x_z_covar ** 2]
-        ]) / (std ** 2)
+        ]) / self.var
         self._covar = m1 - m2
         v1 = np.array([
-            [mean],
-            [mean],
+            [self.mean],
+            [self.mean],
         ])
         v2 = np.array([
             [x_y_covar],
             [x_z_covar],
         ])
         self._unscaled_mean_vector = v1 + v2
-        self._scipy_dist = multivariate_normal
 
     def _validate(self) -> None:
-        """Mock validation method."""
-        pass
+        """
+        Raises a ValueError if the type of the MultivariateDistribution is invalid
+        (i.e. not in the _dist_types dictionary).
+        """
+        if not self._dist_type:
+            raise ValueError(f"No dist_type provided, please provide a valid value: {self._valid_types}")
+        if self._dist_type not in self._valid_types:
+            raise ValueError(
+                f"Invalid MultivariateDistribution type: {self._dist_type}. "
+                f"Valid names are: {self._valid_types}."
+            )
 
     def oscillate(self) -> float:
         """Returns a gaussian value."""
@@ -195,14 +213,15 @@ class _MultiVariateGaussianDistribution(Oscillator):
             x: float = 0.0,
     ) -> float:
         """Implements the oscillate method by returning a random value drawn from the distribution."""
-        return self._scipy_dist(mean=self.get_mean_vector(x=x), cov=self._covar)
+        mean = self.get_mean_vector(x=x).ravel()
+        return multivariate_normal.rvs(mean=mean, cov=self._covar)
 
     def get_mean_vector(
             self,
             x: float,
     ) -> np.array:
         """Returns the mean vector of the distribution, given one of its values."""
-        return self._unscaled_mean_vector * (x - self.mean) / (self.std**2)
+        return self._unscaled_mean_vector * (x - self.mean) / self.var
 
     def split(self) -> MultivariateGaussianDistribution():
         """Implements the split method by returning an identical, independent Distribution."""
@@ -217,9 +236,10 @@ def MultivariateGaussianDistribution(
         mother_d1_corr: float = 0.5,
         mother_d2_corr: float = 0.5,
         d1_d2_corr: float = 0.5,
-) -> _MultiVariateGaussianDistribution:
+) -> MultivariateDistribution:
     """Returns a multivariate gaussian distribution."""
-    return _MultiVariateGaussianDistribution(
+    return MultivariateDistribution(
+        dist_type='gaussian',
         mean=mean,
         std=std,
         x_y_corr=mother_d1_corr,
@@ -327,7 +347,7 @@ def StochasticSinusoidalWave(
 _VALID_DIST_NAMES = ['gaussian', 'emgaussian', 'gamma', 'lognormal']
 _VALID_MULTIVAR_DIST_NAMES = ['multivariategaussian']
 _VALID_WAVE_NAMES = ['sinusoidal', 'stochastic', ['stochasticsinusoidal', 'stochsin', 'stochastic-sinusoidal'], 'wave']
-_VALID_NAMES = _VALID_DIST_NAMES + _VALID_WAVE_NAMES
+_VALID_NAMES = _VALID_DIST_NAMES + _VALID_MULTIVAR_DIST_NAMES + _VALID_WAVE_NAMES
 
 
 def get_oscillator(
@@ -340,9 +360,12 @@ def get_oscillator(
         return get_distribution(name=name, *args, **kwargs)
     except ValueError:
         try:
-            return get_wave(name=name, *args, **kwargs)
-        except ValueError as e:
-            raise ValueError(f'Invalid Oscillator name: {name}. Valid names are:\n  {_VALID_NAMES}') from e
+            return get_multivariate_distribution(name=name, *args, **kwargs)
+        except ValueError:
+            try:
+                return get_wave(name=name, *args, **kwargs)
+            except ValueError as e:
+                raise ValueError(f'Invalid Oscillator name: {name}. Valid names are:\n  {_VALID_NAMES}') from e
 
 
 def get_distribution(
@@ -360,10 +383,24 @@ def get_distribution(
             return GammaDistribution(*args, **kwargs)
         case 'lognormal':
             return LognormalDistribution(*args, **kwargs)
+        case _:
+            raise ValueError(f"Invalid distribution name: {name}. Valid names are: {_VALID_DIST_NAMES}.")
+
+
+def get_multivariate_distribution(
+        name: str,
+        *args,
+        **kwargs,
+) -> MultivariateDistribution:
+    """Returns a multivariate distribution, given its name."""
+    match name.lower():
         case 'multivariategaussian':
             return MultivariateGaussianDistribution(*args, **kwargs)
         case _:
-            raise ValueError(f"Invalid distribution name: {name}. Valid names are: {_VALID_DIST_NAMES}")
+            raise ValueError(
+                f"Invalid multivariate distribution name: {name}. "
+                f"Valid names are: {_VALID_MULTIVAR_DIST_NAMES}."
+            )
 
 
 def get_wave(
