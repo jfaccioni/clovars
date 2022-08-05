@@ -210,7 +210,7 @@ class MultivariateDistribution(Oscillator):
 
     def bifurcate(
             self,
-            x: float = 0.0,
+            x: float,
     ) -> float:
         """Implements the oscillate method by returning a random value drawn from the distribution."""
         mean = self.get_mean_vector(x=x).ravel()
