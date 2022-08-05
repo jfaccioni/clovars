@@ -12,10 +12,10 @@ initial_size = 1
     name = 'MultivariateGaussian'
     initial_value = 50.0
     mean = 0.0
-    std = 5.0
-    mother_d1_corr = 0.5
-    mother_d2_corr = 0.5
-    d1_d2_corr = 0.5
+    std = 100.0
+    mother_d1_corr = 0.1
+    mother_d2_corr = 0.2
+    d1_d2_corr = 0.98
 #    std_division_scaling = 50.0
 
   [[colony.treatment]]
