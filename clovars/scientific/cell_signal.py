@@ -19,6 +19,7 @@ class CellSignal:
         **oscillator_kwargs,
     ) -> None:
         """Initializes a CellSignal instance."""
+        self._last_delta = 0.0
         self.value = initial_value
         self.oscillator = oscillator
         if oscillator is None:
@@ -26,7 +27,9 @@ class CellSignal:
 
     def oscillate(self) -> None:
         """Oscillates the CellSignal value based on its Oscillator."""
-        self.value += self.oscillator.oscillate()
+        delta = self.oscillator.oscillate()
+        self._last_delta = delta
+        self.value += delta
 
     def oscillate_and_get(self) -> float:
         """Oscillates the CellSignal and returns its value afterwards."""
@@ -51,10 +54,10 @@ class CellSignal:
         elif isinstance(self.oscillator, Distribution):
             return self.split(), self.split()
         elif isinstance(self.oscillator, MultivariateDistribution):
-            left_value, right_value = self.oscillator.bifurcate()
+            left_delta, right_delta = self.oscillator.bifurcate(x=self._last_delta)
             return (
-                CellSignal(initial_value=left_value, oscillator=self.oscillator.split()),
-                CellSignal(initial_value=right_value, oscillator=self.oscillator.split()),
+                CellSignal(initial_value=self.value+left_delta, oscillator=self.oscillator.split()),
+                CellSignal(initial_value=self.value+right_delta, oscillator=self.oscillator.split()),
             )
         else:  # MultivariateGaussian
             raise ValueError('Bad dist type!')
