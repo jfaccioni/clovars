@@ -5,7 +5,7 @@ from typing import Optional
 import numpy as np
 from matplotlib import pyplot as plt
 
-from clovars.scientific import get_oscillator, Distribution, Wave, Oscillator
+from clovars.scientific import Distribution, MultivariateDistribution, Oscillator, Wave, get_oscillator
 
 
 class CellSignal:
@@ -50,7 +50,7 @@ class CellSignal:
             return self.split(), self.split()
         elif isinstance(self.oscillator, Distribution):
             return self.split(), self.split()
-        elif isinstance(self.oscillator, Oscillator):  # MultivariateGaussianDistribution
+        elif isinstance(self.oscillator, MultivariateDistribution):
             left_value, right_value = self.oscillator.bifurcate()
             return (
                 CellSignal(initial_value=left_value, oscillator=self.oscillator.split()),
@@ -92,5 +92,5 @@ def get_cell_signal(
 
 
 if __name__ == '__main__':
-    signal = CellSignal(oscillator_name='gaussian', initial_value=1_000)
-    plot_cell_signal(signal=signal, n_iters=100)
+    _signal = CellSignal(oscillator_name='gaussian', initial_value=1_000)
+    plot_cell_signal(signal=_signal, n_iters=100)
