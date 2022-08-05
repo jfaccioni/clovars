@@ -33,6 +33,8 @@ perform = false
 [colony_division_times]
 perform = false
 
+[mother_daughter_deltas]
+perform = true
 
 [videos]
 render_colony_signal_vs_size = false
