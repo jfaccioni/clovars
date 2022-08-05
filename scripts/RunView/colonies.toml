@@ -10,11 +10,11 @@ initial_size = 1
   sister_fitness_memory = 0.5  # between 0 and 1
     [colony.cells.signal]
     name = 'MultivariateGaussian'
-    initial_value = 10.0
-    mean = 1.0
+    initial_value = 50.0
+    mean = 0.0
     std = 5.0
-    mother_d1_corr = 1.0
-    mother_d2_corr = 0.0
+    mother_d1_corr = 0.95
+    mother_d2_corr = 0.5
     d1_d2_corr = 0.0
 #    std_division_scaling = 50.0
 
