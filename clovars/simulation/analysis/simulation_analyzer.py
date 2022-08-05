@@ -89,6 +89,9 @@ class SimulationAnalyzer(QuietPrinterMixin, PathCreatorMixin):
         if settings.get('show_colony_division_times_cv', False) is True:
             self.quiet_print('Showing CV of Colony division times...')
             self.show_colony_division_times_cv()
+        if settings.get('show_mother_daughter_signal_deltas', False) is True:
+            self.quiet_print('Showing Mother-Daughter signal deltas...')
+            self.show_mother_daughter_signal_deltas()
         if settings.get('write_video_colony_signal_vs_size_over_time', False) is True:
             self.quiet_print('Rendering video of Colony Signal vs Size over time...')
             self.write_video_colony_signal_vs_size_over_time()
@@ -529,6 +532,12 @@ class SimulationAnalyzer(QuietPrinterMixin, PathCreatorMixin):
         ax2.set_title('Hours since birth (var)')
         ax3.set_title('Hours since birth (CV)')
         plt.show()
+
+
+    def show_mother_daughter_signal_deltas(self) -> None:
+        """Displays the mother-daughter deltas of the CellSignal value."""
+        print("RUN")
+        pass
 
     @staticmethod
     def filter_invalid(df: pd.DataFrame) -> pd.DataFrame:

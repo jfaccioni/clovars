@@ -21,7 +21,7 @@ bootstrap_n = 100
 use_log2_colony_size = false
 
 [cell_fate_distribution]
-display = true
+display = false
 render = false
 join_treatments = false
 render_file_name = 'cell_fate_distribution'
@@ -33,7 +33,7 @@ perform = false
 [colony_division_times]
 perform = false
 
-[mother_daughter_deltas]
+[mother_daughter_signal_deltas]
 perform = true
 
 [videos]

@@ -309,6 +309,7 @@ class AnalysisParameterValidator(ParameterValidator):
         'cell_fate_distribution.render_file_extension': ('optional', str, 'png'),
         'cell_fitness_distribution.perform': ('optional', bool, False),
         'colony_division_times.perform': ('optional', bool, False),
+        'mother_daughter_signal_deltas.perform': ('optional', bool, False),
         'videos.render_colony_signal_vs_size': ('optional', bool, False),
         'videos.render_colony_fitness_distribution': ('optional', bool, False),
         'verbose': ('optional', bool, True),
@@ -350,6 +351,7 @@ class AnalysisParameterValidator(ParameterValidator):
             'distributions_file_extension': self.params['cell_fate_distribution.render_file_extension'],
             'show_cell_fitness_distributions': self.params['cell_fitness_distribution.perform'],
             'show_colony_division_times_cv': self.params['colony_division_times.perform'],
+            'show_mother_daughter_signal_deltas': self.params['mother_daughter_signal_deltas.perform'],
             'write_video_colony_signal_vs_size_over_time': self.params['videos.render_colony_signal_vs_size'],
             'write_video_colony_fitness_over_time': self.params['videos.render_colony_fitness_distribution'],
         }
