@@ -14,20 +14,24 @@ class CellSignal:
         self,
         oscillator_name: str = '',
         initial_value: float = 0.0,
+        last_delta: float = 0.0,
         oscillator: Oscillator = None,
         *oscillator_args,
         **oscillator_kwargs,
     ) -> None:
         """Initializes a CellSignal instance."""
-        self._last_delta = 0.0
         self.value = initial_value
+        self._last_delta = last_delta
         self.oscillator = oscillator
         if oscillator is None:
             self.oscillator = get_oscillator(name=oscillator_name, *oscillator_args, **oscillator_kwargs)
 
     def oscillate(self) -> None:
         """Oscillates the CellSignal value based on its Oscillator."""
-        delta = self.oscillator.oscillate()
+        if isinstance(self.oscillator, MultivariateDistribution):
+            delta = self.oscillator.oscillate(x=self._last_delta)
+        else:
+            delta = self.oscillator.oscillate()
         self._last_delta = delta
         self.value += delta
 
@@ -43,9 +47,14 @@ class CellSignal:
         """Oscillates the CellSignal n times, returning a list of the values after each oscillation."""
         return [self.oscillate_and_get() for _ in range(n)]
 
-    def split(self) -> CellSignal:
+    def split(
+            self,
+            initial_value: float = None
+    ) -> CellSignal:
         """Returns a new CellSignal instance with the same parameters as the current instance."""
-        return CellSignal(initial_value=self.value, oscillator=self.oscillator.split())
+        if initial_value is None:
+            initial_value = self.value
+        return CellSignal(initial_value=initial_value, last_delta=self._last_delta, oscillator=self.oscillator.split())
 
     def bifurcate(self) -> tuple[CellSignal, CellSignal]:
         """Returns two new CellSignals, based on the desired correlation values between them."""
@@ -55,11 +64,10 @@ class CellSignal:
             return self.split(), self.split()
         elif isinstance(self.oscillator, MultivariateDistribution):
             left_delta, right_delta = self.oscillator.bifurcate(x=self._last_delta)
-            return (
-                CellSignal(initial_value=self.value+left_delta, oscillator=self.oscillator.split()),
-                CellSignal(initial_value=self.value+right_delta, oscillator=self.oscillator.split()),
-            )
-        else:  # MultivariateGaussian
+            left_value = left_delta + self.value
+            right_value = right_delta + self.value
+            return self.split(initial_value=left_value), self.split(initial_value=right_value)
+        else:
             raise ValueError('Bad dist type!')
 
     def mutate(
