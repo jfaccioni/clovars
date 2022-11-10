@@ -13,7 +13,7 @@ include = ["clovars/default_settings/*"]
 exclude = ["tests/*", "scripts/*"]
 
 [tool.poetry.dependencies]
-python = "^3.10,<3.11"
+python = ">=3.10"
 ete3 = "*"
 matplotlib = "*"
 numpy = "*"
