@@ -96,9 +96,13 @@ class TreeDrawer2D(QuietPrinterMixin):
     def plot_tree(
             self,
             root_node: CellNode,
+            ax: plt.Axes = None,
     ) -> plt.Figure:
         """Plots the tree, given its root node."""
-        figure, ax = plt.subplots(figsize=(12, 12))
+        if ax is None:
+            figure, ax = plt.subplots(figsize=(12, 12))
+        else:
+            figure = ax.figure
         self.draw_branches(root_node=root_node, ax=ax)
         self.draw_cells(root_node=root_node, ax=ax)
         self.hide_borders(ax=ax)
