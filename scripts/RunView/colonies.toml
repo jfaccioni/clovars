@@ -5,8 +5,8 @@ initial_size = 1
   [colony.cells]
   radius = 20
   max_speed = 0.020351
-  linked_sister_inheritance = true  # if true, the second child cell inherits from the first upon division
-  mother_fitness_memory = 1.0  # between 0 and 1
+  linked_sister_inheritance = false  # if true, the second child cell inherits from the first upon division
+  mother_fitness_memory = 0.0  # between 0 and 1
   sister_fitness_memory = 0.0  # between 0 and 1
     [colony.cells.signal]
     name = 'DivisionGaussian'
