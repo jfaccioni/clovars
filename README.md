@@ -6,7 +6,7 @@ This repository contains the source code accompanying the article "CloVarS: a si
 </p>
 
 ## What is CloVarS
-The **Clo**nal **Var**iability **S**imulation (CloVarS) is a cell culture simulation that generates synthetic single-cell lineage data, as normally obtained from time-lapse microscopy experiments.
+The **Clo**nal **Var**iability **S**imulator (CloVarS) is a cell culture simulation that generates synthetic single-cell lineage data, as normally obtained from time-lapse microscopy experiments.
 
 The example below depicts a single colony, starting from a single cell, which grows over 7 days:
 
