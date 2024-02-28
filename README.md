@@ -1,5 +1,5 @@
 # CloVarS: a simulation of single-cell clonal variability
-This repository contains the source code accompanying the article "CloVarS: a simulation of single-cell clonal variability" (in preparation).
+This repository contains the source code accompanying the article "CloVarS: a simulation of single-cell clonal variability". The article is available on [BioRxiv](https://www.biorxiv.org/content/10.1101/2024.02.22.581631v1).
 
 <p align="center" width="100%">
     <img src="docs/_static/clovars_overview.png" alt="CloVarS basic workflow">
@@ -94,5 +94,5 @@ CloVarS is distributed under the MIT license. Read the [`LICENSE.md`](LICENSE.md
 ## Cite us
 If you use CloVarS, cite us: 
 ```text
-Juliano L. Faccioni, Julieti H. Buss, Karine R. Begnini, Leonardo G. Brunnet, Manuel M. Oliveira and Guido Lenz. CloVarS: a simulation of single-cell clonal variability (in preparation).
+Juliano L. Faccioni, Julieti H. Buss, Karine R. Begnini, Leonardo G. Brunnet, Manuel M. Oliveira and Guido Lenz. CloVarS: a simulation of single-cell clonal variability. BioRxiv, 2023. DOI: https://doi.org/10.1101/2024.02.22.581631.
 ```
