@@ -15,19 +15,19 @@ from clovars.simulation import TreeDrawer2D
 
 SETTINGS = {
     'loader_settings': {
-        'simulation_input_folder': ROOT_PATH / 'scripts' / 'batch_run_analysis' / 'batch_TreatmentTime_treatCurveMean',
+        'simulation_input_folder': ROOT_PATH / 'scripts' / 'batch_run_analysis' / 'batch_FitnessMemory_treatCurveMean',
         'cell_csv_file_name': 'cell_output.csv',
         'colony_csv_file_name': 'colony_output.csv',
         'parameters_file_name': 'params.json',
     },
-    'fitness_memory': ['0.1', '0.3', '0.5', '0.7', '0.9'],
+    'fitness_memories': ['0.1', '0.3', '0.5', '0.7', '0.9'],
     'death_curve_means': ['35.09', '55.09', '75.09'],
 }
 
 
 def main(
         loader_settings: dict,
-        fitness_memory: str,
+        fitness_memories: str,
         death_curve_means: str,
 ) -> None:
     """Main function of this script."""
@@ -38,13 +38,13 @@ def main(
         print('resetting file {missing_file}...')
     _DEFAULT_FILE_NAME_KEYS = ['cell_csv_file_name', 'colony_csv_file_name', 'parameters_file_name']
     initial_file_names = {k: loader_settings[k] for k in _DEFAULT_FILE_NAME_KEYS}
-    for hours, death_curve_mean in itertools.product(fitness_memory, death_curve_means):
+    for fitness_memory, death_curve_mean in itertools.product(fitness_memories, death_curve_means):
         # Monkey patch values here
-        prefix = f'{hours}tt_{death_curve_mean}mean'
+        prefix = f'{fitness_memory}mem_{death_curve_mean}mean'
         for file_name in _DEFAULT_FILE_NAME_KEYS:
             loader_settings[file_name] = f'{prefix}_{loader_settings[file_name]}'
         # Load data here
-        print(f'Loading from experiment {hours=}, {death_curve_mean=}...')
+        print(f'Loading from experiment {fitness_memory=}, {death_curve_mean=}...')
         loader = SimulationLoader(settings=loader_settings)
         # exp_roots = list(yield_roots(cell_data=loader.cell_data))
         # roots.extend(exp_roots)
