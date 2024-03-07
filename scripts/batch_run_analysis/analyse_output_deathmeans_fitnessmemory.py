@@ -1,6 +1,8 @@
 """Script for analysing the output produced by a run."""
 from __future__ import annotations
 
+import itertools
+
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
@@ -13,45 +15,82 @@ from clovars.simulation import TreeDrawer2D
 
 SETTINGS = {
     'loader_settings': {
-        'simulation_input_folder': ROOT_PATH / 'scripts' / 'batch_run_analysis' / 'output',
+        'simulation_input_folder': ROOT_PATH / 'scripts' / 'batch_run_analysis' / 'batch_TreatmentTime_treatCurveMean',
         'cell_csv_file_name': 'cell_output.csv',
         'colony_csv_file_name': 'colony_output.csv',
         'parameters_file_name': 'params.json',
     },
-    'file_suffix': '0.90',
+    'fitness_memory': ['0.1', '0.3', '0.5', '0.7', '0.9'],
+    'death_curve_means': ['35.09', '55.09', '75.09'],
 }
 
 
 def main(
         loader_settings: dict,
-        file_suffix: str
+        fitness_memory: str,
+        death_curve_means: str,
 ) -> None:
     """Main function of this script."""
-    for file_name in ['cell_csv_file_name', 'colony_csv_file_name', 'parameters_file_name']:
-        loader_settings[file_name] = loader_settings[file_name].replace('.', f'_{file_suffix}.')
-    loader = SimulationLoader(settings=loader_settings)
-    roots = list(yield_roots(cell_data=loader.cell_data))
-    root_idx = 0
-    fig = plt.figure(figsize=(12, 16))
+    # roots = []
+    out_folder = loader_settings['simulation_input_folder'] / 'figures'
+    out_folder.mkdir(exist_ok=True, parents=True)
+    with open(out_folder / 'missing.txt', 'w') as _:
+        print('resetting file {missing_file}...')
+    _DEFAULT_FILE_NAME_KEYS = ['cell_csv_file_name', 'colony_csv_file_name', 'parameters_file_name']
+    initial_file_names = {k: loader_settings[k] for k in _DEFAULT_FILE_NAME_KEYS}
+    for hours, death_curve_mean in itertools.product(fitness_memory, death_curve_means):
+        # Monkey patch values here
+        prefix = f'{hours}tt_{death_curve_mean}mean'
+        for file_name in _DEFAULT_FILE_NAME_KEYS:
+            loader_settings[file_name] = f'{prefix}_{loader_settings[file_name]}'
+        # Load data here
+        print(f'Loading from experiment {hours=}, {death_curve_mean=}...')
+        loader = SimulationLoader(settings=loader_settings)
+        # exp_roots = list(yield_roots(cell_data=loader.cell_data))
+        # roots.extend(exp_roots)
+        # Export each root to figure here
+        for i, root in enumerate(yield_roots(cell_data=loader.cell_data), 1):
+            exp_folder = out_folder / prefix
+            exp_folder.mkdir(exist_ok=True, parents=True)
+            figure_name = f'{prefix}_{i:03d}.png'
+            print(f'Creating Fig. {figure_name}...')
+            fig = plt.Figure(figsize=(24, 16))
+            leaves = [leaf for leaf in root.get_leaves() if not leaf.is_dead()]
+            try:
+                plot_distance(fig=fig, leaves=leaves)
+            except IndexError:
+                print(f'Unable to create Fig. {figure_name}, skipping...')
+                with open(out_folder / 'missing.txt', 'a') as missing_file:
+                    missing_file.write(f'{figure_name}\n')
+                continue
+            fig.savefig(exp_folder / figure_name)
+            plt.close(fig=fig)
+        # Restore values here
+        for file_name in _DEFAULT_FILE_NAME_KEYS:
+            loader_settings[file_name] = initial_file_names[file_name]
 
-    def on_key_press(event):
-        nonlocal roots, root_idx
-        if event.key == 'right':
-            root_idx += 1
-        elif event.key == 'left':
-            root_idx -= 1
-        else:
-            return
-        root_idx %= len(roots)
-        ls = [leaf for leaf in roots[root_idx].get_leaves() if not leaf.is_dead()]
-        fig.clf()
-        plot_distance(fig=fig, leaves=ls)
-        fig.canvas.draw_idle()
-
-    leaves = [leaf for leaf in roots[root_idx].get_leaves() if not leaf.is_dead()]
-    plot_distance(fig=fig, leaves=leaves)
-    fig.canvas.mpl_connect('key_press_event', on_key_press)
-    plt.show()
+    # # Analyse all loaded data here
+    # root_idx = 0
+    # fig = plt.figure(figsize=(12, 16))
+    #
+    # def on_key_press(event):
+    #     nonlocal roots, root_idx
+    #     if event.key == 'right':
+    #         root_idx += 1
+    #     elif event.key == 'left':
+    #         root_idx -= 1
+    #     else:
+    #         return
+    #     root_idx %= len(roots)
+    #     ls = [leaf for leaf in roots[root_idx].get_leaves() if not leaf.is_dead()]
+    #     fig.clf()
+    #     plot_distance(fig=fig, leaves=ls)
+    #     fig.canvas.draw_idle()
+    #
+    # leaves = [leaf for leaf in roots[root_idx].get_leaves() if not leaf.is_dead()]
+    # plot_distance(fig=fig, leaves=leaves)
+    # fig.canvas.mpl_connect('key_press_event', on_key_press)
+    # plt.show()
 
 
 def yield_roots(cell_data: pd.DataFrame):
