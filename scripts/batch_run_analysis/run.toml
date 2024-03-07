@@ -5,8 +5,7 @@ delta = 3600
 well_radius = 13351.624
 
 [output]
-output_folder = 'output'
-#output_folder = 'batch_FitnessMemory_treatCurveMean'
+output_folder = 'output/batch_8Cells_FitnessMemory_treatCurveMean'
 parameters_file_name = 'params.json'
 cell_csv_file_name = 'cell_output.csv'
 colony_csv_file_name = 'colony_output.csv'
@@ -14,5 +13,5 @@ confirm_overwrite = false
 
 [stop_conditions]
 stop_at_frame = 144
-#stop_at_single_colony_size = 50
+stop_at_single_colony_size = 8
 #stop_at_all_colonies_size = 8

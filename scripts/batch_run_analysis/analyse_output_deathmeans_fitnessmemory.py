@@ -15,7 +15,13 @@ from clovars.simulation import TreeDrawer2D
 
 SETTINGS = {
     'loader_settings': {
-        'simulation_input_folder': ROOT_PATH / 'scripts' / 'batch_run_analysis' / 'batch_FitnessMemory_treatCurveMean',
+        'simulation_input_folder': (
+            ROOT_PATH /
+            'scripts' /
+            'batch_run_analysis' /
+            'output' /
+            'batch_8Cells_FitnessMemory_treatCurveMean'
+        ),
         'cell_csv_file_name': 'cell_output.csv',
         'colony_csv_file_name': 'colony_output.csv',
         'parameters_file_name': 'params.json',
