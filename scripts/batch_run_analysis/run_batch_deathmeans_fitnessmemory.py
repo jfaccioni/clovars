@@ -10,6 +10,7 @@ from clovars.simulation import run_simulation_function
 SETTINGS = {
     'run_path': ROOT_PATH / 'scripts' / 'batch_run_analysis' / 'run.toml',
     'colonies_path': ROOT_PATH / 'scripts' / 'batch_run_analysis' / 'colonies.toml',
+    'base_remote_folder': ROOT_PATH / 'data' / 'clovars_output',
     'death_curve_means': [35.09, 55.09, 75.09],
     'fitness_memory': [0.1, 0.3, 0.5, 0.7, 0.9],
 }
@@ -18,6 +19,7 @@ SETTINGS = {
 def main(
         run_path: str | Path,
         colonies_path: str | Path,
+        base_remote_folder: Path,
         death_curve_means: list[float],
         fitness_memory: list[float],
 ) -> None:
@@ -27,11 +29,15 @@ def main(
     run_validator.validate()
     run_params = run_validator.to_simulation()
 
+    # Monkey patch output folder to save in remote folder
+    output_folder = run_params['simulation_writer_settings']['output_folder']
+    run_params['simulation_writer_settings']['output_folder'] = str(base_remote_folder / output_folder)
+
     colony_formatter = ColonyDataFormatter()
     colony_formatter.parse_toml(toml_path=colonies_path)
     colonies = colony_formatter.to_simulation()
 
-    original_treatments = colonies[0]['treatment_data']  # Parte do princípio de que só tem 1 colônia
+    original_treatments = colonies[0]['treatment_data']  # Assumes a single colony
     original_ctr = original_treatments[0]
     original_tmz = original_treatments[72]
     for death_curve_mean, fitness_memory in itertools.product(death_curve_means, fitness_memory):
