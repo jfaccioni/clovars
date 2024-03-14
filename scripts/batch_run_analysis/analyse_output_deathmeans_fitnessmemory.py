@@ -34,8 +34,8 @@ def main(
     # roots = []
     out_folder = loader_settings['simulation_input_folder'] / 'figures'
     out_folder.mkdir(exist_ok=True, parents=True)
-    with open(out_folder / 'missing.txt', 'w') as _:
-        print('resetting file {missing_file}...')
+    with open(missing_file := out_folder / 'missing.txt', 'w') as _:
+        print(f'resetting file {missing_file}...')
     _DEFAULT_FILE_NAME_KEYS = ['cell_csv_file_name', 'colony_csv_file_name', 'parameters_file_name']
     initial_file_names = {k: loader_settings[k] for k in _DEFAULT_FILE_NAME_KEYS}
     for fitness_memory, death_curve_mean in itertools.product(fitness_memories, death_curve_means):
