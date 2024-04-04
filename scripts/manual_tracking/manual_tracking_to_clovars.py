@@ -16,8 +16,8 @@ SETTINGS = {
         'Camilla_01',
         'Camilla_02',
         'Camilla_03',
-        'Letícia_03',
-        'Letícia_03',
+        'Letícia_01',
+        # 'Letícia_02',
         'Letícia_03',
     ],
 }
@@ -27,7 +27,6 @@ SECONDS_IN_FRAME = MINUTES_IN_FRAME * 60
 SECONDS_IN_HOUR = 60 * 60
 SECONDS_IN_DAY = SECONDS_IN_HOUR * 24
 CSV_COLUMNS = [
-    'id',
     'name',
     'generation',
     'seconds_since_birth',
@@ -39,6 +38,7 @@ CSV_COLUMNS = [
     'branch_name',
     'colony_name',
     'treatment_name',
+    'id',
     'x',
     'y',
     'radius',
@@ -65,6 +65,7 @@ class ManualTrackingColumns:
 
 class MetadataKeys:
     researcher_name = 'Nome do Anotador'
+    colony_name = 'colony_name'
     delta_minutes = 'Intervalo de Tempo entre Imagens (min)'
 
 
@@ -81,6 +82,7 @@ def main(
     output_folder.mkdir(exist_ok=True, parents=True)
     for i, sheet_name in enumerate(sheets_to_analyze):
         metadata = get_metadata(input_path=input_path, sheet_name=sheet_name)
+        metadata['colony_name'] = sheet_name
         tracking_data = get_tracking_data(input_path=input_path, sheet_name=sheet_name)
         tree = build_tree(tracking_data=tracking_data, row_index=i, metadata=metadata)
         output_path = output_folder / f'{sheet_name}_clovars_fmt.csv'
@@ -88,7 +90,8 @@ def main(
         with open(output_path, 'w') as clovars_file:
             clovars_file.write(f'index,{",".join(CSV_COLUMNS)}')
             clovars_file.write('\n')
-            for node in tree.get_tree_root().traverse():
+            root = tree.get_tree_root()
+            for node in root.traverse():
                 clovars_file.write(f'{idx},')
                 for feature_name in CSV_COLUMNS:
                     try:
@@ -97,6 +100,8 @@ def main(
                         feature_value = ''
                     if pd.isna(feature_value):
                         feature_value = ''
+                    if feature_name == 'branch_name':  # Monkey-patch branch name
+                        feature_value = root.name
                     clovars_file.write(f'{feature_value},')
                 clovars_file.write('\n')
                 idx += 1
@@ -152,15 +157,15 @@ def get_node_from_row(
         metadata: dict,
 ) -> CellNode:
     """Returns a CellNode for the given row of the tracking data, and for the given frame."""
-    researcher_name = metadata[MetadataKeys.researcher_name]
+    researcher_name = metadata[MetadataKeys.colony_name]
     seconds_in_frame = metadata[MetadataKeys.delta_minutes] * 60
     features = {
         'support': 1.0,
         'dist': 1.0,
-        'id': (_id := cell_row[ManualTrackingColumns.cell_id]),
-        'name': (_name := f'{researcher_name}-{_id}'),
+        'id': np.nan,
+        'name': f'{researcher_name}-{cell_row[ManualTrackingColumns.cell_id]}',
         'colony_name': researcher_name,
-        'branch_name': _name,
+        'branch_name': researcher_name,
         'treatment_name': 'N/A',
         'radius': np.nan,
         'fitness_memory': np.nan,
