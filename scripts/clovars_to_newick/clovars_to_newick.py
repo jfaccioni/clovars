@@ -12,7 +12,7 @@ SETTINGS = {
     'input_file': '0.1mem_35.09mean_cell_output.csv',
     # Newick format as defined in the link below:
     # http://etetoolkit.org/docs/latest/tutorial/tutorial_trees.html#reading-and-writing-newick-trees
-    'newick_format': 4,
+    'newick_format': 0,
 }
 
 
