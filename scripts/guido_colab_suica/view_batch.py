@@ -1,5 +1,6 @@
-"""Script for analysing the output produced by a run."""
 from __future__ import annotations
+
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -12,46 +13,45 @@ from clovars.abstract import CellNode
 from clovars.simulation import TreeDrawer2D
 
 SETTINGS = {
-    'loader_settings': {
-        'simulation_input_folder': ROOT_PATH / 'scripts' / 'batch_run_analysis' / 'output',
-        'cell_csv_file_name': 'cell_output.csv',
-        'colony_csv_file_name': 'colony_output.csv',
-        'parameters_file_name': 'params.json',
-    },
-    'file_suffix': '0.90',
+    'base_input_folder': ROOT_PATH / 'data' / 'guido_colab_suica2'/ '120h',
 }
 
 
 def main(
-        loader_settings: dict,
-        file_suffix: str
+        base_input_folder: Path,
 ) -> None:
     """Main function of this script."""
-    for file_name in ['cell_csv_file_name', 'colony_csv_file_name', 'parameters_file_name']:
-        loader_settings[file_name] = loader_settings[file_name].replace('.', f'_{file_suffix}.')
-    loader = SimulationLoader(settings=loader_settings)
-    roots = list(yield_roots(cell_data=loader.cell_data))
-    root_idx = 0
-    fig = plt.figure(figsize=(12, 16))
+    # roots = []
+    for folder in base_input_folder.iterdir():
+        prefix = folder.name
+        print(f'Loading from experiment {prefix}...')
+        loader_settings = {
+            'simulation_input_folder': base_input_folder / prefix,
+            'cell_csv_file_name': f'{prefix}_cell_output.csv',
+            'colony_csv_file_name': f'{prefix}_colony_output.csv',
+            'parameters_file_name': f'{prefix}_params.json',
+        }
 
-    def on_key_press(event):
-        nonlocal roots, root_idx
-        if event.key == 'right':
-            root_idx += 1
-        elif event.key == 'left':
-            root_idx -= 1
-        else:
-            return
-        root_idx %= len(roots)
-        ls = [leaf for leaf in roots[root_idx].get_leaves() if not leaf.is_dead()]
-        fig.clf()
-        plot_distance(fig=fig, leaves=ls)
-        fig.canvas.draw_idle()
+        out_folder = loader_settings['simulation_input_folder'] / 'figures'
+        out_folder.mkdir(exist_ok=True, parents=True)
+        loader = SimulationLoader(settings=loader_settings)
 
-    leaves = [leaf for leaf in roots[root_idx].get_leaves() if not leaf.is_dead()]
-    plot_distance(fig=fig, leaves=leaves)
-    fig.canvas.mpl_connect('key_press_event', on_key_press)
-    plt.show()
+        for i, root in enumerate(yield_roots(cell_data=loader.cell_data), 1):
+            exp_folder = out_folder / prefix
+            exp_folder.mkdir(exist_ok=True, parents=True)
+            figure_name = f'{prefix}_{i:03d}.png'
+            print(f'Creating Fig. {figure_name}...')
+            fig = plt.Figure(figsize=(24, 16))
+            leaves = [leaf for leaf in root.get_leaves() if not leaf.is_dead()]
+            try:
+                plot_distance(fig=fig, leaves=leaves)
+            except IndexError:
+                print(f'Unable to create Fig. {figure_name}, skipping...')
+                with open(out_folder / 'missing.txt', 'a') as missing_file:
+                    missing_file.write(f'{figure_name}\n')
+                continue
+            fig.savefig(exp_folder / figure_name)
+            plt.close(fig=fig)
 
 
 def yield_roots(cell_data: pd.DataFrame):
