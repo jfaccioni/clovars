@@ -9,9 +9,9 @@ from clovars.simulation import run_simulation_function
 SETTINGS = {
     'run_path': ROOT_PATH / 'scripts' / 'guido_colab_suica' / 'run.toml',
     'colonies_path': ROOT_PATH / 'scripts' / 'guido_colab_suica' / 'colonies.toml',
-    'base_remote_folder': ROOT_PATH / 'data' / 'guido_colab_suica',
-    'md_memory': [0.0, 0.1, 0.2, 0.3, 1.0],
-    'ss_memory': [0.0, 0.3, 0.6, 0.9, 1.0],
+    'base_remote_folder': ROOT_PATH / 'data' / 'guido_colab_suica2' / '120h',
+    'md_memory': [-1.0, -0.5, 0.0, 0.1, 0.2, 0.3, 1.0],
+    'ss_memory': [ 0.0,  0.0, 0.0, 0.3, 0.6, 0.9, 1.0],
 }
 
 

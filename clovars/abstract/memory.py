@@ -1,12 +1,18 @@
 from __future__ import annotations
 
+import numpy as np
+
 from clovars.scientific import bounded_brownian_motion
 
 
 class CellMemory:
     """Class representing a Cell memory, with specific values for mother and sister inheritance."""
-    _min = 0.0
-    _max = 1.0
+    # Actual memory
+    _memory_min = -1.0
+    _memory_max = 1.0
+    # Brownian motion limits
+    _fluct_min = 0.0
+    _fluct_max = 1.0
 
     def __init__(
             self,
@@ -24,7 +30,7 @@ class CellMemory:
                 [self.mother_memory, 'Mother'],
                 [self.sister_memory, 'Sister'],
         ):
-            if not self._min <= memory_value <= self._max:
+            if not self._memory_min <= memory_value <= self._memory_max:
                 raise ValueError(f'Bad memory value for {memory_label} memory: {memory_value}')
 
     def inherit_from_mother(
@@ -32,24 +38,34 @@ class CellMemory:
             mother_value: float,
     ) -> float:
         """Inherits the value from the mother, scaled by the mother_memory parameter."""
-        return bounded_brownian_motion(
+        scale = np.absolute(self.mother_memory)
+        value = bounded_brownian_motion(
             current_value=mother_value,
-            scale=self.mother_memory,
-            lower_bound=self._min,
-            upper_bound=self._max,
+            scale=scale,
+            lower_bound=self._fluct_min,
+            upper_bound=self._fluct_max,
         )
+        if self.mother_memory < 0:
+            return 1 - value
+        else:
+            return value
 
     def inherit_from_sister(
             self,
             sister_value: float,
     ) -> float:
         """Inherits the value from the sister, scaled by the sister_memory parameter."""
-        return bounded_brownian_motion(
+        scale = np.absolute(self.sister_memory)
+        value = bounded_brownian_motion(
             current_value=sister_value,
-            scale=self.sister_memory,
-            lower_bound=self._min,
-            upper_bound=self._max,
+            scale=scale,
+            lower_bound=self._fluct_min,
+            upper_bound=self._fluct_max,
         )
+        if self.sister_memory < 0:
+            return 1 - value
+        else:
+            return value
 
 # class Inheritable:
 #     """Class representing an abstract object that can be inherited from another object."""

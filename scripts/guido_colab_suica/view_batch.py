@@ -13,7 +13,7 @@ from clovars.abstract import CellNode
 from clovars.simulation import TreeDrawer2D
 
 SETTINGS = {
-    'base_input_folder': ROOT_PATH / 'data' / 'guido_colab_suica' / '120h',
+    'base_input_folder': ROOT_PATH / 'data' / 'guido_colab_suica2'/ '120h',
 }
 
 
