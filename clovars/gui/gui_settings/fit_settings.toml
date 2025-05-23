@@ -1,0 +1,7 @@
+verbose = true
+
+[input]
+input_file = 'data.csv'
+sheet_name = 'Sheet1'
+division_hours_column_name = 'Division Times'
+death_hours_column_name = 'Death Times'
