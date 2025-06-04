@@ -3,6 +3,7 @@ from __future__ import annotations
 import sys
 from argparse import ArgumentParser
 from typing import Any, Callable, TYPE_CHECKING
+import subprocess
 
 from clovars import (
     DEFAULT_ANALYSIS_PATH,
@@ -34,6 +35,11 @@ def main() -> None:
     """Main function of CloVarS."""
     print('----- CloVarS -----\n')
     mode, settings_path, colonies_path = parse_command_line_arguments()
+    
+    if mode == "gui":
+        subprocess.Popen([sys.executable, "clovars/gui/clovars_main_gui.py"])
+        return
+    
     validator, simulation_function = get_validator_and_function(mode=mode)
     validator.parse_toml(settings_path)
     validator.validate()
@@ -59,6 +65,7 @@ def get_validator_and_function(mode: str) -> tuple[ParameterValidator, Callable]
             'view': (ViewParameterValidator(), view_simulation_function),
             'analyse': (AnalysisParameterValidator(), analyse_simulation_function),
             'fit': (FitParameterValidator(), fit_experimental_data_function),
+            'gui': ("", "")
         }[mode]
     except KeyError:
         raise ValueError(f'Something went wrong, got invalid mode {mode}. Exiting...')
@@ -104,6 +111,7 @@ def get_default_settings_path(mode: str) -> str:
             'view': DEFAULT_VIEW_PATH,
             'analyse': DEFAULT_ANALYSIS_PATH,
             'fit': DEFAULT_FIT_PATH,
+            'gui' : '',
         }[mode]
     except KeyError:
         raise ValueError(f'Invalid mode {mode}')
