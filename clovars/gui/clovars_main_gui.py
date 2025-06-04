@@ -6,10 +6,10 @@ import sys
 def open_window(script_name: str):
     subprocess.Popen([sys.executable, script_name])
 
-def run_clicked(): open_window("/home/frederico-mattos/Documents/UFRGS/labsinal/projects/clovars/clovars/gui/run_window.py")
-def view_clicked(): open_window("/home/frederico-mattos/Documents/UFRGS/labsinal/projects/clovars/clovars/gui/view_window.py")
-def analyse_clicked(): open_window("/home/frederico-mattos/Documents/UFRGS/labsinal/projects/clovars/clovars/gui/analyse_window.py")
-def fit_clicked(): open_window("/home/frederico-mattos/Documents/UFRGS/labsinal/projects/clovars/clovars/gui/fit_window.py")
+def run_clicked(): open_window("clovars/gui/run_window.py")
+def view_clicked(): open_window("clovars/gui/view_window.py")
+def analyse_clicked(): open_window("clovars/gui/analyse_window.py")
+def fit_clicked(): open_window("clovars/gui/fit_window.py")
 
 # Create Window
 root = tk.Tk()
