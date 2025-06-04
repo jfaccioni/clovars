@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 import toml
 from pathlib import Path
-from clovars.IO import RunParameterValidator, ColonyDataFormatter
+from clovars.IO.parameter_validator import RunParameterValidator, ColonyDataFormatter
 from clovars.simulation import run_simulation_function
 
 # ================ STYLE CONSTANTS ================
